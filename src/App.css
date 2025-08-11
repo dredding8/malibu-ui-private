@@ -1,0 +1,337 @@
+/* 8-Point Grid System - CSS Custom Properties */
+:root {
+  /* Spacing Scale (8pt increments) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 56px;
+  --space-8: 64px;
+  
+  /* Component Spacing */
+  --card-margin: var(--space-3);
+  --section-padding: var(--space-3);
+  --button-gap: var(--space-2);
+  --form-group-margin: var(--space-3);
+  --table-cell-gap: var(--space-1);
+  --navigation-gap: var(--space-2);
+  --divider-margin: var(--space-3);
+  --tag-gap: var(--space-1);
+  --loading-padding: var(--space-6);
+}
+
+/* Custom styles for VUE Dashboard */
+
+.app {
+  min-height: 100vh;
+  background-color: #f5f8fa;
+}
+
+.dashboard-content,
+.history-content,
+.analytics-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--section-padding) !important;
+}
+
+/* Custom spacing for cards */
+.bp4-card {
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 0 0 rgba(16, 22, 26, 0), 0 1px 1px rgba(16, 22, 26, 0.2);
+  border-radius: 3px;
+}
+
+/* Enhanced table styling */
+.bp4-table-container {
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Custom button spacing */
+.bp4-button-group {
+  gap: var(--button-gap);
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .dashboard-content,
+  .history-content,
+  .analytics-content {
+    padding: var(--space-2) !important;
+  }
+  
+  .bp4-control-group {
+    flex-direction: column;
+  }
+  
+  .bp4-control-group > * {
+    margin-bottom: var(--space-1);
+  }
+}
+
+/* Custom navbar styling */
+.bp4-navbar {
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 0 0 rgba(16, 22, 26, 0), 0 1px 1px rgba(16, 22, 26, 0.2);
+}
+
+/* Enhanced form styling */
+.bp4-form-group {
+  margin-bottom: var(--form-group-margin);
+}
+
+/* Custom callout styling */
+.bp4-callout {
+  border-radius: 3px;
+}
+
+/* Table cell content alignment */
+.bp4-table-cell {
+  vertical-align: middle;
+}
+
+/* Custom tag styling */
+.bp4-tag {
+  font-weight: 500;
+}
+
+/* Loading state styling */
+.bp4-spinner {
+  margin-right: var(--space-1);
+}
+
+/* Custom divider styling */
+.bp4-divider {
+  margin: var(--divider-margin) 0;
+}
+
+/* Enhanced input styling */
+.bp4-input-group {
+  border-radius: 3px;
+}
+
+/* Custom date input styling */
+.bp4-date-input {
+  border-radius: 3px;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 1024px) {
+  .bp4-table-container {
+    overflow-x: auto;
+  }
+}
+
+/* Review Matches Page Styles */
+.review-matches-container {
+  padding: var(--section-padding);
+  background-color: #293742;
+  min-height: 100vh;
+}
+
+.review-matches-header {
+  margin-bottom: var(--card-margin);
+}
+
+.review-matches-tabs {
+  margin-bottom: var(--card-margin);
+}
+
+.review-matches-filters {
+  display: flex;
+  gap: var(--button-gap);
+  margin-top: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.review-matches-table-container {
+  background-color: #30404d;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.review-matches-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+  padding: 0 var(--space-2);
+}
+
+.review-matches-selection-info {
+  display: flex;
+  gap: var(--button-gap);
+  align-items: center;
+}
+
+.review-matches-navigation {
+  display: flex;
+  gap: var(--button-gap);
+  justify-content: flex-end;
+  margin-top: var(--card-margin);
+}
+
+.review-matches-summary {
+  margin-bottom: var(--card-margin);
+}
+
+.review-matches-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--card-margin);
+  font-size: 14px;
+}
+
+.review-matches-loading {
+  text-align: center;
+  padding: var(--loading-padding);
+}
+
+.review-matches-loading-text {
+  margin-top: var(--card-margin);
+  color: #666;
+}
+
+.review-matches-site-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tag-gap);
+}
+
+.review-matches-site-tag {
+  font-size: 11px;
+}
+
+.review-matches-priority-warning {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-right: var(--space-1);
+}
+
+.review-matches-empty-state {
+  text-align: center;
+  padding: var(--loading-padding);
+  color: #666;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .review-matches-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .review-matches-summary-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  
+  .review-matches-table-header {
+    flex-direction: column;
+    gap: var(--button-gap);
+    align-items: stretch;
+  }
+  
+  .review-matches-navigation {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+/* Dark theme enhancements */
+.bp4-dark .review-matches-container {
+  background-color: #293742;
+}
+
+.bp4-dark .review-matches-table-container {
+  background-color: #30404d;
+}
+
+/* Table specific styles */
+.bp4-dark .bp4-table-container {
+  background-color: #30404d;
+}
+
+.bp4-dark .bp4-table-header {
+  background-color: #364750;
+}
+
+.bp4-dark .bp4-table-cell {
+  background-color: #30404d;
+  border-color: #435a6b;
+}
+
+.bp4-dark .bp4-table-cell:hover {
+  background-color: #364750;
+}
+
+/* Tag styles for site allocation */
+.bp4-dark .bp4-tag {
+  background-color: #0f9960;
+  color: white;
+}
+
+.bp4-dark .bp4-tag.bp4-minimal {
+  background-color: transparent;
+  color: #0f9960;
+  border: 1px solid #0f9960;
+}
+
+/* Progress bar styles */
+.bp4-dark .bp4-progress-bar {
+  background-color: #435a6b;
+}
+
+/* Input group styles */
+.bp4-dark .bp4-input-group {
+  background-color: #30404d;
+  border-color: #435a6b;
+}
+
+.bp4-dark .bp4-input-group:focus-within {
+  border-color: #137cbd;
+}
+
+/* Select styles */
+.bp4-dark .bp4-html-select select {
+  background-color: #30404d;
+  border-color: #435a6b;
+  color: #f5f8fa;
+}
+
+.bp4-dark .bp4-html-select select:focus {
+  border-color: #137cbd;
+}
+
+/* Tab styles */
+.bp4-dark .bp4-tab-list {
+  border-bottom-color: #435a6b;
+}
+
+.bp4-dark .bp4-tab {
+  color: #a7b6c2;
+}
+
+.bp4-dark .bp4-tab[aria-selected="true"] {
+  color: #137cbd;
+  border-bottom-color: #137cbd;
+}
+
+/* Card styles */
+.bp4-dark .bp4-card {
+  background-color: #30404d;
+  border-color: #435a6b;
+}
+
+/* Section styles */
+.bp4-dark .bp4-section {
+  background-color: #30404d;
+}
+
+.bp4-dark .bp4-section-card {
+  background-color: #364750;
+  border-color: #435a6b;
+}
