@@ -147,3 +147,6 @@ The 8-point grid system maintains consistency across different screen sizes:
 - **Mobile**: Reduces to smaller spacing values (`--space-2` for main content)
 
 This ensures the interface remains visually consistent and professional across all devices.
+
+
+
