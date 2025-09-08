@@ -1,0 +1,441 @@
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Intent, Alert, Position, OverlayToaster } from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
+import { NavigationContext as NavTypes } from '../types/navigation';
+
+// Enhanced navigation state with full preservation capabilities
+interface EnhancedNavigationState {
+  // Core state
+  currentContext: NavTypes.PageContext;
+  previousContext: NavTypes.PageContext | null;
+  navigationHistory: NavTypes.PageContext[];
+  
+  // Form and state preservation
+  formData: Record<string, any>;
+  wizardState: Record<string, any>;
+  scrollPositions: Record<string, number>;
+  
+  // Navigation flags
+  hasUnsavedChanges: boolean;
+  isNavigating: boolean;
+  navigationBlocked: boolean;
+  
+  // Methods
+  updateContext: (updates: Partial<NavTypes.PageContext>) => void;
+  navigateWithContext: (path: string, options?: NavigationOptions) => Promise<boolean>;
+  preserveFormData: (key: string, data: any) => void;
+  getPreservedData: (key: string) => any;
+  clearPreservedData: (key?: string) => void;
+  preserveScrollPosition: (path: string, position: number) => void;
+  restoreScrollPosition: (path: string) => number | null;
+  setUnsavedChanges: (hasChanges: boolean) => void;
+  canNavigateAway: () => Promise<boolean>;
+  blockNavigation: (reason?: string) => void;
+  unblockNavigation: () => void;
+  restoreFromSession: () => void;
+  // Deep linking
+  generateDeepLink: (path: string, state?: any) => string;
+  restoreFromDeepLink: (url: string) => void;
+}
+
+interface NavigationOptions {
+  replace?: boolean;
+  preserveState?: boolean;
+  skipConfirmation?: boolean;
+  state?: any;
+}
+
+const EnhancedNavigationContext = createContext<EnhancedNavigationState | undefined>(undefined);
+const toaster = OverlayToaster.create({ position: Position.TOP });
+
+// Session storage keys
+const STORAGE_KEYS = {
+  FORM_DATA: 'nav_form_data',
+  WIZARD_STATE: 'nav_wizard_state',
+  SCROLL_POSITIONS: 'nav_scroll_positions',
+  NAVIGATION_HISTORY: 'nav_history',
+};
+
+export const useEnhancedNavigation = () => {
+  const context = useContext(EnhancedNavigationContext);
+  if (!context) {
+    throw new Error('useEnhancedNavigation must be used within EnhancedNavigationProvider');
+  }
+  return context;
+};
+
+export const EnhancedNavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // State management
+  const [currentContext, setCurrentContext] = useState<NavTypes.PageContext>(
+    determinePageContext(location.pathname)
+  );
+  const [previousContext, setPreviousContext] = useState<NavTypes.PageContext | null>(null);
+  const [navigationHistory, setNavigationHistory] = useState<NavTypes.PageContext[]>([]);
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [wizardState, setWizardState] = useState<Record<string, any>>({});
+  const [scrollPositions, setScrollPositions] = useState<Record<string, number>>({});
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigationBlocked, setNavigationBlocked] = useState(false);
+  const blockReasonRef = useRef<string>();
+  
+  // Restore state from session storage on mount
+  useEffect(() => {
+    // Inline restoration to avoid circular dependency
+    try {
+      const savedFormData = sessionStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      if (savedFormData) setFormData(JSON.parse(savedFormData));
+      
+      const savedWizardState = sessionStorage.getItem(STORAGE_KEYS.WIZARD_STATE);
+      if (savedWizardState) setWizardState(JSON.parse(savedWizardState));
+      
+      const savedScrollPositions = sessionStorage.getItem(STORAGE_KEYS.SCROLL_POSITIONS);
+      if (savedScrollPositions) setScrollPositions(JSON.parse(savedScrollPositions));
+      
+      const savedHistory = sessionStorage.getItem(STORAGE_KEYS.NAVIGATION_HISTORY);
+      if (savedHistory) setNavigationHistory(JSON.parse(savedHistory));
+    } catch (e) {
+      console.warn('Failed to restore navigation state from session:', e);
+    }
+    
+    // Handle deep link restoration
+    const deepLinkState = searchParams.get('state');
+    if (deepLinkState) {
+      try {
+        const decoded = JSON.parse(atob(deepLinkState));
+        if (decoded.formData) setFormData(decoded.formData);
+        if (decoded.wizardState) setWizardState(decoded.wizardState);
+      } catch (e) {
+        console.warn('Failed to restore deep link state:', e);
+      }
+    }
+  }, []);
+  
+  // Save state to session storage on changes
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify(formData));
+  }, [formData]);
+  
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEYS.WIZARD_STATE, JSON.stringify(wizardState));
+  }, [wizardState]);
+  
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEYS.SCROLL_POSITIONS, JSON.stringify(scrollPositions));
+  }, [scrollPositions]);
+  
+  useEffect(() => {
+    // Keep only last 20 history entries
+    const trimmedHistory = navigationHistory.slice(-20);
+    sessionStorage.setItem(STORAGE_KEYS.NAVIGATION_HISTORY, JSON.stringify(trimmedHistory));
+  }, [navigationHistory]);
+  
+  // Update context on route change
+  useEffect(() => {
+    const newContext = determinePageContext(location.pathname);
+    setCurrentContext(newContext);
+    
+    // Update navigation history
+    setNavigationHistory(prev => {
+      const last = prev[prev.length - 1];
+      if (!last || last.title !== newContext.title) {
+        return [...prev, newContext];
+      }
+      return prev;
+    });
+  }, [location.pathname]);
+  
+  // Prevent navigation when blocked
+  useEffect(() => {
+    if (navigationBlocked) {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = blockReasonRef.current || 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
+  }, [navigationBlocked]);
+  
+  const updateContext = useCallback((updates: Partial<NavTypes.PageContext>) => {
+    setCurrentContext(prev => ({ ...prev, ...updates }));
+  }, []);
+  
+  const preserveFormData = useCallback((key: string, data: any) => {
+    setFormData(prev => ({ ...prev, [key]: data }));
+  }, []);
+  
+  const getPreservedData = useCallback((key: string) => {
+    return formData[key] || wizardState[key];
+  }, [formData, wizardState]);
+  
+  const clearPreservedData = useCallback((key?: string) => {
+    if (key) {
+      setFormData(prev => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      setWizardState(prev => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    } else {
+      setFormData({});
+      setWizardState({});
+    }
+  }, []);
+  
+  const preserveScrollPosition = useCallback((path: string, position: number) => {
+    setScrollPositions(prev => ({ ...prev, [path]: position }));
+  }, []);
+  
+  const restoreScrollPosition = useCallback((path: string): number | null => {
+    return scrollPositions[path] || null;
+  }, [scrollPositions]);
+  
+  const canNavigateAway = useCallback(async (): Promise<boolean> => {
+    if (!hasUnsavedChanges || navigationBlocked) {
+      return !navigationBlocked;
+    }
+    
+    return new Promise((resolve) => {
+      toaster.show({
+        message: (
+          <Alert
+            intent={Intent.WARNING}
+            onConfirm={() => {
+              setHasUnsavedChanges(false);
+              resolve(true);
+            }}
+            onCancel={() => resolve(false)}
+            confirmButtonText="Leave Page"
+            cancelButtonText="Stay"
+          >
+            <p>You have unsaved changes. Are you sure you want to leave this page?</p>
+          </Alert>
+        ),
+        timeout: 0,
+      });
+    });
+  }, [hasUnsavedChanges, navigationBlocked]);
+  
+  const navigateWithContext = useCallback(async (
+    path: string, 
+    options: NavigationOptions = {}
+  ): Promise<boolean> => {
+    if (!options.skipConfirmation) {
+      const canNavigate = await canNavigateAway();
+      if (!canNavigate) return false;
+    }
+    
+    setIsNavigating(true);
+    setPreviousContext(currentContext);
+    
+    // Preserve current scroll position
+    preserveScrollPosition(location.pathname, window.scrollY);
+    
+    const navigationState = {
+      fromContext: currentContext,
+      preservedFormData: options.preserveState ? formData : undefined,
+      preservedWizardState: options.preserveState ? wizardState : undefined,
+      ...options.state
+    };
+    
+    navigate(path, {
+      replace: options.replace,
+      state: navigationState
+    });
+    
+    setIsNavigating(false);
+    return true;
+  }, [canNavigateAway, currentContext, formData, wizardState, location.pathname, navigate, preserveScrollPosition]);
+  
+  const blockNavigation = useCallback((reason?: string) => {
+    setNavigationBlocked(true);
+    blockReasonRef.current = reason;
+  }, []);
+  
+  const unblockNavigation = useCallback(() => {
+    setNavigationBlocked(false);
+    blockReasonRef.current = undefined;
+  }, []);
+
+  const setUnsavedChanges = useCallback((hasChanges: boolean) => {
+    setHasUnsavedChanges(hasChanges);
+    if (hasChanges) {
+      setNavigationBlocked(true);
+      blockReasonRef.current = 'You have unsaved changes.';
+    } else {
+      setNavigationBlocked(false);
+      blockReasonRef.current = undefined;
+    }
+  }, []);
+
+  const preserveFormData = useCallback((key: string, data: any) => {
+    setFormData(prev => ({ ...prev, [key]: data }));
+  }, []);
+
+  const getPreservedData = useCallback((key: string) => {
+    return formData[key];
+  }, [formData]);
+
+  const clearPreservedData = useCallback((key?: string) => {
+    if (key) {
+      setFormData(prev => {
+        const newData = { ...prev };
+        delete newData[key];
+        return newData;
+      });
+    } else {
+      setFormData({});
+    }
+  }, []);
+
+  const preserveScrollPosition = useCallback((path: string, position: number) => {
+    setScrollPositions(prev => ({ ...prev, [path]: position }));
+  }, []);
+
+  const restoreScrollPosition = useCallback((path: string): number | null => {
+    return scrollPositions[path] || null;
+  }, [scrollPositions]);
+  
+  const restoreFromSession = useCallback(() => {
+    try {
+      const savedFormData = sessionStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      if (savedFormData) setFormData(JSON.parse(savedFormData));
+      
+      const savedWizardState = sessionStorage.getItem(STORAGE_KEYS.WIZARD_STATE);
+      if (savedWizardState) setWizardState(JSON.parse(savedWizardState));
+      
+      const savedScrollPositions = sessionStorage.getItem(STORAGE_KEYS.SCROLL_POSITIONS);
+      if (savedScrollPositions) setScrollPositions(JSON.parse(savedScrollPositions));
+      
+      const savedHistory = sessionStorage.getItem(STORAGE_KEYS.NAVIGATION_HISTORY);
+      if (savedHistory) setNavigationHistory(JSON.parse(savedHistory));
+    } catch (e) {
+      console.warn('Failed to restore navigation state from session:', e);
+    }
+  }, []);
+  
+  const generateDeepLink = useCallback((path: string, state?: any): string => {
+    const baseUrl = window.location.origin;
+    const stateToEncode = {
+      formData: state?.formData || formData,
+      wizardState: state?.wizardState || wizardState,
+      timestamp: Date.now()
+    };
+    
+    const encodedState = btoa(JSON.stringify(stateToEncode));
+    const url = new URL(path, baseUrl);
+    url.searchParams.set('state', encodedState);
+    
+    return url.toString();
+  }, [formData, wizardState]);
+  
+  const restoreFromDeepLink = useCallback((url: string) => {
+    try {
+      const urlObj = new URL(url);
+      const encodedState = urlObj.searchParams.get('state');
+      
+      if (encodedState) {
+        const state = JSON.parse(atob(encodedState));
+        if (state.formData) setFormData(state.formData);
+        if (state.wizardState) setWizardState(state.wizardState);
+        
+        navigate(urlObj.pathname, { replace: true });
+      }
+    } catch (e) {
+      console.error('Failed to restore from deep link:', e);
+    }
+  }, [navigate]);
+  
+  const value: EnhancedNavigationState = {
+    currentContext,
+    previousContext,
+    navigationHistory,
+    formData,
+    wizardState,
+    scrollPositions,
+    hasUnsavedChanges,
+    isNavigating,
+    navigationBlocked,
+    updateContext,
+    navigateWithContext,
+    preserveFormData,
+    getPreservedData,
+    clearPreservedData,
+    preserveScrollPosition,
+    restoreScrollPosition,
+    setUnsavedChanges,
+    canNavigateAway,
+    blockNavigation,
+    unblockNavigation,
+    restoreFromSession,
+    generateDeepLink,
+    restoreFromDeepLink,
+  };
+  
+  return (
+    <EnhancedNavigationContext.Provider value={value}>
+      {children}
+    </EnhancedNavigationContext.Provider>
+  );
+};
+
+// Helper function to determine page context (reuse from original)
+function determinePageContext(pathname: string): NavTypes.PageContext {
+  // Collection Opportunity View
+  if (pathname.match(/^\/history\/[^/]+\/collection-opportunities$/)) {
+    const collectionId = pathname.split('/')[2];
+    return {
+      domain: 'collectionOpportunity',
+      title: 'Collection Opportunities',
+      subtitle: 'Satellite passes included in this collection',
+      icon: IconNames.SATELLITE,
+      intent: Intent.SUCCESS,
+      breadcrumbs: [
+        { text: 'Data Sources', href: '/', icon: IconNames.DATABASE },
+        { text: 'History', href: '/history', icon: IconNames.HISTORY },
+        { text: `Collection ${collectionId}` },
+        { text: 'Collection Opportunities', current: true }
+      ]
+    };
+  }
+  
+  // Field Mapping Review
+  if (pathname.match(/^\/history\/[^/]+\/field-mapping-review$/)) {
+    const collectionId = pathname.split('/')[2];
+    return {
+      domain: 'fieldMapping',
+      title: 'Field Mapping Review',
+      subtitle: 'Review data field relationships and transformations',
+      icon: IconNames.FLOWS,
+      intent: Intent.PRIMARY,
+      breadcrumbs: [
+        { text: 'Data Sources', href: '/', icon: IconNames.DATABASE },
+        { text: 'History', href: '/history', icon: IconNames.HISTORY },
+        { text: `Collection ${collectionId}` },
+        { text: 'Field Mapping Review', current: true }
+      ]
+    };
+  }
+  
+  // Add more contexts as needed
+  
+  // Default context
+  return {
+    domain: 'history',
+    title: 'Navigation',
+    icon: IconNames.COMPASS,
+    breadcrumbs: []
+  };
+}

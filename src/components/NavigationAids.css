@@ -1,0 +1,311 @@
+/* Navigation Aids Styles */
+
+/* Contextual Navigator Menu */
+.navigation-aids-menu {
+  min-width: 280px;
+  max-width: 350px;
+}
+
+.current-location {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.location-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.location-subtitle {
+  font-size: 12px;
+  color: #5c7080;
+  margin-top: 2px;
+}
+
+.bp6-dark .location-subtitle {
+  color: #a7b6c2;
+}
+
+.current-location-item {
+  background-color: #f5f8fa;
+  pointer-events: none;
+}
+
+.bp6-dark .current-location-item {
+  background-color: #293742;
+}
+
+/* Navigation FAB */
+.navigation-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  transition: transform 0.2s ease;
+}
+
+.navigation-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.navigation-help-card {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 9998;
+  animation: slideIn 200ms ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.help-shortcuts {
+  margin-top: 16px;
+}
+
+.help-shortcuts h5 {
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.shortcut-list kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  margin-right: 8px;
+  background-color: #e1e8ed;
+  border: 1px solid #c1c7cd;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.bp6-dark .shortcut-list kbd {
+  background-color: #30404d;
+  border-color: #404854;
+}
+
+/* Navigation Error */
+.error-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Workflow Progress */
+.workflow-progress {
+  background-color: #ffffff;
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.bp6-dark .workflow-progress {
+  background-color: #1c2127;
+  border-color: #30404d;
+}
+
+.progress-bar-container {
+  height: 4px;
+  background-color: #e1e8ed;
+  border-radius: 2px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.bp6-dark .progress-bar-container {
+  background-color: #30404d;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #137cbd;
+  transition: width 300ms ease;
+}
+
+.workflow-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.workflow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.workflow-step.clickable {
+  cursor: pointer;
+}
+
+.workflow-step.clickable:hover .step-indicator {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Step Indicators */
+.step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 200ms ease;
+  margin-bottom: 8px;
+}
+
+.workflow-step.completed .step-indicator {
+  background-color: #0d8050;
+  color: white;
+}
+
+.workflow-step.current .step-indicator {
+  background-color: #137cbd;
+  color: white;
+  box-shadow: 0 0 0 4px #137cbd20;
+}
+
+.workflow-step.pending .step-indicator {
+  background-color: #f5f8fa;
+  border: 2px solid #c1c7cd;
+  color: #5c7080;
+}
+
+.bp6-dark .workflow-step.pending .step-indicator {
+  background-color: #30404d;
+  border-color: #404854;
+  color: #a7b6c2;
+}
+
+.workflow-step.error .step-indicator {
+  background-color: #db3737;
+  color: white;
+}
+
+.current-indicator,
+.pending-indicator {
+  font-size: 12px;
+}
+
+/* Step Labels */
+.step-label {
+  text-align: center;
+  font-size: 12px;
+  color: #182026;
+  max-width: 100px;
+  word-wrap: break-word;
+}
+
+.bp6-dark .step-label {
+  color: #f5f8fa;
+}
+
+.workflow-step.pending .step-label {
+  color: #5c7080;
+}
+
+.bp6-dark .workflow-step.pending .step-label {
+  color: #a7b6c2;
+}
+
+.optional-tag {
+  margin-left: 4px;
+  font-size: 10px;
+  vertical-align: middle;
+}
+
+/* Connecting Lines */
+.workflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: calc(100% - 32px);
+  height: 1px;
+  background-color: #e1e8ed;
+  z-index: -1;
+}
+
+.bp6-dark .workflow-step:not(:last-child)::after {
+  background-color: #30404d;
+}
+
+.workflow-step.completed:not(:last-child)::after {
+  background-color: #0d8050;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .navigation-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .navigation-help-card {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    bottom: 72px;
+  }
+  
+  .workflow-steps {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .workflow-step {
+    flex: 0 1 calc(50% - 8px);
+  }
+  
+  .workflow-step::after {
+    display: none;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .navigation-help-card,
+  .progress-bar-fill,
+  .step-indicator {
+    animation: none;
+    transition: none;
+  }
+}

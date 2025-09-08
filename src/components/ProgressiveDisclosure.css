@@ -1,0 +1,216 @@
+/* Progressive Disclosure Styles */
+.progressive-disclosure {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+  margin-bottom: 8px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progress-header > span {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Disclosure Sections */
+.disclosure-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.disclosure-section {
+  transition: all 200ms ease;
+  border: 1px solid transparent;
+}
+
+.disclosure-section.viewed {
+  border-color: #137cbd20;
+}
+
+.disclosure-section.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.disclosure-section.locked .section-header {
+  pointer-events: all;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.section-toggle {
+  flex: 1;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 12px;
+  min-height: 60px;
+}
+
+.section-toggle:hover {
+  background-color: #f5f8fa;
+}
+
+.bp6-dark .section-toggle:hover {
+  background-color: #293742;
+}
+
+.section-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.section-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #182026;
+}
+
+.bp6-dark .section-title {
+  color: #f5f8fa;
+}
+
+.section-subtitle {
+  margin: 2px 0 0 0;
+  font-size: 13px;
+  color: #5c7080;
+  font-weight: normal;
+}
+
+.bp6-dark .section-subtitle {
+  color: #a7b6c2;
+}
+
+/* Section Indicators */
+.section-indicators {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.section-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+.priority-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.priority-icon.bp5-intent-primary {
+  opacity: 1;
+}
+
+.lock-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+/* Section Content */
+.section-content {
+  padding: 0 16px 16px 16px;
+  animation: fadeIn 200ms ease;
+}
+
+.section-help {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-toggle {
+    padding: 8px;
+    min-height: auto;
+  }
+  
+  .section-title {
+    font-size: 15px;
+  }
+  
+  .section-subtitle {
+    font-size: 12px;
+  }
+  
+  .section-icon {
+    font-size: 18px;
+  }
+}
+
+/* Accordion Mode Specific */
+.progressive-disclosure[data-mode="accordion"] .disclosure-section {
+  border-radius: 0;
+  margin: -1px 0;
+}
+
+.progressive-disclosure[data-mode="accordion"] .disclosure-section:first-child {
+  border-radius: 3px 3px 0 0;
+  margin-top: 0;
+}
+
+.progressive-disclosure[data-mode="accordion"] .disclosure-section:last-child {
+  border-radius: 0 0 3px 3px;
+  margin-bottom: 0;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .disclosure-section {
+    border: 2px solid currentColor;
+  }
+  
+  .disclosure-section.locked {
+    border-style: dashed;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-section,
+  .section-content {
+    transition: none;
+    animation: none;
+  }
+}
