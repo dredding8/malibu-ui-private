@@ -1,0 +1,434 @@
+{
+  "timestamp": "2025-08-29T18:44:16.193Z",
+  "url": "http://localhost:3000/dashboard",
+  "reactRoot": {
+    "exists": true,
+    "hasChildren": 1,
+    "innerHTML": "<div class=\"app\"><div class=\"dashboard\"><div class=\"bp6-navbar bp6-dark\"><div class=\"bp6-navbar-group bp6-align-left\"><div class=\"bp6-navbar-heading\"><span class=\"bp6-icon bp6-icon-cube bp6-margin-right\"></span>VUE Dashboard</div><div class=\"bp6-navbar-divider\"></div><button type=\"button\" class=\"bp6-button bp6-minimal\" data-testid=\"nav-dashboard\" title=\"Data Sources (cmd+1)\"><span aria-hidden=\"true\" class=\"bp6-icon bp6-icon-database\"><svg data-icon=\"database\" height=\"16\" role=\"img\" viewBox=\"0 0 "
+  },
+  "appComponent": {
+    "exists": false,
+    "isVisible": false,
+    "styles": null
+  },
+  "cssInfo": [
+    {
+      "href": null,
+      "rules": 3561,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 2,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 241,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 71,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 27,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 21,
+      "disabled": false,
+      "media": ""
+    },
+    {
+      "href": null,
+      "rules": 43,
+      "disabled": false,
+      "media": ""
+    }
+  ],
+  "fabChecks": [
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": true,
+      "isVisible": true,
+      "styles": {
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "position": "fixed",
+        "zIndex": "9999",
+        "transform": "none",
+        "overflow": "visible"
+      }
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    }
+  ],
+  "breadcrumbChecks": [
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": true,
+      "isVisible": true,
+      "styles": {
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "position": "static",
+        "zIndex": "auto",
+        "transform": "none",
+        "overflow": "visible"
+      }
+    }
+  ],
+  "navChecks": [
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    }
+  ],
+  "uxChecks": [
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    },
+    {
+      "exists": false,
+      "isVisible": false,
+      "styles": null
+    }
+  ],
+  "routingInfo": {
+    "hasReactRouter": null,
+    "currentPath": "/dashboard",
+    "currentHash": "",
+    "currentSearch": "",
+    "href": "http://localhost:3000/dashboard"
+  },
+  "moduleInfo": {
+    "hasReact": false,
+    "hasReactDOM": false,
+    "hasAppContent": true,
+    "appElementTag": "DIV",
+    "appElementClasses": "app",
+    "totalElements": 606
+  },
+  "domInspection": {
+    "bodyChildCount": 8,
+    "rootChildCount": 1,
+    "suspiciousElements": [
+      {
+        "tagName": "DIV",
+        "className": "bp6-navbar bp6-dark",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "VUE DashboardData SourcesSCCsCollectionsHistoryAnalyticsLogout"
+      },
+      {
+        "tagName": "DIV",
+        "className": "bp6-navbar-group bp6-align-left",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "VUE DashboardData SourcesSCCsCollectionsHistoryAnalytics"
+      },
+      {
+        "tagName": "DIV",
+        "className": "bp6-navbar-heading",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "VUE Dashboard"
+      },
+      {
+        "tagName": "DIV",
+        "className": "bp6-navbar-divider",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": ""
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-dashboard",
+        "ariaLabel": null,
+        "textContent": "Data Sources"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-sccs",
+        "ariaLabel": null,
+        "textContent": "SCCs"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-collections",
+        "ariaLabel": null,
+        "textContent": "Collections"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-history",
+        "ariaLabel": null,
+        "textContent": "History"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-analytics",
+        "ariaLabel": null,
+        "textContent": "Analytics"
+      },
+      {
+        "tagName": "DIV",
+        "className": "bp6-navbar-group bp6-align-right",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "Logout"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-intent-danger bp6-minimal",
+        "id": "",
+        "dataTestId": "nav-logout",
+        "ariaLabel": null,
+        "textContent": "Logout"
+      },
+      {
+        "tagName": "OL",
+        "className": "bp6-overflow-list bp6-breadcrumbs",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "Data Sources"
+      },
+      {
+        "tagName": "SPAN",
+        "className": "bp6-breadcrumb bp6-breadcrumb-current",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": "Data Sources"
+      },
+      {
+        "tagName": "BUTTON",
+        "className": "bp6-button bp6-intent-primary bp6-large navigation-fab",
+        "id": "",
+        "dataTestId": null,
+        "ariaLabel": null,
+        "textContent": ""
+      }
+    ],
+    "allDataTestIds": [
+      "nav-dashboard",
+      "nav-sccs",
+      "nav-collections",
+      "nav-history",
+      "nav-analytics",
+      "help-button",
+      "nav-logout",
+      "search-input",
+      "update-master-button",
+      "create-deck-button",
+      "add-scc-button"
+    ],
+    "allClasses": [
+      "app",
+      "dashboard",
+      "bp6-navbar",
+      "bp6-dark",
+      "bp6-navbar-group",
+      "bp6-align-left",
+      "bp6-navbar-heading",
+      "bp6-icon",
+      "bp6-icon-cube",
+      "bp6-margin-right",
+      "bp6-navbar-divider",
+      "bp6-button",
+      "bp6-minimal",
+      "bp6-icon-database",
+      "[object",
+      "SVGAnimatedString]",
+      "bp6-button-text",
+      "bp6-icon-new-object",
+      "bp6-icon-history",
+      "bp6-icon-chart",
+      "bp6-align-right",
+      "bp6-popover-target",
+      "bp6-icon-help",
+      "bp6-intent-danger",
+      "bp6-icon-log-out",
+      "bp6-overflow-list",
+      "bp6-breadcrumbs",
+      "bp6-breadcrumb",
+      "bp6-breadcrumb-current",
+      "bp6-overflow-list-spacer",
+      "dashboard-content",
+      "bp6-margin-bottom",
+      "bp6-card",
+      "bp6-elevation-0",
+      "bp6-heading",
+      "bp6-form-group",
+      "bp6-form-content",
+      "bp6-input-group",
+      "bp6-large",
+      "bp6-icon-search",
+      "bp6-input",
+      "bp6-intent-primary",
+      "bp6-icon-refresh",
+      "bp6-intent-success",
+      "bp6-intent-warning",
+      "bp6-icon-plus",
+      "bp6-divider",
+      "classification-legend",
+      "classification-tags",
+      "bp6-tag"
+    ]
+  },
+  "blueprintCheck": {
+    "blueprintElementCount": 0,
+    "blueprintClasses": [],
+    "hasBlueprintCSS": true
+  },
+  "consoleMessages": [
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+      "timestamp": "2025-08-29T18:44:11.925Z"
+    },
+    {
+      "type": "warning",
+      "text": "Web Vitals initialization failed: TypeError: (0 , web_vitals__WEBPACK_IMPORTED_MODULE_1__.onFID) is not a function\n    at PerformanceMonitoringService.initializeWebVitals (http://localhost:3000/static/js/bundle.js:143403:56)\n    at new PerformanceMonitoringService (http://localhost:3000/static/js/bundle.js:143383:10)\n    at ./src/services/performanceMonitoringService.ts (http://localhost:3000/static/js/bundle.js:143620:38)\n    at options.factory (http://localhost:3000/static/js/bundle.js:144679:30)\n    at __webpack_require__ (http://localhost:3000/static/js/bundle.js:144034:32)\n    at fn (http://localhost:3000/static/js/bundle.js:144295:21)\n    at hotRequire (http://localhost:3000/static/js/bundle.js:144662:47)\n    at ./src/App.tsx (http://localhost:3000/static/js/bundle.js:124499:97)\n    at options.factory (http://localhost:3000/static/js/bundle.js:144679:30)\n    at __webpack_require__ (http://localhost:3000/static/js/bundle.js:144034:32)",
+      "timestamp": "2025-08-29T18:44:11.979Z"
+    },
+    {
+      "type": "error",
+      "text": "Warning: Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.%s Dashboard \n    at Dashboard (http://localhost:3000/static/js/bundle.js:138932:81)\n    at RenderedRoute (http://localhost:3000/static/js/bundle.js:109994:5)\n    at Routes (http://localhost:3000/static/js/bundle.js:110728:5)\n    at div\n    at KeyboardNavigationProvider (http://localhost:3000/static/js/bundle.js:126979:3)\n    at WizardSyncProvider (http://localhost:3000/static/js/bundle.js:130948:3)\n    at NavigationContextProvider (http://localhost:3000/static/js/bundle.js:130792:3)\n    at EnhancedNavigationProvider (http://localhost:3000/static/js/bundle.js:130361:3)\n    at Router (http://localhost:3000/static/js/bundle.js:110662:15)\n    at BrowserRouter (http://localhost:3000/static/js/bundle.js:108563:5)\n    at BackgroundProcessingProvider (http://localhost:3000/static/js/bundle.js:130245:3)\n    at HotkeysProvider (http://localhost:3000/static/js/bundle.js:13088:3)\n    at HotkeysProvider (http://localhost:3000/static/js/bundle.js:13088:3)\n    at OverlaysProvider (http://localhost:3000/static/js/bundle.js:13173:3)\n    at PortalProvider (http://localhost:3000/static/js/bundle.js:13228:3)\n    at BlueprintProvider (http://localhost:3000/static/js/bundle.js:12978:3)\n    at ErrorBoundary (http://localhost:3000/static/js/bundle.js:125840:5)\n    at App (http://localhost:3000/static/js/bundle.js:124542:48)",
+      "timestamp": "2025-08-29T18:44:12.017Z"
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+      "timestamp": "2025-08-29T18:44:12.019Z"
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+      "timestamp": "2025-08-29T18:44:12.019Z"
+    },
+    {
+      "type": "log",
+      "text": "Initial performance metrics: []",
+      "timestamp": "2025-08-29T18:44:15.091Z"
+    },
+    {
+      "type": "log",
+      "text": "Initial performance metrics: []",
+      "timestamp": "2025-08-29T18:44:15.091Z"
+    }
+  ],
+  "jsErrors": [],
+  "networkErrors": [],
+  "resourceLoads": [
+    {
+      "url": "http://localhost:3000/static/js/bundle.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "resourceType": "script"
+    },
+    {
+      "url": "http://localhost:3000/static/js/blueprint-icons-split-paths-by-size-loader.chunk.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "resourceType": "script"
+    },
+    {
+      "url": "http://localhost:3000/static/js/blueprint-icons-16px-paths.chunk.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "resourceType": "script"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkvue_dashboard_blueprint=self.webpackChunkvue_dashboard_blueprint||[]).push([[37231],{47868:(e,a,t)=>{t.r(a),t.d(a,{splitPathsBySizeLoader:()=>r});var n=t(53902),s=t(17455);const r=async(e,a)=>{const r=(0,n.fL)(e);let i;return i=a===s.l.STANDARD?await t.e(79672).then(t.bind(t,87165)):await t.e(94783).then(t.bind(t,25070)),i[r]}}}]);
+//# sourceMappingURL=blueprint-icons-split-paths-by-size-loader.2d6b4fbf.chunk.js.map

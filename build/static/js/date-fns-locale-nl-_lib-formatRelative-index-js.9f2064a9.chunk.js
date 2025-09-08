@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkvue_dashboard_blueprint=self.webpackChunkvue_dashboard_blueprint||[]).push([[7879],{19319:(e,o)=>{Object.defineProperty(o,"__esModule",{value:!0}),o.default=void 0;var t={lastWeek:"'afgelopen' eeee 'om' p",yesterday:"'gisteren om' p",today:"'vandaag om' p",tomorrow:"'morgen om' p",nextWeek:"eeee 'om' p",other:"P"},a=function(e,o,a,r){return t[e]};o.default=a,e.exports=o.default}}]);
+//# sourceMappingURL=date-fns-locale-nl-_lib-formatRelative-index-js.9f2064a9.chunk.js.map

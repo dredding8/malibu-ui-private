@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkvue_dashboard_blueprint=self.webpackChunkvue_dashboard_blueprint||[]).push([[20860],{89780:(e,u,n)=>{n.d(u,{getIconPaths:()=>b});var s=n(53902),t=n(87165),a=n(25070),r=n(17455);function b(e,u){const n=(0,s.fL)(e);return u===r.l.STANDARD?t[n]:a[n]}}}]);
+//# sourceMappingURL=blueprint-icons-all-paths.508c0d87.chunk.js.map
