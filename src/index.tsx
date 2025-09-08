@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+// Removed i18n import - using custom localization hook instead
 import App from './App';
 
 const root = ReactDOM.createRoot(

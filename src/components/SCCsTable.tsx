@@ -1,6 +1,22 @@
 import React, { useMemo, useState } from 'react';
 import { Cell, Column, Table, RegionCardinality } from '@blueprintjs/table';
-import { Intent, Tag, Checkbox, Button, Icon } from '@blueprintjs/core';
+import { 
+  Intent, 
+  Tag, 
+  Checkbox, 
+  Button, 
+  Icon, 
+  Alert,
+  Position,
+  Classes,
+  H6,
+  Divider,
+  ControlGroup,
+  ButtonGroup,
+  HTMLSelect,
+  FormGroup
+} from '@blueprintjs/core';
+import { OverlayToaster } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
 // Design Assumptions:
@@ -169,6 +185,24 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
   filterClassification 
 }) => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [sccToDelete, setSccToDelete] = useState<SCC | null>(null);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [toaster] = useState(() => OverlayToaster.create({ position: Position.TOP }));
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Helper function to show toasts
+  const showToast = async (message: string, intent: Intent, icon?: string) => {
+    const toasterInstance = await toaster;
+    toasterInstance.show({
+      message,
+      intent,
+      icon: icon as any,
+    });
+  };
 
   // Filter SCCs based on search query and filters
   const filteredSCCs = useMemo(() => {
@@ -204,6 +238,26 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
     return filtered;
   }, [searchQuery, filterFunction, filterOrbit, filterClassification]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredSCCs.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedSCCs = filteredSCCs.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Clear selection when changing pages
+    setSelectedRows(new Set());
+  };
+
+  // Handle page size change
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Reset to first page
+    setSelectedRows(new Set()); // Clear selection
+  };
+
   // Handle row selection
   const handleRowSelection = (rowId: string, checked: boolean) => {
     const newSelected = new Set(selectedRows);
@@ -229,14 +283,84 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
     console.log('Edit SCC:', sccId);
   };
 
-  // Handle delete action
+  // Handle delete action with confirmation
   const handleDelete = (sccId: string) => {
-    console.log('Delete SCC:', sccId);
+    const scc = filteredSCCs.find(s => s.id === sccId);
+    if (scc) {
+      setSccToDelete(scc);
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  // Confirm delete action
+  const confirmDelete = () => {
+    if (sccToDelete) {
+      // Simulate API call
+      console.log('Deleting SCC:', sccToDelete.id);
+      
+      // Show success message
+      showToast(
+        `SCC ${sccToDelete.scc} has been deleted successfully.`,
+        Intent.SUCCESS,
+        IconNames.TICK_CIRCLE
+      );
+      
+      // Remove from selected rows if it was selected
+      const newSelected = new Set(selectedRows);
+      newSelected.delete(sccToDelete.id);
+      setSelectedRows(newSelected);
+    }
+    
+    setDeleteDialogOpen(false);
+    setSccToDelete(null);
+  };
+
+  // Cancel delete action
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSccToDelete(null);
+  };
+
+  // Handle bulk delete
+  const handleBulkDelete = () => {
+    if (selectedRows.size > 0) {
+      setBulkDeleteDialogOpen(true);
+    } else {
+      showToast(
+        "Please select at least one SCC to delete.",
+        Intent.WARNING,
+        IconNames.WARNING_SIGN
+      );
+    }
+  };
+
+  // Confirm bulk delete
+  const confirmBulkDelete = () => {
+    const selectedSCCs = filteredSCCs.filter(scc => selectedRows.has(scc.id));
+    
+    // Simulate API call
+    console.log('Bulk deleting SCCs:', Array.from(selectedRows));
+    
+    // Show success message
+    showToast(
+      `${selectedSCCs.length} SCC(s) have been deleted successfully.`,
+      Intent.SUCCESS,
+      IconNames.TICK_CIRCLE
+    );
+    
+    // Clear selection
+    setSelectedRows(new Set());
+    setBulkDeleteDialogOpen(false);
+  };
+
+  // Cancel bulk delete
+  const cancelBulkDelete = () => {
+    setBulkDeleteDialogOpen(false);
   };
 
   // Cell renderers
   const checkboxCellRenderer = (rowIndex: number) => {
-    const scc = filteredSCCs[rowIndex];
+    const scc = paginatedSCCs[rowIndex];
     if (!scc) return <Cell />;
 
     return (
@@ -251,42 +375,42 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
 
   const priorityCellRenderer = (rowIndex: number) => (
     <Cell>
-      {filteredSCCs[rowIndex]?.priority}
+      {paginatedSCCs[rowIndex]?.priority}
     </Cell>
   );
 
   const sccCellRenderer = (rowIndex: number) => (
     <Cell>
-      <strong>{filteredSCCs[rowIndex]?.scc}</strong>
+      <strong>{paginatedSCCs[rowIndex]?.scc}</strong>
     </Cell>
   );
 
   const functionCellRenderer = (rowIndex: number) => (
     <Cell>
-      {filteredSCCs[rowIndex]?.function}
+      {paginatedSCCs[rowIndex]?.function}
     </Cell>
   );
 
   const orbitCellRenderer = (rowIndex: number) => (
     <Cell>
-      {filteredSCCs[rowIndex]?.orbit}
+      {paginatedSCCs[rowIndex]?.orbit}
     </Cell>
   );
 
   const periodicityCellRenderer = (rowIndex: number) => (
     <Cell>
-      {filteredSCCs[rowIndex]?.periodicity}
+      {paginatedSCCs[rowIndex]?.periodicity}
     </Cell>
   );
 
   const collectionTypeCellRenderer = (rowIndex: number) => (
     <Cell>
-      {filteredSCCs[rowIndex]?.collectionType}
+      {paginatedSCCs[rowIndex]?.collectionType}
     </Cell>
   );
 
   const classificationCellRenderer = (rowIndex: number) => {
-    const scc = filteredSCCs[rowIndex];
+    const scc = paginatedSCCs[rowIndex];
     if (!scc) return <Cell />;
 
     const getClassificationIntent = (classification: string): Intent => {
@@ -305,7 +429,7 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
   };
 
   const actionsCellRenderer = (rowIndex: number) => {
-    const scc = filteredSCCs[rowIndex];
+    const scc = paginatedSCCs[rowIndex];
     if (!scc) return <Cell />;
 
     return (
@@ -333,8 +457,48 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
 
   return (
     <div>
+      {/* Classification Legend */}
+      <div className="classification-legend">
+        <H6>Classification Legend</H6>
+        <div className="classification-tags">
+          <Tag intent={Intent.DANGER} minimal>
+            S//REL FVEY - Top Secret/Rel FVEY
+          </Tag>
+          <Tag intent={Intent.WARNING} minimal>
+            S//NF - Secret/No Foreign
+          </Tag>
+          <Tag intent={Intent.NONE} minimal>
+            Other Classifications
+          </Tag>
+        </div>
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedRows.size > 0 && (
+        <div className="bulk-actions">
+          <span className="bulk-actions-info">
+            {selectedRows.size} SCC(s) selected
+          </span>
+          <ButtonGroup>
+            <Button
+              small
+              intent={Intent.DANGER}
+              icon={IconNames.TRASH}
+              text="Delete Selected"
+              onClick={handleBulkDelete}
+            />
+            <Button
+              small
+              icon={IconNames.CROSS}
+              text="Clear Selection"
+              onClick={() => setSelectedRows(new Set())}
+            />
+          </ButtonGroup>
+        </div>
+      )}
+
       <Table 
-        numRows={filteredSCCs.length} 
+        numRows={paginatedSCCs.length} 
         enableRowHeader={false}
         selectionModes={[]}
         enableFocusedCell={false}
@@ -343,6 +507,7 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
         enableRowReordering={false}
         enableRowResizing={false}
         enableMultipleSelection={false}
+        className="sccs-table"
       >
         <Column 
           name="" 
@@ -387,6 +552,99 @@ const SCCsTable: React.FC<SCCsTableProps> = ({
           No SCCs found matching your search criteria.
         </div>
       )}
+
+      {/* Pagination Controls */}
+      {filteredSCCs.length > 0 && (
+        <div className="pagination-controls">
+          <div className="pagination-info">
+            <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredSCCs.length)} of {filteredSCCs.length} SCCs</span>
+            <FormGroup inline label="Per page:" style={{ margin: 0 }}>
+              <HTMLSelect
+                value={pageSize}
+                onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                options={[
+                  { value: 5, label: '5' },
+                  { value: 10, label: '10' },
+                  { value: 20, label: '20' },
+                  { value: 50, label: '50' }
+                ]}
+                minimal
+              />
+            </FormGroup>
+          </div>
+          
+          <div className="pagination-buttons">
+            <Button
+              small
+              icon={IconNames.CHEVRON_LEFT}
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              minimal
+            />
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNum = i + 1;
+              return (
+                <Button
+                  key={pageNum}
+                  small
+                  minimal
+                  active={pageNum === currentPage}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+            
+            <Button
+              small
+              icon={IconNames.CHEVRON_RIGHT}
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              minimal
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Alert
+        isOpen={deleteDialogOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        intent={Intent.DANGER}
+        icon={IconNames.WARNING_SIGN}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        className={Classes.DARK}
+      >
+        <p>
+          Are you sure you want to delete SCC <strong>{sccToDelete?.scc}</strong>?
+        </p>
+        <p>
+          This action cannot be undone and will permanently remove this SCC from the system.
+        </p>
+      </Alert>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Alert
+        isOpen={bulkDeleteDialogOpen}
+        onClose={cancelBulkDelete}
+        onConfirm={confirmBulkDelete}
+        intent={Intent.DANGER}
+        icon={IconNames.WARNING_SIGN}
+        confirmButtonText="Delete All Selected"
+        cancelButtonText="Cancel"
+        className={Classes.DARK}
+      >
+        <p>
+          Are you sure you want to delete <strong>{selectedRows.size} selected SCC(s)</strong>?
+        </p>
+        <p>
+          This action cannot be undone and will permanently remove these SCCs from the system.
+        </p>
+      </Alert>
     </div>
   );
 };

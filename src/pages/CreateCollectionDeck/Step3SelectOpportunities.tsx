@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   H5,
   Divider,
@@ -16,10 +16,16 @@ import {
   Section,
   SectionCard,
   Text,
-  Spinner
+  Spinner,
+  NonIdealState,
+  Alert,
+  OverlayToaster,
+  Position
 } from '@blueprintjs/core';
 import { Cell, Column, Table, TruncatedFormat, JSONFormat } from '@blueprintjs/table';
 import { IconNames } from '@blueprintjs/icons';
+import { useBackgroundProcessing } from '../../hooks/useBackgroundProcessing';
+import { NAVIGATION_LABELS } from '../../constants/navigation';
 
 interface Match {
   id: string;
@@ -153,7 +159,7 @@ const sampleMatches: Match[] = [
   }
 ];
 
-const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({ 
+const Step3SelectOpportunities: React.FC<Step3ReviewMatchesProps> = ({ 
   data, 
   onUpdate, 
   onNext, 
@@ -166,15 +172,137 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSite, setSelectedSite] = useState('all');
+  const [progress, setProgress] = useState(0);
+  const [loadingStep, setLoadingStep] = useState('Initializing...');
+  const [showInterruptionAlert, setShowInterruptionAlert] = useState(false);
+  const [isInterrupted, setIsInterrupted] = useState(false);
+  
+  // Refs for cleanup
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [toaster] = useState(() => OverlayToaster.create({ position: Position.TOP }));
+  const { isProcessing } = useBackgroundProcessing();
 
-  useEffect(() => {
-    // Simulate generating matches
-    setTimeout(() => {
+  // Enhanced loading simulation with progress tracking
+  const simulateLoading = useCallback(async () => {
+    setProgress(0);
+    setLoadingStep('Initializing analysis engine...');
+    
+    // Simulate progress updates
+    progressIntervalRef.current = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev + Math.random() * 15;
+        
+        // Update loading step based on progress
+        if (newProgress < 25) {
+          setLoadingStep('Loading satellite data...');
+        } else if (newProgress < 50) {
+          setLoadingStep('Analyzing orbital parameters...');
+        } else if (newProgress < 75) {
+          setLoadingStep('Calculating collection opportunities...');
+        } else if (newProgress < 90) {
+          setLoadingStep('Generating match results...');
+        } else {
+          setLoadingStep('Finalizing results...');
+        }
+        
+        return Math.min(newProgress, 100);
+      });
+    }, 200);
+
+    // Complete loading after 3 seconds
+    loadingTimeoutRef.current = setTimeout(async () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
       setMatches(sampleMatches);
       setSelectedMatches(new Set(sampleMatches.filter(m => m.selected).map(m => m.id)));
       setIsGenerating(false);
+      setProgress(100);
+      setLoadingStep('Complete');
+      
+      // Show success notification
+      const toasterInstance = await toaster;
+      toasterInstance.show({
+        message: "Matches generated successfully!",
+        intent: Intent.SUCCESS,
+        icon: IconNames.TICK_CIRCLE
+      });
     }, 3000);
+  }, [toaster]);
+
+  // Cleanup function for loading state
+  const cleanupLoading = useCallback(() => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
   }, []);
+
+  // Handle interruption
+  const handleInterruption = useCallback(() => {
+    if (isGenerating) {
+      setIsInterrupted(true);
+      setShowInterruptionAlert(true);
+      cleanupLoading();
+    }
+  }, [isGenerating, cleanupLoading]);
+
+  // Resume loading after interruption
+  const handleResumeLoading = useCallback(() => {
+    setIsInterrupted(false);
+    setShowInterruptionAlert(false);
+    setIsGenerating(true);
+    simulateLoading();
+  }, [simulateLoading]);
+
+  // Handle background processing completion
+  useEffect(() => {
+    if (isProcessing) {
+      // In a real implementation, this would check for completed background processing
+      // For now, we'll just simulate the completion
+      const checkCompletion = setTimeout(() => {
+        setMatches(sampleMatches);
+        setSelectedMatches(new Set(sampleMatches.filter(m => m.selected).map(m => m.id)));
+        setIsGenerating(false);
+        setProgress(100);
+        setLoadingStep('Complete');
+        
+        // Show completion notification
+        toaster.then(toasterInstance => {
+          toasterInstance.show({
+            message: "Background processing completed! Matches are ready for review.",
+            intent: Intent.SUCCESS,
+            icon: IconNames.TICK_CIRCLE
+          });
+        });
+      }, 5000); // Simulate 5 second delay
+      
+      return () => clearTimeout(checkCompletion);
+    }
+  }, [isProcessing, toaster]);
+
+  // Cancel loading after interruption
+  const handleCancelLoading = useCallback(() => {
+    setIsInterrupted(false);
+    setShowInterruptionAlert(false);
+    setIsGenerating(false);
+    setProgress(0);
+    setLoadingStep('');
+  }, []);
+
+  useEffect(() => {
+    simulateLoading();
+    
+    // Cleanup on unmount
+    return () => {
+      cleanupLoading();
+    };
+  }, [simulateLoading, cleanupLoading]);
 
   // Filter matches based on active tab, search query, and site selection
   const filteredMatches = useMemo(() => {
@@ -245,6 +373,13 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
     const selectedMatchesData = matches.filter(match => selectedMatches.has(match.id));
     onUpdate({ matches: selectedMatchesData });
     onNext();
+  };
+
+  const handleBack = () => {
+    // Save current state before going back
+    const selectedMatchesData = matches.filter(match => selectedMatches.has(match.id));
+    onUpdate({ matches: selectedMatchesData });
+    onBack();
   };
 
   const getMatchIntent = (match: string): Intent => {
@@ -416,14 +551,14 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
   const unmatchedCount = matches.filter(m => m.unmatched).length;
 
   return (
-    <div>
-      <H5>Step 3: Review Matches</H5>
-      <Divider className="bp4-margin-bottom" />
+    <div data-testid="step3-container">
+      <h3 id="step-heading" data-testid="step3-heading">Step 3: {NAVIGATION_LABELS.WIZARD_STEP_3}</h3>
+      <Divider className="bp4-margin-bottom" data-testid="step3-divider" />
 
       {/* Configuration Summary */}
-      <Section>
-        <SectionCard>
-          <H5>Configuration Summary</H5>
+      <Section data-testid="configuration-summary-section">
+        <SectionCard data-testid="configuration-summary-card">
+          <h4 data-testid="configuration-summary-heading">Configuration Summary</h4>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', fontSize: '14px' }}>
             <div>
               <strong>Tasking Window:</strong><br />
@@ -442,40 +577,104 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
       </Section>
 
       {isGenerating ? (
-        <Card className="bp4-margin-top">
+        <Card className="bp4-margin-top" data-testid="match-generation-card">
           <div style={{ textAlign: 'center', padding: '40px' }}>
-            <Spinner size={50} />
-            <H5 className="bp4-margin-top">Generating Matches</H5>
-            <ProgressBar intent={Intent.PRIMARY} className="bp4-margin-top" />
-            <Text className="bp4-margin-top" style={{ color: '#666' }}>
-              Analyzing satellite data and generating collection opportunities...
+            <Spinner 
+              size={50} 
+              aria-label="Loading collection opportunities..."
+              data-testid="loading-spinner"
+            />
+            <h4 className="bp4-margin-top">Finding Collection Opportunities</h4>
+            <Text className="bp4-margin-top" style={{ color: '#666', marginBottom: '20px' }}>
+              {loadingStep}
             </Text>
+            <ProgressBar 
+              intent={Intent.PRIMARY} 
+              className="bp4-margin-top"
+              data-testid="loading-progress"
+              value={progress / 100}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progress}
+            />
+            <Text className="bp4-margin-top" style={{ color: '#666' }}>
+              Analyzing satellite passes and identifying collection opportunities...
+            </Text>
+            <Text className="bp4-margin-top" style={{ color: '#888', fontSize: '14px' }}>
+              Estimated time remaining: {Math.max(0, Math.ceil((100 - progress) / 15))} seconds
+            </Text>
+            
+            {/* Interruption Controls */}
+            <div className="bp4-margin-top">
+              <Button
+                minimal
+                icon={IconNames.PAUSE}
+                text="Pause"
+                onClick={handleInterruption}
+                intent={Intent.WARNING}
+              />
+            </div>
+            
+            <div aria-live="polite" style={{ position: 'absolute', left: '-9999px' }}>
+              Loading collection opportunities: {loadingStep} - {Math.round(progress)}% complete
+            </div>
           </div>
         </Card>
+      ) : isInterrupted ? (
+        <Card className="bp4-margin-top" data-testid="match-generation-paused-card">
+          <NonIdealState
+            icon={IconNames.PAUSE}
+            title="Analysis Paused"
+            description="The match generation process was interrupted. You can resume or cancel the operation."
+            data-testid="analysis-paused-state"
+            action={
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }} data-testid="pause-resume-controls">
+                <Button
+                  intent={Intent.PRIMARY}
+                  icon={IconNames.PLAY}
+                  text="Resume Analysis"
+                  onClick={handleResumeLoading}
+                  data-testid="resume-analysis-button"
+                />
+                <Button
+                  intent={Intent.DANGER}
+                  icon={IconNames.CROSS}
+                  text="Cancel Analysis"
+                  onClick={handleCancelLoading}
+                  data-testid="cancel-analysis-button"
+                />
+              </div>
+            }
+          />
+        </Card>
       ) : (
-        <Card className="bp4-margin-top">
+        <Card className="bp4-margin-top" data-testid="matches-results-card">
           {/* Filter Controls */}
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '20px' }} data-testid="match-filter-controls">
             <Tabs 
               id="match-tabs" 
               selectedTabId={activeTab} 
               onChange={(newTabId) => setActiveTab(newTabId as string)}
               large={false}
+              data-testid="match-filter-tabs"
             >
               <Tab 
                 id="all" 
                 title={`ALL (${allCount})`} 
                 panel={<div />}
+                data-testid="all-matches-tab"
               />
               <Tab 
                 id="needsReview" 
                 title={`NEEDS REVIEW (${needsReviewCount})`} 
                 panel={<div />}
+                data-testid="needs-review-tab"
               />
               <Tab 
                 id="unmatched" 
                 title={`UNMATCHED (${unmatchedCount})`} 
                 panel={<div />}
+                data-testid="unmatched-tab"
               />
             </Tabs>
             
@@ -485,11 +684,15 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 leftIcon={IconNames.SEARCH}
+                aria-label="Search satellite catalog numbers"
+                data-testid="search-sccs-input"
                 style={{ width: '300px' }}
               />
               <HTMLSelect
                 value={selectedSite}
                 onChange={(e) => setSelectedSite(e.currentTarget.value)}
+                aria-label="Filter by collection site"
+                data-testid="site-filter-select"
                 style={{ width: '150px' }}
               >
                 <option value="all">Sites</option>
@@ -505,7 +708,7 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
           </div>
 
           {/* Table Header with Selection Controls */}
-          <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} data-testid="table-header-controls">
             <span>
               Showing {filteredMatches.length} match{filteredMatches.length !== 1 ? 'es' : ''}
             </span>
@@ -516,6 +719,7 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
                 icon={IconNames.SELECTION}
                 text={selectedMatches.size === filteredMatches.length ? 'Deselect All' : 'Select All'}
                 onClick={() => handleSelectAll(selectedMatches.size !== filteredMatches.length)}
+                data-testid="select-all-matches-button"
               />
             )}
           </div>
@@ -532,50 +736,83 @@ const Step3ReviewMatches: React.FC<Step3ReviewMatchesProps> = ({
               enableColumnResizing={true}
               enableFocusedCell={true}
               enableMultipleSelection={true}
+              data-testid="matches-data-table"
             >
               {columns}
             </Table>
           ) : (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px', 
-              color: '#666',
-              fontStyle: 'italic'
-            }}>
-              {searchQuery || selectedSite !== 'all' 
-                ? "No matches found with the current search criteria. Try adjusting your filters."
-                : "No matches found with the current parameters. Try adjusting your criteria."
+            <NonIdealState
+              icon={IconNames.SEARCH}
+              title="No Matches Found"
+              description={
+                searchQuery || selectedSite !== 'all' 
+                  ? "No matches found with the current search criteria. Try adjusting your filters."
+                  : "No matches found with the current parameters. Try adjusting your criteria."
               }
-            </div>
+              data-testid="no-matches-found-state"
+              action={
+                <Button
+                  intent={Intent.PRIMARY}
+                  icon={IconNames.ARROW_LEFT}
+                  text="Go Back"
+                  onClick={handleBack}
+                  data-testid="no-matches-go-back-button"
+                />
+              }
+            />
           )}
         </Card>
       )}
 
       {/* Navigation Buttons */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }} data-testid="step3-navigation-buttons">
         <Button
           text="Cancel"
           onClick={onCancel}
+          disabled={isGenerating}
+          data-testid="step3-cancel-button"
         />
         <Button
           text="Back"
-          onClick={onBack}
+          onClick={handleBack}
+          disabled={isGenerating}
+          data-testid="step3-back-button"
         />
         <Button
           text="Next"
           intent={Intent.PRIMARY}
           disabled={isGenerating || selectedMatches.size === 0}
           onClick={handleNext}
+          data-testid="step3-next-button"
         />
       </div>
 
-      {selectedMatches.size === 0 && !isGenerating && (
-        <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} className="bp4-margin-top">
+      {selectedMatches.size === 0 && !isGenerating && !isInterrupted && (
+        <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} className="bp4-margin-top" data-testid="no-matches-selected-warning">
           Please select at least one match to continue.
         </Callout>
       )}
+
+      {/* Interruption Alert */}
+      <Alert
+        isOpen={showInterruptionAlert}
+        onClose={() => setShowInterruptionAlert(false)}
+        onConfirm={handleResumeLoading}
+        onCancel={handleCancelLoading}
+        intent={Intent.WARNING}
+        icon={IconNames.WARNING_SIGN}
+        cancelButtonText="Cancel Analysis"
+        confirmButtonText="Resume Analysis"
+      >
+        <p>
+          The match generation process has been paused. Would you like to resume the analysis or cancel it entirely?
+        </p>
+        <p>
+          <strong>Note:</strong> Canceling will lose all progress and you'll need to start over from Step 2.
+        </p>
+      </Alert>
     </div>
   );
 };
 
-export default Step3ReviewMatches;
+export default Step3SelectOpportunities;

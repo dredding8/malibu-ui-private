@@ -1,12 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { Cell, Column, Table, RegionCardinality } from '@blueprintjs/table';
-import { Intent, Tag, Button, Icon } from '@blueprintjs/core';
+import { Intent, Tag, Button } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
+import { 
+  CollectionDeckStatus, 
+  COLLECTION_STATUS_LABELS, 
+  COLLECTION_STATUS_INTENTS 
+} from '../constants/statusTypes';
 
 interface CollectionDeck {
   id: string;
   name: string;
-  status: string;
+  status: CollectionDeckStatus;
   createdDate: string;
   lastModified: string;
   priority: number;
@@ -24,8 +29,8 @@ interface CollectionDecksTableProps {
 const sampleInProgressDecks: CollectionDeck[] = [
   {
     id: '1',
-    name: 'Collection Deck Alpha-001',
-    status: 'In Progress',
+    name: 'Collection Alpha-001',
+    status: 'processing',
     createdDate: '2024-01-15',
     lastModified: '2024-01-20',
     priority: 1,
@@ -34,8 +39,8 @@ const sampleInProgressDecks: CollectionDeck[] = [
   },
   {
     id: '2',
-    name: 'Collection Deck Beta-002',
-    status: 'Review',
+    name: 'Collection Beta-002',
+    status: 'review',
     createdDate: '2024-01-18',
     lastModified: '2024-01-22',
     priority: 2,
@@ -44,8 +49,8 @@ const sampleInProgressDecks: CollectionDeck[] = [
   },
   {
     id: '3',
-    name: 'Collection Deck Gamma-003',
-    status: 'Pending Approval',
+    name: 'Collection Gamma-003',
+    status: 'review',
     createdDate: '2024-01-20',
     lastModified: '2024-01-23',
     priority: 3,
@@ -57,8 +62,8 @@ const sampleInProgressDecks: CollectionDeck[] = [
 const sampleCompletedDecks: CollectionDeck[] = [
   {
     id: '4',
-    name: 'Collection Deck Delta-004',
-    status: 'Completed',
+    name: 'Collection Delta-004',
+    status: 'ready',
     createdDate: '2024-01-10',
     lastModified: '2024-01-15',
     priority: 1,
@@ -68,8 +73,8 @@ const sampleCompletedDecks: CollectionDeck[] = [
   },
   {
     id: '5',
-    name: 'Collection Deck Epsilon-005',
-    status: 'Completed',
+    name: 'Collection Epsilon-005',
+    status: 'ready',
     createdDate: '2024-01-12',
     lastModified: '2024-01-17',
     priority: 2,
@@ -126,26 +131,26 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
   const handleContinue = (deckId: string) => {
     console.log('Continue with deck:', deckId);
     // Navigate to continue deck flow
+    window.location.href = `/decks/${deckId}/continue`;
   };
 
   const handleView = (deckId: string) => {
     console.log('View deck:', deckId);
     // Navigate to view deck details
+    window.location.href = `/decks/${deckId}/view`;
   };
 
-  const getStatusIntent = (status: string): Intent => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return Intent.SUCCESS;
-      case 'in progress':
-        return Intent.PRIMARY;
-      case 'review':
-        return Intent.WARNING;
-      case 'pending approval':
-        return Intent.DANGER;
-      default:
-        return Intent.NONE;
+  const handleDiscard = (deckId: string) => {
+    console.log('Discard deck:', deckId);
+    // This would typically show a confirmation dialog
+    if (confirm('Are you sure you want to discard this deck?')) {
+      console.log('Deck discarded:', deckId);
     }
+  };
+
+  const getStatusIntent = (status: CollectionDeckStatus): Intent => {
+    const intentString = COLLECTION_STATUS_INTENTS[status];
+    return Intent[intentString as keyof typeof Intent] || Intent.NONE;
   };
 
   const nameCellRenderer = (rowIndex: number) => (
@@ -158,8 +163,8 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
     const deck = filteredData[rowIndex];
     return (
       <Cell>
-        <Tag intent={getStatusIntent(deck?.status || '')}>
-          {deck?.status}
+        <Tag intent={getStatusIntent(deck?.status || 'draft')}>
+          {COLLECTION_STATUS_LABELS[deck?.status || 'draft']}
         </Tag>
       </Cell>
     );
@@ -207,13 +212,25 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
       <Cell>
         <div style={{ display: 'flex', gap: '5px' }}>
           {type === 'in-progress' ? (
-            <Button
-              small
-              minimal
-              icon={IconNames.ARROW_RIGHT}
-              text="Continue"
-              onClick={() => handleContinue(deck?.id || '')}
-            />
+            <>
+              <Button
+                small
+                minimal
+                icon={IconNames.ARROW_RIGHT}
+                text="Continue"
+                onClick={() => handleContinue(deck?.id || '')}
+                data-testid="resume-deck-button"
+              />
+              <Button
+                small
+                minimal
+                icon={IconNames.TRASH}
+                text="Discard"
+                onClick={() => handleDiscard(deck?.id || '')}
+                data-testid="discard-deck-menu-item"
+                intent="danger"
+              />
+            </>
           ) : (
             <Button
               small
@@ -229,7 +246,7 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
   };
 
   const columns = [
-    <Column key="name" name="Deck Name" cellRenderer={nameCellRenderer} />,
+    <Column key="name" name="Collection Name" cellRenderer={nameCellRenderer} />,
     <Column key="status" name="Status" cellRenderer={statusCellRenderer} />,
     <Column key="priority" name="Priority" cellRenderer={priorityCellRenderer} />,
     <Column key="sccCount" name="SCC Count" cellRenderer={sccCountCellRenderer} />,
@@ -280,7 +297,7 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
           color: '#666',
           fontStyle: 'italic'
         }}>
-          No {type === 'in-progress' ? 'in-progress' : 'completed'} collection decks found.
+          No {type === 'in-progress' ? 'in-progress' : 'completed'} collections found.
         </div>
       )}
     </div>

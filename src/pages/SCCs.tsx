@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
-  Button,
-  Alignment,
   Card,
   InputGroup,
   FormGroup,
@@ -16,10 +10,13 @@ import {
   Callout,
   Intent,
   ControlGroup,
-  HTMLSelect
+  HTMLSelect,
+  Button,
+  Breadcrumbs
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import SCCsTable from '../components/SCCsTable';
+import AppNavbar from '../components/AppNavbar';
 
 const SCCs: React.FC = () => {
   const navigate = useNavigate();
@@ -44,58 +41,33 @@ const SCCs: React.FC = () => {
   return (
     <div className="sccs">
       {/* Header */}
-      <Navbar className="bp4-dark">
-        <NavbarGroup align={Alignment.START}>
-          <NavbarHeading>
-            <span className="bp4-icon bp4-icon-cube bp4-margin-right" />
-            VUE Dashboard
-          </NavbarHeading>
-          <NavbarDivider />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.DATABASE} 
-            text="Master" 
-            onClick={() => navigate('/')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CUBE} 
-            text="SCCs" 
-            onClick={() => navigate('/sccs')}
-            intent="primary"
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.NEW_OBJECT} 
-            text="Decks" 
-            onClick={() => navigate('/decks')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.HISTORY} 
-            text="History" 
-            onClick={() => navigate('/history')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CHART} 
-            text="Analytics" 
-            onClick={() => navigate('/analytics')}
-          />
-        </NavbarGroup>
-        <NavbarGroup align={Alignment.END}>
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.LOG_OUT} 
-            text="Logout"
-            intent="danger"
-          />
-        </NavbarGroup>
-      </Navbar>
+      <AppNavbar />
+      
+      {/* Breadcrumbs */}
+      <div style={{ 
+        padding: '16px 24px 0 24px',
+        maxWidth: '1400px',
+        margin: '0 auto'
+      }}>
+        <Breadcrumbs
+          items={[
+            {
+              text: 'Data Sources',
+              icon: IconNames.DATABASE,
+              onClick: () => navigate('/')
+            },
+            {
+              text: 'SCCs',
+              icon: IconNames.SATELLITE,
+              current: true
+            }
+          ]}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="sccs-content" style={{ padding: '20px' }}>
-        <H3>SCCs Master List</H3>
+        <H3>SCCs</H3>
         
         {/* Search and Filter Section */}
         <Card className="bp4-margin-bottom">
@@ -103,7 +75,7 @@ const SCCs: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px', marginBottom: '15px' }}>
             <FormGroup label="Search SCCs">
               <InputGroup
-                placeholder="Search by SCC number, function, etc..."
+                placeholder="Search by SCC number, function..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 leftIcon={IconNames.SEARCH}
@@ -157,15 +129,15 @@ const SCCs: React.FC = () => {
               text="Add SCC"
               intent="success"
               onClick={handleAddSCC}
-              large
+              size="large"
             />
             <Button
               icon={IconNames.REFRESH}
-              text="Refresh List"
+              text="Refresh Data Sources"
               intent="primary"
               loading={isRefreshing}
               onClick={handleRefreshList}
-              large
+              size="large"
             />
           </div>
         </Card>
@@ -173,13 +145,13 @@ const SCCs: React.FC = () => {
         {/* Status Message */}
         {isRefreshing && (
           <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN} className="bp4-margin-bottom">
-            Refreshing SCC data... Please wait.
+            Refreshing SCC data...
           </Callout>
         )}
 
         {/* SCCs Table */}
         <Card>
-          <H5>SCCs Master List</H5>
+          <H5>SCCs</H5>
           <Divider className="bp4-margin-bottom" />
           <SCCsTable 
             searchQuery={searchQuery}

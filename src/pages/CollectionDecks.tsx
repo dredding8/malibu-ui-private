@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
-  Button,
-  Alignment,
   Card,
   H3,
   H5,
@@ -16,20 +10,77 @@ import {
   TabId,
   FormGroup,
   ControlGroup,
-  Intent
+  Intent,
+  Callout,
+  Alert,
+  Button,
+  Breadcrumbs
 } from '@blueprintjs/core';
 import { DateInput } from '@blueprintjs/datetime';
 import { IconNames } from '@blueprintjs/icons';
 import CollectionDecksTable from '../components/CollectionDecksTable';
+import AppNavbar from '../components/AppNavbar';
 
 const CollectionDecks: React.FC = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<TabId>('in-progress');
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [showIncompleteDeckAlert, setShowIncompleteDeckAlert] = useState(false);
+  const [hasIncompleteDeck, setHasIncompleteDeck] = useState(false);
+
+  // Check for incomplete deck on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('vue-deck-draft');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        // Check if we have meaningful data (not just empty object)
+        const hasData = parsedData.taskingWindow?.startDate || 
+                       parsedData.parameters?.hardCapacity ||
+                       parsedData.matches?.length > 0;
+        
+        if (hasData) {
+          setHasIncompleteDeck(true);
+          setShowIncompleteDeckAlert(true);
+        }
+      } catch (error) {
+        console.warn('Failed to parse saved deck data:', error);
+      }
+    }
+  }, []);
+
+  const getSmartEntryPoint = () => {
+    const savedData = localStorage.getItem('vue-deck-draft');
+    if (!savedData) return '/create-collection-deck/data';
+    
+    try {
+      const data = JSON.parse(savedData);
+      
+      // Step 4: Has matches selected
+      if (data.matches && data.matches.length > 0) {
+        return '/create-collection-deck/instructions';
+      }
+      
+      // Step 3: Has parameters set
+      if (data.parameters && data.parameters.hardCapacity) {
+        return '/create-collection-deck/matches';
+      }
+      
+      // Step 2: Has basic data
+      if (data.taskingWindow && data.taskingWindow.startDate) {
+        return '/create-collection-deck/parameters';
+      }
+      
+      // Default to step 1
+      return '/create-collection-deck/data';
+    } catch {
+      return '/create-collection-deck/data';
+    }
+  };
 
   const handleCreateNewDeck = () => {
-    navigate('/decks/new/data');
+    navigate(getSmartEntryPoint());
   };
 
   const handleReset = () => {
@@ -41,61 +92,86 @@ const CollectionDecks: React.FC = () => {
     setSelectedTab(newTabId);
   };
 
+  const handleResumeDeck = () => {
+    setShowIncompleteDeckAlert(false);
+    navigate('/create-collection-deck/data');
+  };
+
+  const handleDismissIncompleteDeck = () => {
+    setShowIncompleteDeckAlert(false);
+  };
+
+  const handleDiscardIncompleteDeck = () => {
+    localStorage.removeItem('vue-deck-draft');
+    setHasIncompleteDeck(false);
+    setShowIncompleteDeckAlert(false);
+  };
+
   return (
     <div className="collection-decks">
       {/* Header */}
-      <Navbar className="bp4-dark">
-        <NavbarGroup align={Alignment.START}>
-          <NavbarHeading>
-            <span className="bp4-icon bp4-icon-cube bp4-margin-right" />
-            VUE Dashboard
-          </NavbarHeading>
-          <NavbarDivider />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.DATABASE} 
-            text="Master" 
-            onClick={() => navigate('/')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CUBE} 
-            text="SCCs" 
-            onClick={() => navigate('/sccs')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.NEW_OBJECT} 
-            text="Decks" 
-            onClick={() => navigate('/decks')}
-            intent="primary"
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.HISTORY} 
-            text="History" 
-            onClick={() => navigate('/history')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CHART} 
-            text="Analytics" 
-            onClick={() => navigate('/analytics')}
-          />
-        </NavbarGroup>
-        <NavbarGroup align={Alignment.END}>
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.LOG_OUT} 
-            text="Logout"
-            intent="danger"
-          />
-        </NavbarGroup>
-      </Navbar>
+      <AppNavbar />
+      
+      {/* Breadcrumbs */}
+      <div style={{ 
+        padding: '16px 24px 0 24px',
+        maxWidth: '1400px',
+        margin: '0 auto'
+      }}>
+        <Breadcrumbs
+          items={[
+            {
+              text: 'Data Sources',
+              icon: IconNames.DATABASE,
+              onClick: () => navigate('/')
+            },
+            {
+              text: 'Collection Decks',
+              icon: IconNames.LAYERS,
+              current: true
+            }
+          ]}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="collection-decks-content" style={{ padding: '20px' }}>
-        <H3>Collection Decks</H3>
+        <H3>Your Collections</H3>
+        
+        {/* Incomplete Deck Notification */}
+        {hasIncompleteDeck && (
+          <Callout 
+            intent={Intent.WARNING} 
+            icon={IconNames.WARNING_SIGN} 
+            className="bp4-margin-bottom"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <strong>You have work waiting to be finished</strong>
+                <br />
+                Your previous progress has been saved and you can continue where you left off.
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  small
+                  intent={Intent.PRIMARY}
+                  icon={IconNames.PLAY}
+                  text="Continue"
+                  onClick={handleResumeDeck}
+                  data-testid="resume-deck-button"
+                />
+                <Button
+                  small
+                  minimal
+                  intent={Intent.DANGER}
+                  icon={IconNames.TRASH}
+                  text="Discard"
+                  onClick={handleDiscardIncompleteDeck}
+                />
+              </div>
+            </div>
+          </Callout>
+        )}
         
         {/* Action Buttons */}
         <Card className="bp4-margin-bottom">
@@ -103,17 +179,18 @@ const CollectionDecks: React.FC = () => {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Button
               icon={IconNames.NEW_OBJECT}
-              text="Create New Deck"
+              text="Create Collection"
               intent="success"
               onClick={handleCreateNewDeck}
-              large
+              size="large"
+              data-testid="create-collection-button"
             />
           </div>
         </Card>
 
         {/* Date Filters */}
         <Card className="bp4-margin-bottom">
-          <H5>Date Range Filter</H5>
+          <H5>Find Collections by Date</H5>
           <ControlGroup fill>
             <FormGroup label="Start Date">
               <DateInput
@@ -155,7 +232,7 @@ const CollectionDecks: React.FC = () => {
               title="In Progress"
               panel={
                 <div>
-                  <H5>In Progress Collection Decks</H5>
+                  <H5>Collections We're Working On</H5>
                   <Divider className="bp4-margin-bottom" />
                   <CollectionDecksTable 
                     type="in-progress"
@@ -170,11 +247,11 @@ const CollectionDecks: React.FC = () => {
               title="Completed"
               panel={
                 <div>
-                  <H5>Completed Collection Decks</H5>
+                  <H5>Ready Collections</H5>
                   <Divider className="bp4-margin-bottom" />
                   <CollectionDecksTable 
                     type="completed"
-                    startDate={startDate}
+                    startDate={endDate}
                     endDate={endDate}
                   />
                 </div>
@@ -183,6 +260,25 @@ const CollectionDecks: React.FC = () => {
           </Tabs>
         </Card>
       </div>
+
+      {/* Incomplete Deck Alert */}
+      <Alert
+        isOpen={showIncompleteDeckAlert}
+        onClose={handleDismissIncompleteDeck}
+        onConfirm={handleResumeDeck}
+        onCancel={handleDiscardIncompleteDeck}
+        intent={Intent.WARNING}
+        icon={IconNames.WARNING_SIGN}
+        cancelButtonText="Discard Draft"
+        confirmButtonText="Continue Editing"
+      >
+        <p>
+          You have an unfinished collection that we saved automatically. Would you like to continue where you left off?
+        </p>
+        <p>
+          <strong>Note:</strong> Your progress has been kept safe and you can pick up from the last step you were working on.
+        </p>
+      </Alert>
     </div>
   );
 };

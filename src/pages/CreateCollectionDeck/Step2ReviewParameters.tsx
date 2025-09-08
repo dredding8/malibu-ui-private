@@ -129,6 +129,7 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
               placeholder="Enter elevation angle..."
               rightElement={<span>degrees</span>}
               intent={errors.elevation ? Intent.DANGER : Intent.NONE}
+              aria-label="Elevation angle input"
               data-testid="elevation-input"
             />
           </FormGroup>
@@ -177,9 +178,9 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
           />
         </FormGroup>
       </div>
-      <div>
-        <Card elevation={1}>
-          <H5>Sensor Capacity Information</H5>
+      <div data-testid="sensor-capacity-info-container">
+        <Card elevation={1} data-testid="sensor-capacity-info-card">
+          <H5 data-testid="sensor-capacity-info-heading">Sensor Capacity Information</H5>
           <ul style={{ marginLeft: '20px', fontSize: '14px', lineHeight: '1.6' }}>
             <li>Wideband Collection: 8 simultaneous channels</li>
             <li>Narrowband Collection: 16 simultaneous channels</li>
@@ -212,9 +213,9 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
           />
         </FormGroup>
       </div>
-      <div>
-        <Card elevation={1}>
-          <H5>Duration Guidance</H5>
+      <div data-testid="duration-guidance-container">
+        <Card elevation={1} data-testid="duration-guidance-card">
+          <H5 data-testid="duration-guidance-heading">Duration Guidance</H5>
           <Text>
             <p><strong>Shorter Durations (&lt; 5 min):</strong><br/>
             May result in a higher number of total collections, but each may be less complete. Good for rapid, wide-net surveys.</p>
@@ -227,13 +228,13 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
   );
 
   return (
-    <div>
-      <H5>Step 2: Review Parameters</H5>
-      <Divider className="bp4-margin-bottom" />
+    <div data-testid="step2-container">
+      <h3 id="step-heading" data-testid="step2-heading">Step 2: Review Parameters</h3>
+      <Divider className="bp4-margin-bottom" data-testid="step2-divider" />
 
       {/* Summary of Step 1 Data */}
-      <Card className="bp4-margin-bottom">
-        <H5>Input Data Summary</H5>
+      <Card className="bp4-margin-bottom" data-testid="step1-data-summary-card">
+        <h4 data-testid="input-data-summary-heading">Input Data Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '14px' }}>
           <div>
             <strong>Tasking Window:</strong><br />
@@ -248,29 +249,32 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
       </Card>
 
       {/* New Tabbed Interface */}
-      <Card>
-        <Tabs id="ParameterTabs" defaultSelectedTabId="elevation" renderActiveTabPanelOnly={true}>
-          <Tab id="elevation" title="Elevation" panel={<ElevationPanel />} />
-          <Tab id="capacity" title="Hard Capacity" panel={<CapacityPanel />} />
-          <Tab id="duration" title="Min Duration" panel={<DurationPanel />} />
+      <Card data-testid="parameters-tabs-card">
+        <Tabs id="ParameterTabs" defaultSelectedTabId="elevation" renderActiveTabPanelOnly={true} data-testid="parameter-tabs">
+          <Tab id="elevation" title="Elevation" panel={<ElevationPanel />} data-testid="elevation-tab" />
+          <Tab id="capacity" title="Hard Capacity" panel={<CapacityPanel />} data-testid="capacity-tab" />
+          <Tab id="duration" title="Min Duration" panel={<DurationPanel />} data-testid="duration-tab" />
         </Tabs>
       </Card>
 
       {/* Navigation Buttons */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }} data-testid="step2-navigation-buttons">
         <Button
           text="Cancel"
           onClick={onCancel}
+          data-testid="step2-cancel-button"
         />
         <Button
           text="Back"
           onClick={onBack}
+          data-testid="step2-back-button"
         />
         <Button
           text="Next"
           intent={Intent.PRIMARY}
           loading={isProcessing}
           onClick={handleNext}
+          data-testid="step2-next-button"
         />
       </div>
 
@@ -284,6 +288,7 @@ const Step2ReviewParameters: React.FC<Step2ReviewParametersProps> = ({
         icon={IconNames.INFO_SIGN}
         cancelButtonText="Continue Editing"
         confirmButtonText="Start Background Processing"
+        data-testid="background-processing-alert"
       >
         <div>
           <p style={{ marginBottom: '16px' }}>

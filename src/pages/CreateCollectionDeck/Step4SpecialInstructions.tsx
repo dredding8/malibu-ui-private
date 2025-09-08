@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   H5,
   Divider,
@@ -9,9 +10,9 @@ import {
   TextArea,
   FormGroup,
   Tag,
-  Checkbox
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
+import { useBackgroundProcessing } from '../../hooks/useBackgroundProcessing';
 
 interface Step4SpecialInstructionsProps {
   data: any;
@@ -31,24 +32,27 @@ const Step4SpecialInstructions: React.FC<Step4SpecialInstructionsProps> = ({
   const [instructions, setInstructions] = useState(data.instructions || '');
   const [isSaving, setIsSaving] = useState(false);
   const [confirmSave, setConfirmSave] = useState(false);
+  const { startProcessing } = useBackgroundProcessing();
+  const navigate = useNavigate();
 
   const handleInstructionsChange = (value: string) => {
     setInstructions(value);
     onUpdate({ instructions: value });
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (!confirmSave) {
       setConfirmSave(true);
       return;
     }
 
     setIsSaving(true);
-    // Simulate saving the collection deck
-    setTimeout(() => {
+    try {
+      // Start the background processing job
+      await startProcessing(data);
+    } finally {
       setIsSaving(false);
-      onFinish();
-    }, 2000);
+    }
   };
 
   const getSelectedMatchesSummary = () => {
@@ -68,13 +72,13 @@ const Step4SpecialInstructions: React.FC<Step4SpecialInstructionsProps> = ({
   const summary = getSelectedMatchesSummary();
 
   return (
-    <div>
-      <H5>Step 4: Special Instructions</H5>
-      <Divider className="bp4-margin-bottom" />
+    <div data-testid="step4-container">
+      <h3 id="step-heading" data-testid="step4-heading">Step 4: Special Instructions & Finish</h3>
+      <Divider className="bp4-margin-bottom" data-testid="step4-divider" />
 
       {/* Final Summary */}
-      <Card className="bp4-margin-bottom">
-        <H5>Collection Deck Summary</H5>
+      <Card className="bp4-margin-bottom" data-testid="collection-summary-card">
+        <h4 data-testid="collection-summary-heading">Collection Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', fontSize: '14px', marginBottom: '20px' }}>
           <div>
             <strong>Tasking Window:</strong><br />
@@ -95,7 +99,7 @@ const Step4SpecialInstructions: React.FC<Step4SpecialInstructionsProps> = ({
           padding: '15px', 
           borderRadius: '3px',
           border: '1px solid #d3d8de'
-        }}>
+        }} data-testid="selected-matches-summary">
           <strong>Selected Matches:</strong>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px', marginTop: '10px' }}>
             <div>
@@ -115,8 +119,8 @@ const Step4SpecialInstructions: React.FC<Step4SpecialInstructionsProps> = ({
       </Card>
 
       {/* Special Instructions */}
-      <Card className="bp4-margin-bottom">
-        <H5>Special Instructions</H5>
+      <Card className="bp4-margin-bottom" data-testid="special-instructions-card">
+        <h4 data-testid="special-instructions-heading">Special Instructions</h4>
         <FormGroup 
           label="Instructions for Collection Team"
           labelFor="instructions"
@@ -127,67 +131,49 @@ const Step4SpecialInstructions: React.FC<Step4SpecialInstructionsProps> = ({
             value={instructions}
             onChange={(e) => handleInstructionsChange(e.target.value)}
             placeholder="Enter special instructions, notes, or requirements..."
+            aria-label="Special instructions for collection team"
+            data-testid="special-instructions-textarea"
             rows={8}
             fill
           />
         </FormGroup>
-        
-        <div style={{ marginTop: '15px', fontSize: '14px', color: '#666' }}>
-          <p><strong>Common Instructions:</strong></p>
-          <ul style={{ marginLeft: '20px', lineHeight: '1.6' }}>
-            <li>Priority handling for specific SCCs</li>
-            <li>Special coordination requirements</li>
-            <li>Quality control instructions</li>
-            <li>Reporting requirements</li>
-            <li>Emergency contact information</li>
-          </ul>
-        </div>
       </Card>
 
       {/* Confirmation */}
       {confirmSave && (
-        <Card className="bp4-margin-bottom">
-          <H5>Confirm Collection Deck Creation</H5>
+        <Card className="bp4-margin-bottom" data-testid="confirmation-card">
+          <h4 data-testid="confirmation-heading">Confirm & Start Background Processing</h4>
           <div style={{ fontSize: '14px', lineHeight: '1.6' }}>
-            <p>You are about to create a collection deck with the following specifications:</p>
-            <ul style={{ marginLeft: '20px' }}>
-              <li><strong>{summary.count} collection opportunities</strong> across {summary.uniqueSites} sites</li>
-              <li><strong>{summary.totalDuration} total minutes</strong> of collection time</li>
-              <li><strong>{summary.uniqueSCCs} unique SCCs</strong> to be collected</li>
-              <li>Tasking window: <strong>{data.taskingWindow.startDate} to {data.taskingWindow.endDate}</strong></li>
-            </ul>
-            <p>This action will create a new collection deck that can be managed from the Collection Decks page.</p>
+            <p>You are about to create a collection deck and start the background processing. You will be redirected to the History page to monitor the progress.</p>
           </div>
         </Card>
       )}
 
       {/* Navigation Buttons */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }} data-testid="step4-navigation-buttons">
         <Button
           text="Cancel"
           onClick={onCancel}
+          data-testid="step4-cancel-button"
         />
         <Button
           text="Back"
           onClick={onBack}
+          data-testid="step4-back-button"
         />
         <Button
-          text={confirmSave ? "Confirm & Create Deck" : "Finish"}
+          text={confirmSave ? "Confirm & Start Processing" : "Finish"}
           intent={Intent.SUCCESS}
           loading={isSaving}
           onClick={handleFinish}
+          disabled={summary.count === 0}
+          data-testid="step4-finish-button"
         />
       </div>
 
-      {isSaving && (
-        <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN} className="bp4-margin-top">
-          Creating collection deck... Please wait.
-        </Callout>
-      )}
-
       {summary.count === 0 && (
-        <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} className="bp4-margin-top">
-          No matches were selected. Please go back to Step 3 and select at least one match.
+        <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} className="bp4-margin-top" data-testid="no-matches-selected-final-warning">
+          No matches were selected. Please go back to Step 3 and select at least one match before finishing.
         </Callout>
       )}
     </div>

@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
-  Button,
-  Alignment,
   Card,
   H3,
   H5,
@@ -18,10 +12,13 @@ import {
   Intent,
   ProgressBar,
   NumericInput,
-  Callout
+  Callout,
+  Button,
+  Breadcrumbs
 } from '@blueprintjs/core';
 import { Cell, Column, Table } from '@blueprintjs/table';
 import { IconNames } from '@blueprintjs/icons';
+import AppNavbar from '../components/AppNavbar';
 
 const Analytics: React.FC = () => {
   const navigate = useNavigate();
@@ -107,54 +104,29 @@ const Analytics: React.FC = () => {
   return (
     <div className="analytics">
       {/* Header */}
-      <Navbar className="bp4-dark">
-        <NavbarGroup align={Alignment.START}>
-          <NavbarHeading>
-            <span className="bp4-icon bp4-icon-cube bp4-margin-right" />
-            VUE Dashboard
-          </NavbarHeading>
-          <NavbarDivider />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.DATABASE} 
-            text="Master" 
-            onClick={() => navigate('/')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CUBE} 
-            text="SCCs" 
-            onClick={() => navigate('/sccs')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.NEW_OBJECT} 
-            text="Decks" 
-            onClick={() => navigate('/decks')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.HISTORY} 
-            text="History" 
-            onClick={() => navigate('/history')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CHART} 
-            text="Analytics" 
-            onClick={() => navigate('/analytics')}
-            intent="primary"
-          />
-        </NavbarGroup>
-        <NavbarGroup align={Alignment.END}>
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.LOG_OUT} 
-            text="Logout"
-            intent="danger"
-          />
-        </NavbarGroup>
-      </Navbar>
+      <AppNavbar />
+      
+      {/* Breadcrumbs */}
+      <div style={{ 
+        padding: '16px 24px 0 24px',
+        maxWidth: '1400px',
+        margin: '0 auto'
+      }}>
+        <Breadcrumbs
+          items={[
+            {
+              text: 'Data Sources',
+              icon: IconNames.DATABASE,
+              onClick: () => navigate('/')
+            },
+            {
+              text: 'Analytics',
+              icon: IconNames.CHART,
+              current: true
+            }
+          ]}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="analytics-content" style={{ padding: '20px' }}>
@@ -206,12 +178,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Optimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Optimal</span>
                   <NumericInput
                     value={analyticsData.matching.optimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.matching.optimal / analyticsData.matching.total} intent={Intent.SUCCESS} />
@@ -219,12 +196,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Baseline</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Baseline</span>
                   <NumericInput
                     value={analyticsData.matching.baseline}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.matching.baseline / analyticsData.matching.total} intent={Intent.WARNING} />
@@ -232,12 +214,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Suboptimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Suboptimal</span>
                   <NumericInput
                     value={analyticsData.matching.suboptimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.matching.suboptimal / analyticsData.matching.total} intent={Intent.DANGER} />
@@ -245,12 +232,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Manual</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Manual</span>
                   <NumericInput
                     value={analyticsData.matching.manual}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.matching.manual / analyticsData.matching.total} />
@@ -272,12 +264,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Optimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Optimal</span>
                   <NumericInput
                     value={analyticsData.general.optimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.general.optimal / analyticsData.general.total} intent={Intent.SUCCESS} />
@@ -285,12 +282,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Baseline</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Baseline</span>
                   <NumericInput
                     value={analyticsData.general.baseline}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.general.baseline / analyticsData.general.total} intent={Intent.WARNING} />
@@ -298,12 +300,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Suboptimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Suboptimal</span>
                   <NumericInput
                     value={analyticsData.general.suboptimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.general.suboptimal / analyticsData.general.total} intent={Intent.DANGER} />
@@ -311,12 +318,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Manual</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Manual</span>
                   <NumericInput
                     value={analyticsData.general.manual}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.general.manual / analyticsData.general.total} />
@@ -338,12 +350,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Optimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Optimal</span>
                   <NumericInput
                     value={analyticsData.cumulative.optimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.cumulative.optimal / analyticsData.cumulative.total} intent={Intent.SUCCESS} />
@@ -351,12 +368,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Baseline</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Baseline</span>
                   <NumericInput
                     value={analyticsData.cumulative.baseline}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.cumulative.baseline / analyticsData.cumulative.total} intent={Intent.WARNING} />
@@ -364,12 +386,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Suboptimal</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Suboptimal</span>
                   <NumericInput
                     value={analyticsData.cumulative.suboptimal}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.cumulative.suboptimal / analyticsData.cumulative.total} intent={Intent.DANGER} />
@@ -377,12 +404,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Manual</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Manual</span>
                   <NumericInput
                     value={analyticsData.cumulative.manual}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.cumulative.manual / analyticsData.cumulative.total} />
@@ -390,12 +422,17 @@ const Analytics: React.FC = () => {
               
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontSize: '12px' }}>Cumulative</span>
+                  <span style={{ fontSize: '11px', color: '#666' }}>Cumulative</span>
                   <NumericInput
                     value={analyticsData.cumulative.cumulative}
                     readOnly
                     small
-                    style={{ width: '60px' }}
+                    style={{ 
+                      width: '50px', 
+                      fontSize: '11px',
+                      opacity: 0.8,
+                      color: '#666'
+                    }}
                   />
                 </div>
                 <ProgressBar value={analyticsData.cumulative.cumulative / analyticsData.cumulative.total} intent={Intent.PRIMARY} />

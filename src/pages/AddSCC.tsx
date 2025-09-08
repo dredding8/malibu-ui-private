@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
   Button,
-  Alignment,
   Card,
   FormGroup,
   InputGroup,
@@ -16,9 +11,12 @@ import {
   Intent,
   TextArea,
   Callout,
-  HTMLSelect
+  HTMLSelect,
+  Breadcrumbs
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
+import AppNavbar from '../components/AppNavbar';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 const AddSCC: React.FC = () => {
   const navigate = useNavigate();
@@ -89,53 +87,49 @@ const AddSCC: React.FC = () => {
     navigate('/sccs');
   };
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEscape: () => navigate('/sccs'),
+  });
+
   return (
     <div className="add-scc">
       {/* Header */}
-      <Navbar className="bp4-dark">
-        <NavbarGroup align={Alignment.START}>
-          <NavbarHeading>
-            <span className="bp4-icon bp4-icon-cube bp4-margin-right" />
-            VUE Dashboard
-          </NavbarHeading>
-          <NavbarDivider />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.DATABASE} 
-            text="Master" 
-            onClick={() => navigate('/')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CUBE} 
-            text="SCCs" 
-            onClick={() => navigate('/sccs')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.HISTORY} 
-            text="History" 
-            onClick={() => navigate('/history')}
-          />
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.CHART} 
-            text="Analytics" 
-            onClick={() => navigate('/analytics')}
-          />
-        </NavbarGroup>
-        <NavbarGroup align={Alignment.END}>
-          <Button 
-            className="bp4-minimal" 
-            icon={IconNames.LOG_OUT} 
-            text="Logout"
-            intent="danger"
-          />
-        </NavbarGroup>
-      </Navbar>
+      <AppNavbar />
+
+      {/* Breadcrumbs */}
+      <div style={{ 
+        padding: '16px 24px 0 24px',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        <Breadcrumbs
+          items={[
+            {
+              text: 'Data Sources',
+              icon: IconNames.DATABASE,
+              onClick: () => navigate('/')
+            },
+            {
+              text: 'SCCs',
+              icon: IconNames.CUBE,
+              onClick: () => navigate('/sccs')
+            },
+            {
+              text: 'Add SCC',
+              icon: IconNames.PLUS,
+              current: true
+            }
+          ]}
+        />
+      </div>
 
       {/* Main Content */}
-      <div className="add-scc-content" style={{ padding: '20px' }}>
+      <div className="add-scc-content" style={{ 
+        padding: '24px',
+        maxWidth: '1200px',
+        margin: '0 auto' 
+      }}>
         <H3>Add New SCC</H3>
         
         <Card>
@@ -297,7 +291,7 @@ const AddSCC: React.FC = () => {
 
         {isSaving && (
           <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN} className="bp4-margin-top">
-            Saving new SCC... Please wait.
+            Saving new SCC...
           </Callout>
         )}
       </div>
