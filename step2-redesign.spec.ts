@@ -10,9 +10,16 @@ test.describe('NOVA-1709: Step 2 Redesign Validation', () => {
 
     // Fill out Step 1 to enable navigation to Step 2
     await page.fill('[data-testid="deck-name-input"]', 'Validation Test Deck');
-    await page.click('.bp4-date-input'); // Open start date picker
-    await page.click('.bp4-datepicker-day[aria-selected="true"]'); // Select today
-    await page.click('.bp4-date-input'); // Close picker
+    
+    // Select Start Date
+    await page.locator('[data-testid="start-date-input"]').click();
+    await page.locator('div.bp4-datepicker-day[aria-selected="true"]').click();
+
+    // Select End Date (a few days after start date)
+    await page.locator('[data-testid="end-date-input"]').click();
+    await page.locator('div.bp4-datepicker-day[aria-selected="true"] ~ .bp4-datepicker-day ~ .bp4-datepicker-day').first().click();
+
+    // Click Next to proceed to Step 2
     await page.click('button:has-text("Next")');
 
     // Ensure we are on Step 2
