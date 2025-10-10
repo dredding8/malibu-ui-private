@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { BlueprintProvider, HotkeysProvider } from '@blueprintjs/core';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -15,6 +15,9 @@ import CollectionDecks from './pages/CollectionDecks';
 import CreateCollectionDeck from './pages/CreateCollectionDeck';
 import FieldMappingReview from './pages/FieldMappingReview';
 import CollectionOpportunitiesView from './pages/CollectionOpportunitiesView';
+import CollectionOpportunitiesHub from './pages/CollectionOpportunitiesHub';
+import CollectionOpportunitiesRedirect from './components/CollectionOpportunitiesRedirect';
+import TestOpportunities from './pages/TestOpportunities';
 import { BackgroundProcessingProvider } from './contexts/BackgroundProcessingContext';
 import { NavigationContextProvider } from './contexts/NavigationContext';
 import { EnhancedNavigationProvider } from './contexts/EnhancedNavigationContext';
@@ -64,13 +67,18 @@ function App() {
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/history" element={<History />} />
-                          <Route path="/history/:collectionId/collection-opportunities" element={<CollectionOpportunitiesView />} />
+                          <Route 
+                            path="/history/:collectionId/collection-opportunities" 
+                            element={<CollectionOpportunitiesRedirect />} 
+                          />
+                          <Route path="/collection/:collectionId/manage" element={<CollectionOpportunitiesHub />} />
                           <Route path="/history/:collectionId/field-mapping-review" element={<FieldMappingReview />} />
                           <Route path="/analytics" element={<Analytics />} />
                           <Route path="/sccs" element={<SCCs />} />
                           <Route path="/sccs/new" element={<AddSCC />} />
                           <Route path="/decks" element={<CollectionDecks />} />
                           <Route path="/create-collection-deck/*" element={<CreateCollectionDeck />} />
+                          <Route path="/test-opportunities" element={<TestOpportunities />} />
                           <Route path="*" element={<Dashboard />} />
                         </Routes>
                         <NavigationFAB />

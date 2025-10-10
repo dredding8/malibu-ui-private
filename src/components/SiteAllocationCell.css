@@ -1,0 +1,458 @@
+/**
+ * SiteAllocationCell Styles
+ *
+ * Workshop-compliant CSS following Palantir Foundry patterns:
+ * - No inline styles
+ * - Blueprint spacing grid (10px base unit)
+ * - Blueprint Intent color system
+ * - WCAG AA color contrast
+ * - Dark theme support
+ */
+
+/* ========================================
+   Cell Container
+   ======================================== */
+
+.site-allocation-cell {
+  padding: calc(var(--bp5-grid-size) * 1.2); /* 12px */
+}
+
+.site-allocation-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.6); /* 6px */
+}
+
+/* Empty state */
+.site-allocation-empty {
+  color: #5c7080; /* Blueprint muted text */
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ========================================
+   Site Tags Display
+   ======================================== */
+
+.site-allocation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--bp5-grid-size) * 0.5); /* 5px */
+  align-items: center;
+}
+
+/* Individual site tag */
+.site-allocation-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  padding: 3px 8px !important; /* Override Blueprint default */
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: 180px;
+  transition: background-color 150ms ease;
+}
+
+.site-allocation-tag:hover {
+  background-color: rgba(19, 124, 189, 0.15) !important; /* Blueprint primary hover */
+}
+
+/* Site name within tag */
+.site-allocation-tag__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #182026; /* Blueprint text primary */
+  font-weight: 500;
+}
+
+/* Collect count within tag */
+.site-allocation-tag__count {
+  color: #5c7080; /* Blueprint text muted */
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Overflow Indicator
+   ======================================== */
+
+.site-allocation-overflow {
+  padding: 3px 8px !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: #137cbd !important; /* Blueprint intent-primary */
+  background-color: rgba(19, 124, 189, 0.1) !important;
+  cursor: pointer;
+  user-select: none;
+  transition: all 150ms ease;
+}
+
+.site-allocation-overflow:hover {
+  background-color: rgba(19, 124, 189, 0.2) !important;
+  color: #106ba3 !important;
+}
+
+.site-allocation-overflow:focus-visible {
+  outline: 2px solid #137cbd;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3);
+}
+
+/* ========================================
+   Warning & Override Icons
+   ======================================== */
+
+.site-allocation-override-icon,
+.site-allocation-warning-icon {
+  flex-shrink: 0;
+  margin-left: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  transition: opacity 150ms ease;
+}
+
+.site-allocation-override-icon:hover,
+.site-allocation-warning-icon:hover {
+  opacity: 0.8;
+}
+
+/* ========================================
+   Tooltip Content Styling
+   ======================================== */
+
+/* Site Entry Tooltip */
+.site-entry-tooltip {
+  max-width: 280px;
+  padding: calc(var(--bp5-grid-size) * 1); /* 10px */
+}
+
+.site-entry-tooltip__name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #182026;
+  margin-bottom: calc(var(--bp5-grid-size) * 0.5); /* 5px */
+}
+
+.site-entry-tooltip__stats {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.6); /* 6px */
+  font-size: 12px;
+  color: #5c7080;
+  margin-bottom: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+}
+
+.site-entry-tooltip__divider {
+  color: #ced9e0;
+}
+
+.site-entry-tooltip__days {
+  font-size: 11px;
+  color: #738694;
+  font-style: italic;
+  margin-top: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  padding-top: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  border-top: 1px solid rgba(16, 22, 26, 0.1);
+}
+
+/* Overflow Tooltip */
+.site-allocation-overflow-tooltip {
+  max-width: 320px;
+  padding: calc(var(--bp5-grid-size) * 1.2); /* 12px */
+}
+
+.site-allocation-overflow-tooltip__header {
+  margin-bottom: calc(var(--bp5-grid-size) * 1); /* 10px */
+  padding-bottom: calc(var(--bp5-grid-size) * 0.8); /* 8px */
+  border-bottom: 1px solid rgba(16, 22, 26, 0.15);
+  font-size: 13px;
+  color: #182026;
+}
+
+.site-allocation-overflow-tooltip__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.site-allocation-overflow-tooltip__list li {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.6); /* 6px */
+  padding: calc(var(--bp5-grid-size) * 0.5) 0; /* 5px vertical */
+  font-size: 12px;
+  color: #182026;
+}
+
+.overflow-site-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.overflow-site-count {
+  flex-shrink: 0;
+  color: #5c7080;
+  font-weight: 400;
+}
+
+.site-allocation-overflow-tooltip__total {
+  margin-top: calc(var(--bp5-grid-size) * 1); /* 10px */
+  padding-top: calc(var(--bp5-grid-size) * 0.8); /* 8px */
+  border-top: 1px solid rgba(16, 22, 26, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  color: #182026;
+}
+
+/* Override Tooltip */
+.site-allocation-override-tooltip {
+  max-width: 300px;
+  padding: calc(var(--bp5-grid-size) * 1); /* 10px */
+}
+
+.site-allocation-override-tooltip__title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.6); /* 6px */
+  margin-bottom: calc(var(--bp5-grid-size) * 0.8); /* 8px */
+  font-size: 13px;
+  color: #a66321; /* Blueprint intent-warning text */
+  font-weight: 600;
+}
+
+.site-allocation-override-tooltip__reason {
+  font-size: 12px;
+  color: #5c7080;
+  line-height: 1.4;
+  padding-top: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  border-top: 1px solid rgba(166, 99, 33, 0.2);
+}
+
+/* ========================================
+   Dark Theme Support
+   ======================================== */
+
+.bp5-dark .site-allocation-empty {
+  color: #a7b6c2;
+}
+
+.bp5-dark .site-allocation-tag__name {
+  color: #f5f8fa;
+}
+
+.bp5-dark .site-allocation-tag__count {
+  color: #a7b6c2;
+}
+
+.bp5-dark .site-allocation-overflow {
+  color: #48aff0 !important;
+  background-color: rgba(72, 175, 240, 0.15) !important;
+}
+
+.bp5-dark .site-allocation-overflow:hover {
+  background-color: rgba(72, 175, 240, 0.25) !important;
+  color: #6bc4ff !important;
+}
+
+.bp5-dark .site-entry-tooltip__name {
+  color: #f5f8fa;
+}
+
+.bp5-dark .site-entry-tooltip__stats {
+  color: #a7b6c2;
+}
+
+.bp5-dark .site-entry-tooltip__divider {
+  color: #5c7080;
+}
+
+.bp5-dark .site-entry-tooltip__days {
+  color: #8a9ba8;
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.bp5-dark .site-allocation-overflow-tooltip__header {
+  color: #f5f8fa;
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.bp5-dark .site-allocation-overflow-tooltip__list li {
+  color: #f5f8fa;
+}
+
+.bp5-dark .overflow-site-count {
+  color: #a7b6c2;
+}
+
+.bp5-dark .site-allocation-overflow-tooltip__total {
+  color: #f5f8fa;
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.bp5-dark .site-allocation-override-tooltip__title {
+  color: #ffb366; /* Blueprint dark intent-warning */
+}
+
+.bp5-dark .site-allocation-override-tooltip__reason {
+  color: #a7b6c2;
+  border-top-color: rgba(255, 179, 102, 0.2);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) {
+  .site-allocation-tag {
+    max-width: 140px;
+    font-size: 12px;
+    padding: 2px 6px !important;
+  }
+
+  .site-allocation-tag__count {
+    font-size: 11px;
+  }
+
+  .site-allocation-overflow {
+    font-size: 11px;
+    padding: 2px 6px !important;
+  }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  .site-allocation-cell {
+    padding: calc(var(--bp5-grid-size) * 0.8); /* 8px */
+  }
+
+  .site-allocation-tag {
+    max-width: 100px;
+    font-size: 11px;
+    padding: 2px 4px !important;
+  }
+
+  .site-allocation-tag__name {
+    max-width: 60px;
+  }
+
+  .site-allocation-content {
+    gap: calc(var(--bp5-grid-size) * 0.4); /* 4px */
+  }
+
+  .site-allocation-tags {
+    gap: calc(var(--bp5-grid-size) * 0.3); /* 3px */
+  }
+}
+
+/* ========================================
+   Container Query Support
+   (Progressive Enhancement)
+   ======================================== */
+
+@supports (container-type: inline-size) {
+  .site-allocation-cell {
+    container-type: inline-size;
+    container-name: site-cell;
+  }
+
+  /* Compact layout when cell is narrow */
+  @container site-cell (max-width: 200px) {
+    .site-allocation-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .site-allocation-tag {
+      max-width: 100%;
+    }
+
+    .site-allocation-overflow,
+    .site-allocation-override-icon {
+      margin-left: 0;
+    }
+  }
+
+  /* Stack tags vertically in very narrow cells */
+  @container site-cell (max-width: 150px) {
+    .site-allocation-tags {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .site-allocation-tag {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .site-allocation-cell {
+    padding: 4px 8px;
+  }
+
+  .site-allocation-tag {
+    border: 1px solid #ced9e0;
+    background-color: transparent !important;
+    color: #000 !important;
+  }
+
+  .site-allocation-overflow {
+    display: none; /* Hide interactive elements in print */
+  }
+
+  .site-allocation-override-icon,
+  .site-allocation-warning-icon {
+    display: inline-block;
+  }
+}
+
+/* ========================================
+   Accessibility Enhancements
+   ======================================== */
+
+/* Focus visible states */
+.site-allocation-tag:focus-visible {
+  outline: 2px solid #137cbd;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .site-allocation-tag {
+    border: 1px solid currentColor;
+  }
+
+  .site-allocation-overflow {
+    border: 2px solid #137cbd;
+  }
+
+  .site-allocation-override-icon,
+  .site-allocation-warning-icon {
+    filter: contrast(1.5);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .site-allocation-tag,
+  .site-allocation-overflow,
+  .site-allocation-override-icon,
+  .site-allocation-warning-icon {
+    transition: none;
+  }
+}

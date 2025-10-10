@@ -11,8 +11,8 @@ const resources = {
         noResults: "No collections found for the selected time period.",
         columns: {
           name: "Collection Name",
-          collectionStatus: "What's Happening",
-          algorithmStatus: "Processing Update",
+          collectionStatus: "Collection Deck Status",
+          algorithmStatus: "Matching status",
           progress: "Completion",
           created: "Started",
           completed: "Finished"

@@ -1,6 +1,6 @@
 import { OverlayToaster, Position, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { CollectionDeckStatus, AlgorithmStatus } from '../constants/statusTypes';
+import { CollectionDeckStatus, AlgorithmStatus, resolveCollectionStatus } from '../constants/statusTypes';
 
 // Matches the interface in HistoryTable.tsx
 export interface HistoryTableRow {
@@ -10,6 +10,7 @@ export interface HistoryTableRow {
   algorithmStatus: AlgorithmStatus;
   progress: number;
   createdDate: Date;
+  createdBy: string;
   completionDate?: Date;
 }
 
@@ -46,27 +47,30 @@ class BackgroundProcessingServiceImpl {
         {
           id: 'TEST-001',
           name: 'UX Test Collection Deck',
-          collectionDeckStatus: 'processing' as const,
+          collectionDeckStatus: 'in-progress' as const,
           algorithmStatus: 'running' as const,
           progress: 45,
           createdDate: new Date(Date.now() - 60000), // 1 minute ago
+          createdBy: 'John Smith',
         },
         {
           id: 'TEST-002',
           name: 'Sample Analytics Deck',
-          collectionDeckStatus: 'ready' as const,
+          collectionDeckStatus: 'complete' as const,
           algorithmStatus: 'converged' as const,
           progress: 100,
           createdDate: new Date(Date.now() - 300000), // 5 minutes ago
+          createdBy: 'Sarah Johnson',
           completionDate: new Date(Date.now() - 60000),
         },
         {
           id: 'TEST-003',
           name: 'Failed Processing Test',
-          collectionDeckStatus: 'failed' as const,
+          collectionDeckStatus: 'in-progress' as const,
           algorithmStatus: 'error' as const,
           progress: 23,
           createdDate: new Date(Date.now() - 900000), // 15 minutes ago
+          createdBy: 'Mike Chen',
           completionDate: new Date(Date.now() - 300000),
         }
       ];
@@ -98,10 +102,11 @@ class BackgroundProcessingServiceImpl {
     const newJob: HistoryTableRow = {
       id: `DECK-${Date.now()}`,
       name: deckName,
-      collectionDeckStatus: 'processing',
+      collectionDeckStatus: 'in-progress',
       algorithmStatus: 'queued',
       progress: 0,
       createdDate: new Date(),
+      createdBy: 'Current User', // TODO: Get from user context
     };
     this.jobs.unshift(newJob); // Add to the top of the list
     this.saveJobs();
@@ -112,8 +117,9 @@ class BackgroundProcessingServiceImpl {
   private updateJobsProgress() {
     let changed = false;
     this.jobs.forEach(job => {
-      if (job.collectionDeckStatus === 'ready' || job.collectionDeckStatus === 'failed' || job.collectionDeckStatus === 'cancelled') {
-        return; // Skip completed/failed jobs
+      // Skip completed jobs
+      if (job.algorithmStatus === 'converged') {
+        return;
       }
 
       changed = true;
@@ -122,27 +128,25 @@ class BackgroundProcessingServiceImpl {
 
       // Update statuses based on progress
       if (job.progress >= 100) {
-        job.collectionDeckStatus = 'ready';
         job.algorithmStatus = 'converged';
         job.completionDate = new Date();
         this.showCompletionNotification(job.name);
       } else if (job.progress > 70) {
-        job.collectionDeckStatus = 'processing';
         job.algorithmStatus = 'optimizing';
       } else if (job.progress > 20) {
-        job.collectionDeckStatus = 'processing';
         job.algorithmStatus = 'running';
       } else {
-        job.collectionDeckStatus = 'processing';
         job.algorithmStatus = 'queued';
       }
 
       // Randomly introduce a failure for demonstration
       if (Math.random() < 0.01) { // 1% chance of failure
-          job.collectionDeckStatus = 'failed';
           job.algorithmStatus = 'error';
           job.completionDate = new Date();
       }
+      
+      // Always update collectionDeckStatus based on algorithmStatus
+      job.collectionDeckStatus = resolveCollectionStatus(job.algorithmStatus);
     });
 
     if (changed) {

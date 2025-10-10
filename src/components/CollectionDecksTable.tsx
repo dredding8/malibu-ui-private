@@ -1,12 +1,23 @@
 import React, { useMemo, useState } from 'react';
 import { Cell, Column, Table, RegionCardinality } from '@blueprintjs/table';
-import { Intent, Tag, Button } from '@blueprintjs/core';
+import { Intent, Tag, Button, Tooltip, Position, Dialog, DialogBody, DialogFooter } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { 
-  CollectionDeckStatus, 
-  COLLECTION_STATUS_LABELS, 
-  COLLECTION_STATUS_INTENTS 
+import { useNavigate } from 'react-router-dom';
+import IconWrapper from './IconWrapper';
+import {
+  CollectionDeckStatus,
+  COLLECTION_STATUS_LABELS,
+  COLLECTION_STATUS_INTENTS
 } from '../constants/statusTypes';
+import {
+  MatchStatus,
+  MatchInformation,
+  getMatchStatusIntent,
+  getMatchStatusLabel,
+  formatMatchNotes,
+  matchNeedsAttention
+} from '../types/matchTypes';
+import './CollectionDecksTable.css';
 
 interface CollectionDeck {
   id: string;
@@ -18,97 +29,63 @@ interface CollectionDeck {
   sccCount: number;
   assignedTo: string;
   completionDate?: string;
+  matchInfo?: MatchInformation;
 }
 
 interface CollectionDecksTableProps {
+  /** Collection decks data - passed from parent to avoid hardcoded sample data */
+  data: CollectionDeck[];
+
   type: 'in-progress' | 'completed';
   startDate: string | null;
   endDate: string | null;
+
+  /** Callback handlers for actions */
+  onContinue?: (deckId: string) => void;
+  onView?: (deckId: string) => void;
+  onDiscard?: (deckId: string) => void;
 }
 
-const sampleInProgressDecks: CollectionDeck[] = [
-  {
-    id: '1',
-    name: 'Collection Alpha-001',
-    status: 'processing',
-    createdDate: '2024-01-15',
-    lastModified: '2024-01-20',
-    priority: 1,
-    sccCount: 25,
-    assignedTo: 'John Smith'
-  },
-  {
-    id: '2',
-    name: 'Collection Beta-002',
-    status: 'review',
-    createdDate: '2024-01-18',
-    lastModified: '2024-01-22',
-    priority: 2,
-    sccCount: 18,
-    assignedTo: 'Jane Doe'
-  },
-  {
-    id: '3',
-    name: 'Collection Gamma-003',
-    status: 'review',
-    createdDate: '2024-01-20',
-    lastModified: '2024-01-23',
-    priority: 3,
-    sccCount: 32,
-    assignedTo: 'Mike Johnson'
-  }
-];
-
-const sampleCompletedDecks: CollectionDeck[] = [
-  {
-    id: '4',
-    name: 'Collection Delta-004',
-    status: 'ready',
-    createdDate: '2024-01-10',
-    lastModified: '2024-01-15',
-    priority: 1,
-    sccCount: 28,
-    assignedTo: 'John Smith',
-    completionDate: '2024-01-15'
-  },
-  {
-    id: '5',
-    name: 'Collection Epsilon-005',
-    status: 'ready',
-    createdDate: '2024-01-12',
-    lastModified: '2024-01-17',
-    priority: 2,
-    sccCount: 15,
-    assignedTo: 'Jane Doe',
-    completionDate: '2024-01-17'
-  }
-];
-
-const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({ 
-  type, 
-  startDate, 
-  endDate 
+/**
+ * CollectionDecksTable Component
+ *
+ * WAVE 1 IMPROVEMENTS:
+ * - Removed hardcoded sample data (now passed via props)
+ * - Replaced window.location.href with React Router navigate()
+ * - Replaced native confirm() with Blueprint Dialog component
+ * - Added proper TypeScript callback handlers
+ */
+const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
+  data,
+  type,
+  startDate,
+  endDate,
+  onContinue,
+  onView,
+  onDiscard
 }) => {
+  const navigate = useNavigate();
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [discardDialogId, setDiscardDialogId] = useState<string | null>(null);
 
   const filteredData = useMemo(() => {
-    let data = type === 'in-progress' ? sampleInProgressDecks : sampleCompletedDecks;
+    let filteredData = data;
     
     // Apply date filtering if dates are provided
     if (startDate || endDate) {
-      data = data.filter(deck => {
+      filteredData = filteredData.filter(deck => {
         const deckDate = new Date(deck.createdDate);
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
-        
+
         if (start && deckDate < start) return false;
         if (end && deckDate > end) return false;
         return true;
       });
     }
-    
-    return data;
-  }, [type, startDate, endDate]);
+
+    return filteredData;
+  }, [data, startDate, endDate]);
 
   const handleRowSelection = (rowId: string, checked: boolean) => {
     const newSelection = new Set(selectedRows);
@@ -129,22 +106,36 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
   };
 
   const handleContinue = (deckId: string) => {
-    console.log('Continue with deck:', deckId);
-    // Navigate to continue deck flow
-    window.location.href = `/decks/${deckId}/continue`;
+    if (onContinue) {
+      onContinue(deckId);
+    } else {
+      // Default behavior: use React Router navigation
+      navigate(`/decks/${deckId}/continue`);
+    }
   };
 
   const handleView = (deckId: string) => {
-    console.log('View deck:', deckId);
-    // Navigate to view deck details
-    window.location.href = `/decks/${deckId}/view`;
+    if (onView) {
+      onView(deckId);
+    } else {
+      // Default behavior: use React Router navigation
+      navigate(`/decks/${deckId}/view`);
+    }
   };
 
   const handleDiscard = (deckId: string) => {
-    console.log('Discard deck:', deckId);
-    // This would typically show a confirmation dialog
-    if (confirm('Are you sure you want to discard this deck?')) {
-      console.log('Deck discarded:', deckId);
+    // Show accessible Blueprint Dialog instead of native confirm()
+    setDiscardDialogId(deckId);
+  };
+
+  const handleDiscardConfirmed = () => {
+    if (discardDialogId) {
+      if (onDiscard) {
+        onDiscard(discardDialogId);
+      } else {
+        console.log('Deck discarded:', discardDialogId);
+      }
+      setDiscardDialogId(null);
     }
   };
 
@@ -163,8 +154,8 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
     const deck = filteredData[rowIndex];
     return (
       <Cell>
-        <Tag intent={getStatusIntent(deck?.status || 'draft')}>
-          {COLLECTION_STATUS_LABELS[deck?.status || 'draft']}
+        <Tag intent={getStatusIntent(deck?.status || 'in-progress')}>
+          {COLLECTION_STATUS_LABELS[deck?.status || 'in-progress']}
         </Tag>
       </Cell>
     );
@@ -206,6 +197,96 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
     </Cell>
   );
 
+  const matchNotesCellRenderer = (rowIndex: number) => {
+    const deck = filteredData[rowIndex];
+    const matchInfo = deck?.matchInfo;
+    
+    if (!matchInfo) {
+      return (
+        <Cell>
+          <span style={{ color: '#666', fontStyle: 'italic' }}>No match data</span>
+        </Cell>
+      );
+    }
+
+    const status = matchInfo.status;
+    const notes = matchInfo.notes;
+    const needsAttention = matchNeedsAttention(status);
+    const statusIntent = getMatchStatusIntent(status);
+    const statusLabel = getMatchStatusLabel(status);
+    const noteMessage = notes ? formatMatchNotes(notes) : '';
+
+    // Build tooltip content
+    const tooltipContent = (
+      <div className="match-notes-tooltip">
+        <strong>Match Status: {statusLabel}</strong>
+        {matchInfo.matchPercentage !== undefined && (
+          <div>Match Percentage: {matchInfo.matchPercentage}%</div>
+        )}
+        {notes && notes.length > 0 && (
+          <>
+            <div className="match-notes-tooltip-details">
+              <strong>Details:</strong>
+            </div>
+            {notes.map((note, idx) => (
+              <div key={idx} className="match-notes-tooltip-item">
+                <div>• {note.message}</div>
+                {note.details && (
+                  <div className="match-notes-tooltip-subitem">
+                    {note.details}
+                  </div>
+                )}
+                {note.affectedSensors && note.affectedSensors.length > 0 && (
+                  <div className="match-notes-tooltip-subitem">
+                    Affected sensors: {note.affectedSensors.join(', ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    );
+
+    return (
+      <Cell className="match-notes-cell">
+        <div className="match-notes-content">
+          <Tag 
+            intent={statusIntent} 
+            minimal={status === 'optimal'}
+            className="match-status-tag"
+          >
+            {statusLabel}
+          </Tag>
+          
+          {noteMessage && (
+            <Tooltip content={tooltipContent} position={Position.TOP}>
+              <span className={`match-notes-text ${
+                status === 'no-match' ? 'match-notes-text-danger' : 'match-notes-text-warning'
+              }`}>
+                {needsAttention && (
+                  <IconWrapper
+                    icon={status === 'no-match' ? IconNames.ERROR : IconNames.WARNING_SIGN}
+                    size={16}
+                    className="match-notes-icon"
+                    intent={status === 'no-match' ? 'danger' : 'warning'}
+                  />
+                )}
+                <span className="match-notes-message">{noteMessage}</span>
+              </span>
+            </Tooltip>
+          )}
+          
+          {!noteMessage && status === 'optimal' && (
+            <span className="match-full-coverage">
+              Full coverage
+            </span>
+          )}
+        </div>
+      </Cell>
+    );
+  };
+
   const actionsCellRenderer = (rowIndex: number) => {
     const deck = filteredData[rowIndex];
     return (
@@ -220,6 +301,7 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
                 text="Continue"
                 onClick={() => handleContinue(deck?.id || '')}
                 data-testid="resume-deck-button"
+                aria-label={`Continue editing ${deck?.name || 'collection'}`}
               />
               <Button
                 small
@@ -229,6 +311,7 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
                 onClick={() => handleDiscard(deck?.id || '')}
                 data-testid="discard-deck-menu-item"
                 intent="danger"
+                aria-label={`Discard ${deck?.name || 'collection'}`}
               />
             </>
           ) : (
@@ -238,6 +321,7 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
               icon={IconNames.EYE_OPEN}
               text="View"
               onClick={() => handleView(deck?.id || '')}
+              aria-label={`View ${deck?.name || 'collection'}`}
             />
           )}
         </div>
@@ -256,11 +340,12 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
     ...(type === 'completed' ? [
       <Column key="completionDate" name="Completion Date" cellRenderer={completionDateCellRenderer} />
     ] : []),
+    <Column key="matchNotes" name="Match Notes" cellRenderer={matchNotesCellRenderer} />,
     <Column key="actions" name="Actions" cellRenderer={actionsCellRenderer} />
   ];
 
   return (
-    <div>
+    <div className="collection-decks-table-wrapper">
       <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>
           Showing {filteredData.length} {type === 'in-progress' ? 'in-progress' : 'completed'} deck{filteredData.length !== 1 ? 's' : ''}
@@ -291,15 +376,45 @@ const CollectionDecksTable: React.FC<CollectionDecksTableProps> = ({
       </Table>
       
       {filteredData.length === 0 && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px', 
+        <div style={{
+          textAlign: 'center',
+          padding: '40px',
           color: '#666',
           fontStyle: 'italic'
         }}>
           No {type === 'in-progress' ? 'in-progress' : 'completed'} collections found.
         </div>
       )}
+
+      {/* Accessible confirmation dialog (replaces native confirm()) */}
+      <Dialog
+        isOpen={discardDialogId !== null}
+        title="Discard Collection Deck?"
+        icon={IconNames.WARNING_SIGN}
+        onClose={() => setDiscardDialogId(null)}
+      >
+        <DialogBody>
+          <p>Are you sure you want to discard this collection deck?</p>
+          <p><strong>This action cannot be undone.</strong></p>
+        </DialogBody>
+        <DialogFooter
+          actions={[
+            <Button
+              key="cancel"
+              onClick={() => setDiscardDialogId(null)}
+            >
+              Cancel
+            </Button>,
+            <Button
+              key="discard"
+              intent={Intent.DANGER}
+              onClick={handleDiscardConfirmed}
+            >
+              Discard Deck
+            </Button>
+          ]}
+        />
+      </Dialog>
     </div>
   );
 };

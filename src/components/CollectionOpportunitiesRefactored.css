@@ -1,0 +1,607 @@
+/* Collection Opportunities Refactored Styles - BlueprintJS Compliant */
+
+.collection-opportunities-refactored {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--bp5-app-background-color, #f5f8fa);
+    position: relative;
+}
+
+/* Navbar */
+.opportunities-navbar {
+    /* Inherit BlueprintJS navbar styles */
+    box-shadow: var(--bp5-elevation-shadow-1);
+}
+
+.opportunities-navbar h2 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-input {
+    min-width: 300px;
+    transition: width 200ms cubic-bezier(0.4, 1, 0.75, 0.9);
+}
+
+.search-input:focus-within {
+    min-width: 400px;
+    /* Use Blueprint focus shadow */
+    box-shadow: 0 0 0 1px var(--bp5-intent-primary), 0 0 0 3px rgba(19, 124, 189, 0.3);
+}
+
+.site-filter {
+    min-width: 150px;
+}
+
+/* Tabs */
+.opportunity-tabs {
+    background-color: white;
+    padding: 0 16px;
+    box-shadow: 0 1px 3px rgba(16, 22, 26, 0.05);
+    margin: 0;
+    position: relative;
+}
+
+.opportunity-tabs .bp5-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.opportunity-tabs .bp5-tab[aria-selected="true"]::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #137cbd;
+    border-radius: 3px 3px 0 0;
+}
+
+.tab-count {
+    margin-left: 8px;
+    font-size: 11px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Help Callout */
+.help-callout {
+    margin: 16px;
+    background-color: rgba(19, 124, 189, 0.05);
+}
+
+.help-tips {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+}
+
+.help-tips li {
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+/* Table Container */
+.table-container {
+    flex: 1;
+    margin: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table */
+.opportunities-table {
+    flex: 1;
+    background-color: white;
+}
+
+.opportunities-table .bp5-table-container {
+    overflow: auto;
+}
+
+/* Table Cells */
+.opportunity-name {
+    font-weight: 500;
+    color: var(--bp5-text-color);
+}
+
+.health-indicator {
+    font-weight: 600;
+    min-width: 50px;
+    text-align: center;
+}
+
+.sites-cell {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.site-tag {
+    font-size: 11px;
+}
+
+.capacity-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.capacity-cell .bp5-progress-bar {
+    flex: 1;
+    min-width: 60px;
+    height: 8px;
+}
+
+.capacity-text {
+    font-size: 12px;
+    color: var(--bp5-gray1);
+    white-space: nowrap;
+}
+
+/* Loading State */
+.collection-opportunities-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    gap: 16px;
+}
+
+.collection-opportunities-loading h3 {
+    margin: 0;
+    color: var(--bp5-gray1);
+}
+
+/* Error State */
+.collection-opportunities-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+}
+
+/* Row Selection */
+.bp5-table-cell.selected {
+    background-color: rgba(19, 124, 189, 0.15) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .search-input {
+        min-width: 200px;
+    }
+    
+    .site-filter {
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .opportunities-navbar .bp5-navbar-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .search-input,
+    .site-filter {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .table-container {
+        margin: 8px;
+    }
+}
+
+/* Dark Theme Support */
+.bp5-dark .collection-opportunities-refactored {
+    background-color: var(--bp5-dark-gray5);
+}
+
+.bp5-dark .opportunities-navbar,
+.bp5-dark .opportunity-tabs,
+.bp5-dark .opportunities-table {
+    background-color: var(--bp5-dark-gray4);
+}
+
+.bp5-dark .help-callout {
+    background-color: rgba(137, 196, 244, 0.1);
+}
+
+.bp5-dark .match-status-baseline {
+    background: linear-gradient(90deg, #0f9960 0%, #0f9960 4px, rgba(15, 153, 96, 0.2) 4px);
+}
+
+.bp5-dark .match-status-suboptimal {
+    background: linear-gradient(90deg, #d9822b 0%, #d9822b 4px, rgba(217, 130, 43, 0.2) 4px);
+}
+
+.bp5-dark .match-status-unmatched {
+    background: linear-gradient(90deg, #db3737 0%, #db3737 4px, rgba(219, 55, 55, 0.2) 4px);
+}
+
+.bp5-dark .match-note-text {
+    color: var(--bp5-dark-gray1);
+}
+
+/* Standard Blueprint transitions */
+.bp5-table-cell {
+    transition: background-color 100ms cubic-bezier(0.4, 1, 0.75, 0.9);
+}
+
+.health-indicator,
+.site-tag {
+    transition: transform 100ms cubic-bezier(0.4, 1, 0.75, 0.9);
+}
+
+.health-indicator:hover,
+.site-tag:hover {
+    transform: scale(1.05);
+}
+
+/* Priority Column Styling */
+.priority-tag {
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Match Status Styling */
+.match-status-cell {
+    display: flex;
+    align-items: center;
+}
+
+.match-status {
+    font-weight: 600;
+    transition: transform 100ms cubic-bezier(0.4, 1, 0.75, 0.9);
+    cursor: help;
+}
+
+.match-status:hover {
+    transform: scale(1.05);
+}
+
+/* Match status visual indicators with left border accent */
+.match-status-baseline {
+    background: linear-gradient(90deg, #0f9960 0%, #0f9960 4px, rgba(15, 153, 96, 0.1) 4px);
+    border-left: 4px solid #0f9960;
+    padding-left: 8px;
+}
+
+.match-status-suboptimal {
+    background: linear-gradient(90deg, #d9822b 0%, #d9822b 4px, rgba(217, 130, 43, 0.1) 4px);
+    border-left: 4px solid #d9822b;
+    padding-left: 8px;
+}
+
+.match-status-unmatched {
+    background: linear-gradient(90deg, #db3737 0%, #db3737 4px, rgba(219, 55, 55, 0.1) 4px);
+    border-left: 4px solid #db3737;
+    padding-left: 8px;
+}
+
+/* Match Notes Styling */
+.match-notes-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.match-note-text {
+    font-size: 13px;
+    color: var(--bp5-gray1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.alternatives-indicator {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Actions Cell */
+.actions-cell {
+    display: flex;
+    align-items: center;
+}
+
+.actions-cell .bp5-button {
+    transition: transform 100ms cubic-bezier(0.4, 1, 0.75, 0.9);
+}
+
+.actions-cell .bp5-button:hover {
+    transform: translateX(2px);
+}
+
+/* Contextual Breadcrumbs */
+.contextual-breadcrumbs {
+    padding: 12px 20px;
+    background: linear-gradient(to bottom, #ffffff, #f5f8fa);
+    border-bottom: 1px solid #e1e8ed;
+    position: sticky;
+    top: 0;
+    z-index: 11;
+}
+
+.current-breadcrumb {
+    font-weight: 600;
+    color: #182026;
+}
+
+/* Progressive Disclosure */
+.disclosure-level {
+    transition: all 0.2s ease;
+}
+
+.disclosure-trigger {
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.disclosure-trigger:hover {
+    background-color: rgba(19, 124, 189, 0.05);
+}
+
+/* Status Details Popover */
+.status-details-popover .bp5-popover2-content {
+    max-width: 400px;
+    padding: 0;
+}
+
+/* Smart Tooltips */
+.bp5-tooltip2 .bp5-popover2-content {
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 300px;
+}
+
+/* Information Scent Improvements */
+.bp5-table-cell {
+    transition: background-color 100ms cubic-bezier(0.4, 1, 0.75, 0.9);
+}
+
+.bp5-table-row:hover .bp5-table-cell {
+    background-color: rgba(19, 124, 189, 0.03);
+    cursor: pointer;
+}
+
+/* Additional BlueprintJS compliance styles */
+.opportunity-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.site-filter-wrapper {
+    position: relative;
+}
+
+.help-card {
+    margin-bottom: 16px;
+}
+
+.keyboard-shortcuts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Use Blueprint elevation system */
+.bp5-elevation-1 {
+    box-shadow: var(--bp5-elevation-shadow-1);
+}
+
+.bp5-elevation-2 {
+    box-shadow: var(--bp5-elevation-shadow-2);
+}
+
+/* Remove custom animations - use Blueprint defaults */
+* {
+    animation-duration: 200ms !important;
+    animation-timing-function: cubic-bezier(0.4, 1, 0.75, 0.9) !important;
+}
+
+/* Ensure 8px grid compliance */
+.bp5-card {
+    padding: 16px;
+}
+
+.bp5-navbar {
+    padding: 0 16px;
+    min-height: 40px;
+}
+
+/* Blueprint color system compliance */
+.bp5-intent-primary {
+    background-color: rgba(19, 124, 189, 0.15) !important;
+}
+
+/* Keyboard Navigation */
+.bp5-table-row-headers:focus,
+.bp5-table-cell:focus {
+    outline: 2px solid var(--bp5-intent-primary);
+    outline-offset: -1px;
+}
+
+/* Print Styles */
+@media print {
+    .opportunities-navbar,
+    .help-callout {
+        display: none;
+    }
+    
+    .table-container {
+        margin: 0;
+        box-shadow: none;
+    }
+}
+
+/* UX Improvements CSS */
+/* Peak-End Rule: Success animations */
+.success-toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+@keyframes success-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.bp5-toast.bp5-intent-success {
+    animation: success-bounce 0.5s ease-in-out;
+}
+
+/* Zeigarnik Effect: Progress visualization */
+.allocation-progress-card {
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.segmented-progress {
+    position: relative;
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f8fa;
+}
+
+.progress-segment {
+    position: absolute;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 16px;
+}
+
+.progress-motivation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px;
+    background: #ebf1f5;
+    border-radius: 8px;
+}
+
+/* Fitts's Law: Larger click targets */
+.improved-action-button {
+    min-width: 120px !important;
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+}
+
+.site-tag.enhanced {
+    min-height: 28px;
+    padding: 6px 12px;
+    margin: 2px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.site-tag.enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Doherty Threshold: Skeleton loading */
+.opportunity-row-skeleton {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 16px;
+}
+
+.skeleton-cell {
+    background: linear-gradient(90deg, #f5f8fa 25%, #e1e8ed 50%, #f5f8fa 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    height: 24px;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-priority { width: 60px; }
+.skeleton-status { width: 120px; }
+.skeleton-name { width: 200px; }
+.skeleton-health { width: 80px; }
+.skeleton-sites { width: 150px; }
+.skeleton-capacity { width: 100px; }
+.skeleton-actions { width: 100px; }
+
+/* Miller's Law: Chunked display */
+.chunked-site-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.site-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* Aesthetic-Usability: Enhanced visuals */
+.enhanced-health-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.health-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+}
+
+.health-circle:hover {
+    transform: scale(1.1);
+}
+
+.health-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-score {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.health-metrics {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    opacity: 0.8;
+}

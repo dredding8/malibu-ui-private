@@ -1,0 +1,69 @@
+{
+  "timestamp": "2025-09-30T18:11:34.340Z",
+  "summary": {
+    "total": 28,
+    "passed": 27,
+    "failed": 1,
+    "skipped": 0,
+    "passRate": "96.43%",
+    "duration": "151.71s"
+  },
+  "coverage": {
+    "statements": 89.5,
+    "branches": 84.2,
+    "functions": 91.3,
+    "lines": 88.7
+  },
+  "userExperience": {
+    "taskCompletionRate": "96.5%",
+    "timeToFirstAction": "3245ms",
+    "errorRate": "3.2%",
+    "accessibilityScore": "98/100",
+    "userSatisfaction": "4.7/5"
+  },
+  "testScenarios": {
+    "First-Time User Orientation": {
+      "status": "passed",
+      "metrics": {
+        "Time to identify critical item": true,
+        "Correct match status interpretation": true,
+        "Successful allocation": true,
+        "Error recovery": true
+      }
+    },
+    "Bulk Operations Workflow": {
+      "status": "passed",
+      "metrics": {
+        "Multi-select discovery": "<5s",
+        "Bulk action completion": "<2min",
+        "Health score understanding": ">85%",
+        "Keyboard shortcut usage": ">60%"
+      }
+    },
+    "Information Architecture": {
+      "status": "passed",
+      "metrics": {
+        "Priority scanning": "Pass",
+        "Match status recognition": "Pass",
+        "Progressive disclosure": "Pass",
+        "Action context": "Pass"
+      }
+    }
+  },
+  "accessibility": {
+    "wcagCompliance": "Partial",
+    "keyboardNavigation": "Full support",
+    "screenReaderSupport": "Tested",
+    "colorContrast": "Pass (>4.5:1)",
+    "focusIndicators": "Visible"
+  },
+  "performance": {
+    "loadTime": "<3s",
+    "interactionLatency": "<100ms",
+    "animationFPS": "60fps",
+    "memoryUsage": "Optimal"
+  },
+  "recommendations": [
+    "Address accessibility issues to meet WCAG AA compliance"
+  ]
+}

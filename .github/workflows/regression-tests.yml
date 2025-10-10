@@ -1,0 +1,112 @@
+name: Regression Tests
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  regression:
+    name: Run Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run regression tests
+        run: npm run test:regression
+        env:
+          CI: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: regression-results
+          path: test-results/
+          retention-days: 30
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: regression-html-report
+          path: test-results/regression-report/
+          retention-days: 30
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'test-results/regression-results.json';
+
+            if (!fs.existsSync(reportPath)) {
+              console.log('No results file found');
+              return;
+            }
+
+            const results = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+
+            const totalTests = results.suites?.reduce((sum, suite) =>
+              sum + (suite.specs?.length || 0), 0) || 0;
+            const passedTests = results.suites?.reduce((sum, suite) =>
+              sum + (suite.specs?.filter(s => s.ok).length || 0), 0) || 0;
+            const failedTests = totalTests - passedTests;
+
+            const statusEmoji = failedTests === 0 ? '✅' : '❌';
+
+            const comment = `## ${statusEmoji} Regression Test Results
+
+            | Metric | Value |
+            |--------|-------|
+            | Total Tests | ${totalTests} |
+            | Passed | ${passedTests} |
+            | Failed | ${failedTests} |
+            | Status | ${failedTests === 0 ? 'All checks passed' : 'Regressions detected'} |
+
+            ${failedTests > 0 ? `
+            ⚠️ **Regressions Detected**
+
+            Please review the [detailed report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and fix the issues.
+
+            If changes are intentional, update the baseline after review.
+            ` : `
+            ✅ **No Regressions**
+
+            All regression tests passed successfully!
+            `}
+
+            [View Full Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail on regressions
+        if: failure()
+        run: |
+          echo "❌ Regression tests failed"
+          echo "Review the report and fix issues, or update baseline if changes are intentional"
+          exit 1

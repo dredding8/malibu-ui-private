@@ -1,0 +1,468 @@
+/**
+ * Enhanced Bento Layout Styles
+ * Based on Context7 UX research and accessibility best practices
+ */
+
+/* Container and Layout */
+.collection-opportunities-enhanced-bento {
+  height: 100%;
+  display: flex;
+  position: relative;
+  background: var(--bp5-bg-color, #f6f7f9);
+  overflow: hidden;
+}
+
+.collection-opportunities-enhanced-bento.desktop {
+  flex-direction: row;
+}
+
+.collection-opportunities-enhanced-bento.mobile {
+  flex-direction: column;
+}
+
+/* Panel Styles */
+.bento-table-panel,
+.bento-content-panel {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bp5-bg-color-2, #ffffff);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bento-table-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+}
+
+.bento-table-panel.expanded {
+  width: 100% !important;
+}
+
+.bento-content-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Splitter with Enhanced Interaction */
+.bento-splitter {
+  width: 8px;
+  background: var(--bp5-divider-color, #e1e8ed);
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.bento-splitter:hover,
+.bento-splitter:focus {
+  background: var(--bp5-intent-primary, #137cbd);
+  outline: none;
+}
+
+.bento-splitter::before {
+  content: '⋮⋮';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--bp5-text-color-muted, #5c7080);
+  font-size: 10px;
+  letter-spacing: -2px;
+}
+
+/* Panel Toggle Button */
+.panel-toggle {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 10;
+  background: var(--bp5-bg-color-2, #ffffff);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Dashboard Panel */
+.enhanced-dashboard-panel {
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.panel-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  color: var(--bp5-heading-color, #182026);
+}
+
+/* Health Overview Card */
+.health-overview-card {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%);
+}
+
+.health-score-large {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.score-value {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.score-value.optimal { color: #0f9960; }
+.score-value.warning { color: #d9822b; }
+.score-value.critical { color: #db3737; }
+
+.score-label {
+  font-size: 16px;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+/* Enhanced KPI Grid */
+.enhanced-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  padding: 20px;
+  cursor: default;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-card:focus {
+  outline: none;
+  border-color: var(--bp5-intent-primary, #137cbd);
+}
+
+.kpi-card .bp5-icon {
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.kpi-content {
+  flex: 1;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-size: 14px;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+.kpi-percentage {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.kpi-card.total { background: #f7f9fc; }
+.kpi-card.success { background: #e8f5f0; color: #0d8050; }
+.kpi-card.warning { background: #fef6e7; color: #bf7326; }
+.kpi-card.danger { background: #fce9e9; color: #c23030; }
+.kpi-card.critical { background: #f4e7ff; color: #5c255c; }
+
+/* Insight Callouts */
+.insight-callout {
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Quick Actions Card */
+.quick-actions-card {
+  padding: 20px;
+}
+
+.quick-actions-card h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.action-button {
+  height: auto;
+  padding: 16px;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.action-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.action-label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.action-hint {
+  font-size: 12px;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+/* Keyboard Help */
+.keyboard-help {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bp5-bg-color, #f6f7f9);
+}
+
+.keyboard-help summary {
+  cursor: pointer;
+  font-weight: 500;
+  user-select: none;
+}
+
+.shortcut-list {
+  margin: 12px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.shortcut-list div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.shortcut-list dt {
+  font-family: monospace;
+  background: var(--bp5-bg-color-2, #ffffff);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--bp5-divider-color, #e1e8ed);
+  font-size: 12px;
+}
+
+.shortcut-list dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+/* Enhanced Bulk Panel */
+.enhanced-bulk-panel {
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.selection-summary {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-item .bp5-icon {
+  opacity: 0.6;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+.summary-value {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.priority-breakdown h4 {
+  font-size: 14px;
+  margin: 16px 0 8px 0;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+.priority-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Bulk Actions */
+.bulk-actions {
+  padding: 20px;
+}
+
+.action-section {
+  margin-bottom: 24px;
+}
+
+.action-section:last-child {
+  margin-bottom: 0;
+}
+
+.action-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--bp5-text-color-muted, #5c7080);
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-preview {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--bp5-bg-color, #f6f7f9);
+}
+
+/* Mobile Styles */
+.mobile .mobile-header {
+  padding: 16px;
+  background: var(--bp5-bg-color-2, #ffffff);
+  border-bottom: 1px solid var(--bp5-divider-color, #e1e8ed);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile .mobile-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.mobile .mobile-panel {
+  background: var(--bp5-bg-color-2, #ffffff);
+  border-bottom: 1px solid var(--bp5-divider-color, #e1e8ed);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.mobile .mobile-table {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Tablet Adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .enhanced-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Desktop Enhancements */
+@media (min-width: 1024px) {
+  .enhanced-dashboard-panel,
+  .enhanced-bulk-panel {
+    padding: 32px;
+  }
+  
+  .enhanced-kpi-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .bento-splitter {
+    border-left: 2px solid;
+    border-right: 2px solid;
+  }
+  
+  .kpi-card:focus {
+    outline: 3px solid;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .bento-table-panel,
+  .bento-content-panel {
+    transition: none;
+  }
+  
+  .kpi-card:hover {
+    transform: none;
+  }
+  
+  .insight-callout {
+    animation: none;
+  }
+}
+
+/* Loading State */
+.collection-opportunities-enhanced-bento.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+/* Error State */
+.collection-opportunities-enhanced-bento.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 24px;
+}

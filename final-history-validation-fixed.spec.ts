@@ -29,8 +29,8 @@ test.describe('History Table Final Validation', () => {
     // Check for the header row with all expected columns
     const headerColumns = [
       'Deck Name',
-      'Deck Status', 
-      'Processing Status',
+      'Collection Deck Status', 
+      'Matching status',
       'Progress',
       'Created',
       'Completed',

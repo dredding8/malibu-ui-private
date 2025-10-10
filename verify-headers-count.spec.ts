@@ -26,8 +26,8 @@ test('Verify history table headers count', async ({ page }) => {
   // Count each header exactly
   const headersToCheck = [
     'Deck Name',
-    'Deck Status', 
-    'Processing Status',
+    'Collection Deck Status', 
+    'Matching status',
     'Progress',
     'Created',
     'Completed',

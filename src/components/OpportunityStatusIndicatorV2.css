@@ -1,0 +1,426 @@
+/* Enhanced Opportunity Status Indicator V2 Styles */
+/* Mission-critical status display with multi-dimensional information */
+
+/* Base indicator structure */
+.status-indicator-v2 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+/* Size variants */
+.status-small {
+  width: 28px;
+  height: 28px;
+}
+
+.status-medium {
+  width: 36px;
+  height: 36px;
+}
+
+.status-large {
+  width: 44px;
+  height: 44px;
+}
+
+/* Primary status display */
+.primary-status {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  height: 70%;
+  background: white;
+  border-radius: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Shape variants for colorblind accessibility */
+.shape-circle {
+  border-radius: 50%;
+}
+
+.shape-circle .primary-status {
+  border-radius: 50%;
+}
+
+.shape-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-radius: 0;
+}
+
+.shape-triangle .primary-status {
+  clip-path: polygon(50% 15%, 15% 85%, 85% 85%);
+  border-radius: 0;
+}
+
+.shape-square {
+  border-radius: 4px;
+}
+
+.shape-square .primary-status {
+  border-radius: 2px;
+}
+
+/* Capacity ring overlay */
+.capacity-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scale(1.1);
+}
+
+.capacity-bg {
+  stroke: #E1E8ED;
+  opacity: 0.3;
+}
+
+.capacity-fill {
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.capacity-normal {
+  stroke: #0F9960;
+}
+
+.capacity-high {
+  stroke: #D9822B;
+}
+
+.capacity-critical {
+  stroke: #DB3737;
+}
+
+/* Priority badge */
+.priority-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.priority-high {
+  background-color: #D9822B;
+}
+
+.priority-critical {
+  background-color: #DB3737;
+  animation: priority-pulse 1s ease-in-out infinite;
+}
+
+/* Conflict count badge */
+.conflict-count {
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5C7080;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Critical status animation */
+.animate-critical {
+  animation: critical-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes critical-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes priority-pulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Urgent status styling */
+.is-urgent {
+  box-shadow: 0 0 0 2px rgba(219, 55, 55, 0.3);
+}
+
+.is-urgent.animate-critical {
+  box-shadow: 0 0 0 0 rgba(219, 55, 55, 0.7);
+  animation: urgent-ripple 2s ease-out infinite;
+}
+
+@keyframes urgent-ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(219, 55, 55, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(219, 55, 55, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(219, 55, 55, 0);
+  }
+}
+
+/* Clickable state */
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  transform: scale(1.05);
+}
+
+.clickable:active {
+  transform: scale(0.98);
+}
+
+.clickable:focus {
+  outline: 2px solid #2B95D6;
+  outline-offset: 2px;
+}
+
+/* Enhanced tooltip styling */
+.status-tooltip-v2 {
+  min-width: 280px;
+  max-width: 360px;
+  padding: 12px;
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trend-tag {
+  font-size: 11px;
+  text-transform: lowercase;
+}
+
+.tooltip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.tooltip-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltip-section strong {
+  font-size: 11px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+}
+
+.tooltip-section span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Status-specific colors in tooltip */
+.status-optimal { color: #0F9960; }
+.status-warning { color: #D9822B; }
+.status-critical { color: #DB3737; }
+
+.capacity-normal { color: #0F9960; }
+.capacity-high { color: #D9822B; }
+.capacity-critical { color: #DB3737; }
+
+.priority-low { color: #5C7080; }
+.priority-medium { color: #2B95D6; }
+.priority-high { color: #D9822B; }
+.priority-critical { color: #DB3737; }
+
+/* Conflicts in tooltip */
+.tooltip-conflicts-v2 {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltip-conflicts-v2 strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.conflict-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.conflict-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.conflict-list .bp5-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.5;
+}
+
+.more-conflicts {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* Tooltip footer */
+.tooltip-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+/* Status group display */
+.status-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-group .status-indicator-v2 {
+  margin: 0 -4px;
+}
+
+.status-group .status-indicator-v2:first-child {
+  margin-left: 0;
+}
+
+.status-group .status-indicator-v2:last-child {
+  margin-right: 0;
+}
+
+/* Colorblind mode patterns using CSS masks */
+@media screen and (-ms-high-contrast: active), (prefers-contrast: high) {
+  .shape-triangle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      currentColor 2px,
+      currentColor 4px
+    );
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .shape-square::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      currentColor 2px,
+      currentColor 4px
+    );
+    opacity: 0.2;
+    pointer-events: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .status-indicator-v2,
+  .capacity-fill,
+  .animate-critical,
+  .priority-critical,
+  .is-urgent {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .status-indicator-v2 {
+    border: 2px solid currentColor;
+    background: white !important;
+  }
+
+  .capacity-ring,
+  .priority-badge,
+  .conflict-count {
+    display: none;
+  }
+
+  .primary-status::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    white-space: nowrap;
+  }
+}
+
+/* Performance optimization for large lists */
+.status-indicator-v2 {
+  contain: layout style paint;
+}
+
+/* Hardware acceleration for animations */
+.animate-critical,
+.is-urgent {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

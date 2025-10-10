@@ -1,0 +1,335 @@
+/* Override Impact Calculator Styles */
+
+.override-impact-calculator {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.override-impact-calculator .bp4-card {
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.override-impact-calculator .impact-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--bp4-intent-primary);
+}
+
+.override-impact-calculator .risk-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.override-impact-calculator .risk-indicator.low {
+  background-color: rgba(15, 153, 96, 0.1);
+  color: #0f9960;
+}
+
+.override-impact-calculator .risk-indicator.medium {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.override-impact-calculator .risk-indicator.high {
+  background-color: rgba(219, 55, 55, 0.1);
+  color: #db3737;
+}
+
+.override-impact-calculator .capacity-comparison {
+  display: grid;
+  grid-template-columns: 1fr 200px 100px 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.override-impact-calculator .capacity-comparison:last-child {
+  border-bottom: none;
+}
+
+.override-impact-calculator .capacity-bar {
+  position: relative;
+  height: 8px;
+  background-color: #f5f8fa;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.override-impact-calculator .capacity-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.override-impact-calculator .capacity-fill.normal {
+  background: linear-gradient(90deg, #0f9960 0%, #15b371 100%);
+}
+
+.override-impact-calculator .capacity-fill.warning {
+  background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
+}
+
+.override-impact-calculator .capacity-fill.critical {
+  background: linear-gradient(90deg, #db3737 0%, #f55656 100%);
+}
+
+.override-impact-calculator .quality-comparison {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.override-impact-calculator .quality-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 4px;
+  min-width: 80px;
+}
+
+.override-impact-calculator .quality-score-value {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: #2b2d31;
+}
+
+.override-impact-calculator .quality-score-label {
+  font-size: 0.8em;
+  color: #5c7080;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.override-impact-calculator .quality-delta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.override-impact-calculator .quality-delta.positive {
+  background: rgba(15, 153, 96, 0.1);
+  color: #0f9960;
+}
+
+.override-impact-calculator .quality-delta.negative {
+  background: rgba(219, 55, 55, 0.1);
+  color: #db3737;
+}
+
+.override-impact-calculator .conflict-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(219, 55, 55, 0.05);
+  border: 1px solid rgba(219, 55, 55, 0.2);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.override-impact-calculator .conflict-info {
+  flex: 1;
+}
+
+.override-impact-calculator .conflict-title {
+  font-weight: 600;
+  color: #2b2d31;
+  margin-bottom: 4px;
+}
+
+.override-impact-calculator .conflict-description {
+  font-size: 0.9em;
+  color: #5c7080;
+}
+
+.override-impact-calculator .operational-impact {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid;
+}
+
+.override-impact-calculator .operational-impact.low {
+  border-left-color: #0f9960;
+}
+
+.override-impact-calculator .operational-impact.medium {
+  border-left-color: #ff9800;
+}
+
+.override-impact-calculator .operational-impact.high {
+  border-left-color: #db3737;
+}
+
+.override-impact-calculator .impact-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  background: #e1e8ed;
+  color: #2b2d31;
+  border-radius: 3px;
+  font-size: 0.8em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.override-impact-calculator .mitigation {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #5c7080;
+}
+
+.override-impact-calculator .recommendations {
+  background: rgba(15, 153, 96, 0.05);
+  border: 1px solid rgba(15, 153, 96, 0.2);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.override-impact-calculator .recommendations ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.override-impact-calculator .recommendations li {
+  margin-bottom: 6px;
+  color: #2b2d31;
+}
+
+.override-impact-calculator .justification-section {
+  background: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.override-impact-calculator .approval-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(219, 55, 55, 0.1);
+  color: #db3737;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.override-impact-calculator .action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.override-impact-calculator .action-buttons .bp4-button {
+  flex: 1;
+  min-height: 36px;
+}
+
+.override-impact-calculator .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.override-impact-calculator .loading-message {
+  margin-top: 16px;
+  color: #5c7080;
+  font-style: italic;
+}
+
+.override-impact-calculator .section-divider {
+  margin: 20px 0;
+  border: none;
+  border-top: 2px solid #e1e8ed;
+}
+
+/* Animation for impact calculation */
+@keyframes calculateImpact {
+  0% { opacity: 0; transform: translateY(10px); }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.override-impact-calculator .impact-results {
+  animation: calculateImpact 0.5s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .override-impact-calculator .capacity-comparison {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .override-impact-calculator .quality-comparison {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .override-impact-calculator .action-buttons {
+    flex-direction: column;
+  }
+  
+  .override-impact-calculator .conflict-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .override-impact-calculator .capacity-fill.normal {
+    background: #0a5d2a;
+  }
+  
+  .override-impact-calculator .capacity-fill.warning {
+    background: #cc7a00;
+  }
+  
+  .override-impact-calculator .capacity-fill.critical {
+    background: #b02a2a;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .override-impact-calculator .capacity-fill,
+  .override-impact-calculator .impact-results {
+    transition: none;
+    animation: none;
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-09-30T18:11:38.526Z",
+  "wcagLevel": "AA",
+  "totalElements": 156,
+  "violations": [
+    {
+      "impact": "minor",
+      "description": "Button element missing aria-label",
+      "element": "button.quick-action",
+      "fix": "Add aria-label=\"Allocate opportunity\" to button",
+      "wcagCriteria": "4.1.2 Name, Role, Value"
+    }
+  ],
+  "passes": [
+    {
+      "criteria": "1.4.3 Contrast (Minimum)",
+      "elements": 142,
+      "description": "All text meets 4.5:1 contrast ratio"
+    },
+    {
+      "criteria": "2.1.1 Keyboard",
+      "elements": 48,
+      "description": "All interactive elements keyboard accessible"
+    },
+    {
+      "criteria": "2.4.3 Focus Order",
+      "elements": 48,
+      "description": "Focus order is logical and meaningful"
+    },
+    {
+      "criteria": "2.4.7 Focus Visible",
+      "elements": 48,
+      "description": "Focus indicators clearly visible"
+    },
+    {
+      "criteria": "3.3.2 Labels or Instructions",
+      "elements": 23,
+      "description": "All form inputs have labels"
+    },
+    {
+      "criteria": "4.1.1 Parsing",
+      "elements": 156,
+      "description": "No duplicate IDs or parsing errors"
+    }
+  ],
+  "summary": {
+    "score": 98,
+    "level": "AA",
+    "status": "Nearly Compliant",
+    "recommendation": "Fix minor aria-label issue to achieve full compliance"
+  }
+}

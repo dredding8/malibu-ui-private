@@ -10,8 +10,8 @@ test('Count duplicate headers in history table', async ({ page }) => {
   
   const headerNames = [
     'Deck Name',
-    'Deck Status', 
-    'Processing Status',
+    'Collection Deck Status', 
+    'Matching status',
     'Progress',
     'Created',
     'Completed',

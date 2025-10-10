@@ -10,8 +10,8 @@ test('Simple text count verification for headers', async ({ page }) => {
   // Count occurrences of each header text
   const headersToCheck = [
     'Deck Name',
-    'Deck Status', 
-    'Processing Status',
+    'Collection Deck Status', 
+    'Matching status',
     'Progress',
     'Created',
     'Completed',

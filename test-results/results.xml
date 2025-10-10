@@ -1,0 +1,111 @@
+<testsuites id="" name="" tests="5" failures="2" skipped="0" errors="0" time="17.536403999999997">
+<testsuite name="quick-visual-test.spec.ts" timestamp="2025-10-08T16:01:06.285Z" hostname="chromium" tests="1" failures="0" skipped="0" time="7.407" errors="0">
+<testcase name="Quick visual check of Site Allocation column" classname="quick-visual-test.spec.ts" time="7.407">
+<system-out>
+<![CDATA[✓ Site allocation tags found: 4
+✓ First tag text: Ground Station Alpha(124)
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="quick-visual-test.spec.ts" timestamp="2025-10-08T16:01:06.285Z" hostname="firefox" tests="1" failures="0" skipped="0" time="8.188" errors="0">
+<testcase name="Quick visual check of Site Allocation column" classname="quick-visual-test.spec.ts" time="8.188">
+<system-out>
+<![CDATA[✓ Site allocation tags found: 4
+✓ First tag text: Ground Station Alpha(124)
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="quick-visual-test.spec.ts" timestamp="2025-10-08T16:01:06.285Z" hostname="webkit" tests="1" failures="0" skipped="0" time="7.576" errors="0">
+<testcase name="Quick visual check of Site Allocation column" classname="quick-visual-test.spec.ts" time="7.576">
+<system-out>
+<![CDATA[✓ Site allocation tags found: 4
+✓ First tag text: Ground Station Alpha(124)
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="quick-visual-test.spec.ts" timestamp="2025-10-08T16:01:06.285Z" hostname="Mobile Chrome" tests="1" failures="1" skipped="0" time="7.384" errors="0">
+<testcase name="Quick visual check of Site Allocation column" classname="quick-visual-test.spec.ts" time="7.384">
+<failure message="quick-visual-test.spec.ts:3:5 Quick visual check of Site Allocation column" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › quick-visual-test.spec.ts:3:5 › Quick visual check of Site Allocation column ───
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      23 |   }
+      24 |
+    > 25 |   expect(tagCount).toBeGreaterThan(0);
+         |                    ^
+      26 | });
+      27 |
+        at /Users/damon/malibu/quick-visual-test.spec.ts:25:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[✓ Site allocation tags found: 0
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/test-failed-1.png]]
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/video.webm]]
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="quick-visual-test.spec.ts" timestamp="2025-10-08T16:01:06.285Z" hostname="Mobile Safari" tests="1" failures="1" skipped="0" time="7.538" errors="0">
+<testcase name="Quick visual check of Site Allocation column" classname="quick-visual-test.spec.ts" time="7.538">
+<failure message="quick-visual-test.spec.ts:3:5 Quick visual check of Site Allocation column" type="FAILURE">
+<![CDATA[  [Mobile Safari] › quick-visual-test.spec.ts:3:5 › Quick visual check of Site Allocation column ───
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      23 |   }
+      24 |
+    > 25 |   expect(tagCount).toBeGreaterThan(0);
+         |                    ^
+      26 | });
+      27 |
+        at /Users/damon/malibu/quick-visual-test.spec.ts:25:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[✓ Site allocation tags found: 0
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/test-failed-1.png]]
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/video.webm]]
+
+[[ATTACHMENT|quick-visual-test-Quick-vi-f0871-k-of-Site-Allocation-column-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

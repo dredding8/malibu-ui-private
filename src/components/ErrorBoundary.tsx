@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
@@ -25,6 +26,9 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return <>{this.props.fallback}</>;
+      }
       return (
         <div style={{ padding: '20px', textAlign: 'center' }}>
           <h2>⚠️ Application Error</h2>

@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-09-30T18:11:38.526Z",
+  "baselinesCaptured": [
+    "default-state.png",
+    "selected-state.png",
+    "needs-review-tab.png",
+    "unmatched-tab.png",
+    "search-active.png",
+    "site-filtered.png",
+    "health-tooltip.png",
+    "priority-tags.png",
+    "match-status-indicators.png",
+    "action-buttons.png",
+    "empty-state-search.png",
+    "loading-state.png",
+    "dark-mode.png",
+    "high-contrast.png",
+    "reduced-motion.png"
+  ],
+  "responsiveBreakpoints": [
+    {
+      "name": "desktop-xl",
+      "width": 1920,
+      "height": 1080,
+      "status": "captured"
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "status": "captured"
+    },
+    {
+      "name": "laptop",
+      "width": 1366,
+      "height": 768,
+      "status": "captured"
+    },
+    {
+      "name": "tablet-landscape",
+      "width": 1024,
+      "height": 768,
+      "status": "captured"
+    },
+    {
+      "name": "tablet-portrait",
+      "width": 768,
+      "height": 1024,
+      "status": "captured"
+    },
+    {
+      "name": "mobile-large",
+      "width": 414,
+      "height": 896,
+      "status": "captured"
+    },
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 667,
+      "status": "captured"
+    }
+  ]
+}

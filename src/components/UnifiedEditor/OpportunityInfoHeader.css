@@ -1,0 +1,76 @@
+/**
+ * Opportunity Info Header Styles
+ *
+ * Persistent header styling for key opportunity properties display
+ */
+
+.opportunity-info-header {
+  background: linear-gradient(to bottom, #f5f8fa 0%, #ebf1f5 100%);
+  border-bottom: 1px solid #d8e1e8;
+  padding: 12px 20px;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(16, 22, 26, 0.1);
+}
+
+.opportunity-info-header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5c7080;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.priority-tag {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .opportunity-info-header-content {
+    gap: 16px;
+  }
+
+  .info-item {
+    gap: 6px;
+  }
+
+  .info-label {
+    font-size: 11px;
+  }
+
+  .info-value {
+    font-size: 12px;
+  }
+}
+
+/* Dark theme support */
+.bp5-dark .opportunity-info-header {
+  background: linear-gradient(to bottom, #30404d 0%, #293742 100%);
+  border-bottom-color: #111418;
+}
+
+.bp5-dark .info-label {
+  color: #a7b6c2;
+}

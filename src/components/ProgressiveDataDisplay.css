@@ -1,0 +1,290 @@
+/* ProgressiveDataDisplay.css - Implementing design recommendations for progressive disclosure */
+
+/* Base component styling with 10px grid system */
+.progressive-data-display {
+  margin-bottom: 20px; /* 2x spacing unit */
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+/* Visual importance hierarchy */
+.progressive-data-display.importance-critical {
+  border: 2px solid #DB3737;
+  background-color: #FFF5F5; /* Subtle red background zone */
+  box-shadow: 0 0 0 4px rgba(219, 55, 55, 0.1);
+}
+
+.progressive-data-display.importance-high {
+  border: 2px solid #DB3737;
+}
+
+.progressive-data-display.importance-medium {
+  border: 2px solid #D9822B;
+}
+
+.progressive-data-display.importance-normal {
+  border: 1px solid #E1E8ED;
+}
+
+/* Glance Level - 2 second assessment */
+.glance-level {
+  padding: 20px; /* 2x spacing unit */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 80px; /* Ensure consistent height */
+}
+
+.glance-header {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* 2x spacing unit */
+  flex: 1;
+}
+
+.glance-icon {
+  flex-shrink: 0;
+}
+
+/* Critical items get larger display */
+.importance-critical .glance-icon {
+  font-size: 32px !important;
+  animation: subtle-pulse 2s infinite;
+}
+
+.glance-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* 0.5x spacing unit */
+}
+
+.glance-value {
+  font-size: 28px; /* As per design recommendations */
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: #182026;
+}
+
+/* Make critical values even larger for visibility */
+.importance-critical .glance-value {
+  font-size: 36px;
+  color: #DB3737;
+}
+
+.glance-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5C7080;
+  text-transform: uppercase;
+  letter-spacing: 0.5px; /* As per design recommendations */
+}
+
+/* Quick actions for 2-click access */
+.glance-actions {
+  display: flex;
+  gap: 10px; /* 1x spacing unit */
+  margin-right: 10px; /* 1x spacing unit */
+}
+
+.quick-action-button {
+  white-space: nowrap;
+}
+
+.expand-button {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.expand-button:hover {
+  opacity: 1;
+}
+
+/* Operational Level - 10 second understanding */
+.operational-level {
+  padding: 0 20px 20px; /* 2x spacing unit */
+  border-top: 1px solid rgba(92, 112, 128, 0.15);
+}
+
+.operational-subtitle {
+  margin: 20px 0 10px; /* 2x, 0, 1x spacing units */
+  font-size: 14px;
+  color: #5C7080;
+  line-height: 1.5;
+}
+
+.operational-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px; /* 1x spacing unit */
+  margin-bottom: 20px; /* 2x spacing unit */
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* 0.5x spacing unit */
+  padding: 10px; /* 1x spacing unit */
+  background: #F5F8FA;
+  border-radius: 6px;
+}
+
+.metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #738694;
+  letter-spacing: 0.5px; /* As per design recommendations */
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #182026;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 0.5x spacing unit */
+}
+
+.trend-icon {
+  margin-left: 5px; /* 0.5x spacing unit */
+}
+
+.trend-icon.trend-up {
+  color: #0F9960;
+}
+
+.trend-icon.trend-down {
+  color: #DB3737;
+}
+
+.trend-icon.trend-stable {
+  color: #738694;
+}
+
+.operational-actions {
+  display: flex;
+  gap: 10px; /* 1x spacing unit */
+  flex-wrap: wrap;
+  margin-top: 10px; /* 1x spacing unit */
+}
+
+.analytical-toggle {
+  margin-top: 10px; /* 1x spacing unit */
+}
+
+/* Analytical Level - Deep dive */
+.analytical-level {
+  padding: 20px; /* 2x spacing unit */
+  border-top: 1px solid rgba(92, 112, 128, 0.15);
+  background: #F5F8FA;
+}
+
+/* Animations */
+@keyframes subtle-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.9; 
+    transform: scale(1.05);
+  }
+}
+
+/* Hover states for interactive cards */
+.progressive-data-display.bp5-interactive:hover {
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.progressive-data-display.bp5-interactive:hover .expand-button {
+  opacity: 1;
+}
+
+/* Accessibility - Focus states */
+.progressive-data-display:focus-visible {
+  outline: 2px solid #2D72D2;
+  outline-offset: 2px;
+}
+
+.quick-action-button:focus-visible,
+.expand-button:focus-visible {
+  outline: 2px solid #2D72D2;
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .progressive-data-display,
+  .expand-button,
+  .importance-critical .glance-icon {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .glance-level {
+    padding: 15px; /* 1.5x spacing unit */
+    flex-wrap: wrap;
+  }
+  
+  .glance-header {
+    width: 100%;
+    margin-bottom: 10px; /* 1x spacing unit */
+  }
+  
+  .glance-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .glance-value {
+    font-size: 24px;
+  }
+  
+  .importance-critical .glance-value {
+    font-size: 28px;
+  }
+  
+  .operational-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark theme support */
+.bp5-dark .progressive-data-display {
+  background-color: #30404D;
+  border-color: #5C7080;
+}
+
+.bp5-dark .progressive-data-display.importance-critical {
+  background-color: rgba(219, 55, 55, 0.1);
+  border-color: #DB3737;
+}
+
+.bp5-dark .glance-value {
+  color: #F5F8FA;
+}
+
+.bp5-dark .glance-title,
+.bp5-dark .metric-label {
+  color: #A7B6C2;
+}
+
+.bp5-dark .operational-subtitle,
+.bp5-dark .metric-value {
+  color: #F5F8FA;
+}
+
+.bp5-dark .metric-item {
+  background: #394B59;
+}
+
+.bp5-dark .analytical-level {
+  background: #293742;
+}

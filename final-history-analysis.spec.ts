@@ -15,11 +15,11 @@ test('Final history table screenshot analysis', async ({ page }) => {
   console.log('Final analysis screenshot captured');
   
   // Check the exact structure causing duplicate headers
-  const allHeaderText = await page.locator('*').filter({ hasText: /^(Deck Name|Deck Status|Processing Status|Progress|Created|Completed|Actions)$/ }).allTextContents();
+  const allHeaderText = await page.locator('*').filter({ hasText: /^(Deck Name|Collection Deck Status|Matching status|Progress|Created|Completed|Actions)$/ }).allTextContents();
   console.log('All header instances found:', allHeaderText);
   
   // Check column widths in the table
-  const processingHeaders = page.locator('text="Processing S"');
+  const processingHeaders = page.locator('text="Matching s"');
   const count = await processingHeaders.count();
   
   if (count > 0) {

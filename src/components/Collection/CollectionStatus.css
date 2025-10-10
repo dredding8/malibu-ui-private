@@ -1,0 +1,536 @@
+/**
+ * Collection Status Styles
+ * 
+ * Enhanced status display component styling with metrics and indicators.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Status Container
+   ============================================================================= */
+
+.collection-status {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bp5-background-color);
+}
+
+.collection-status.card {
+  padding: 0;
+  background: transparent;
+}
+
+.collection-status.inline {
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 4px;
+}
+
+.collection-status.compact {
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+}
+
+/* =============================================================================
+   System Health
+   ============================================================================= */
+
+.status-health {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.health-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.activity-indicator {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.error-indicator {
+  animation: errorPulse 2s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Spinning animation for activity indicators */
+.spinning {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   Metrics Grid
+   ============================================================================= */
+
+.status-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--bp5-background-color-secondary);
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.metric-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--bp5-text-color);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bp5-text-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.metric-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.metric-status.healthy {
+  background-color: var(--bp5-intent-success);
+}
+
+.metric-status.warning {
+  background-color: var(--bp5-intent-warning);
+}
+
+.metric-status.critical {
+  background-color: var(--bp5-intent-danger);
+}
+
+.metric-status.offline {
+  background-color: var(--bp5-text-color-disabled);
+}
+
+/* =============================================================================
+   Activity Section
+   ============================================================================= */
+
+.status-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.activity-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bp5-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--bp5-text-color-muted);
+  font-style: italic;
+}
+
+.activity-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background-color: var(--bp5-background-color-secondary);
+  border-radius: 3px;
+  font-size: 12px;
+  color: var(--bp5-text-color);
+}
+
+.activity-item .bp5-icon {
+  color: var(--bp5-icon-color);
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   Performance Section
+   ============================================================================= */
+
+.status-performance {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.performance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.performance-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bp5-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.performance-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.performance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.performance-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.performance-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bp5-text-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.performance-bar .bp5-progress-bar {
+  height: 6px;
+}
+
+/* =============================================================================
+   Compact Variant
+   ============================================================================= */
+
+.collection-status.compact .status-health {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.collection-status.compact .health-indicator {
+  gap: 6px;
+}
+
+.collection-status.compact .bp5-tag {
+  font-size: 11px;
+}
+
+.collection-status.compact .activity-indicator {
+  display: none;
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-status {
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  
+  .metric-item {
+    padding: 16px;
+  }
+  
+  .metric-value {
+    font-size: 28px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-status {
+    gap: 14px;
+    padding: 14px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  
+  .metric-value {
+    font-size: 20px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-status {
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .metric-item {
+    padding: 8px;
+  }
+  
+  .metric-value {
+    font-size: 18px;
+  }
+  
+  .activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .activity-time {
+    font-size: 10px;
+  }
+  
+  .performance-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .collection-status.compact {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-status {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-value {
+    font-size: 16px;
+  }
+  
+  .health-indicator {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .activity-item {
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-status:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.metric-item:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-status.inline {
+    border: 2px solid var(--bp5-text-color);
+  }
+  
+  .metric-item {
+    border: 2px solid var(--bp5-text-color);
+  }
+  
+  .metric-status {
+    border: 1px solid var(--bp5-text-color);
+  }
+  
+  .activity-item {
+    border: 1px solid var(--bp5-text-color-muted);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .spinning {
+    animation: none;
+  }
+  
+  .activity-indicator {
+    animation: none;
+  }
+  
+  .error-indicator {
+    animation: none;
+  }
+  
+  .metric-item {
+    transition: none;
+  }
+  
+  .metric-item:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-status {
+  background: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-status.inline {
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .metric-item {
+  background-color: var(--bp5-dark-background-color-secondary);
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .metric-value {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .metric-label {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .activity-title,
+.bp5-dark .performance-title {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .activity-time {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .activity-item {
+  background-color: var(--bp5-dark-background-color-secondary);
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .activity-item .bp5-icon {
+  color: var(--bp5-dark-icon-color);
+}
+
+.bp5-dark .performance-label {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-status {
+    break-inside: avoid;
+    padding: 12px;
+    border: 1px solid #ccc;
+  }
+  
+  .spinning {
+    animation: none;
+  }
+  
+  .activity-indicator,
+  .error-indicator {
+    animation: none;
+  }
+  
+  .metric-item {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  .activity-item {
+    background-color: transparent;
+    border: 1px solid #ccc;
+  }
+}

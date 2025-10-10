@@ -1,0 +1,375 @@
+/**
+ * Collection Footer Styles
+ * 
+ * Footer component styling with pagination, status, and actions.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Footer Container
+   ============================================================================= */
+
+.collection-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--bp5-background-color);
+  border-top: 1px solid var(--bp5-border-color);
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.collection-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.collection-footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.collection-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   Count Styles
+   ============================================================================= */
+
+.collection-footer-count {
+  display: flex;
+  align-items: center;
+}
+
+.count-text {
+  font-size: 13px;
+  color: var(--bp5-text-color-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   Pagination Styles
+   ============================================================================= */
+
+.collection-footer-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collection-footer-pagination .bp5-button-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.collection-footer-pagination .bp5-button {
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 13px;
+  border-radius: 3px;
+}
+
+.collection-footer-pagination .bp5-button.bp5-active {
+  background-color: var(--bp5-intent-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.collection-footer-pagination .bp5-button:not(.bp5-active):hover:not(:disabled) {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 30px;
+  font-size: 13px;
+  color: var(--bp5-text-color-muted);
+  user-select: none;
+}
+
+/* =============================================================================
+   Status Styles
+   ============================================================================= */
+
+.collection-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.last-updated {
+  font-size: 12px;
+  color: var(--bp5-text-color-muted);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.loading-tag {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.collection-footer-status .bp5-tag {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* =============================================================================
+   Actions Styles
+   ============================================================================= */
+
+.collection-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.collection-footer-actions .bp5-button {
+  min-width: 30px;
+  height: 30px;
+}
+
+.collection-footer-actions .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-footer {
+    padding: 16px 24px;
+    gap: 20px;
+  }
+  
+  .collection-footer-left {
+    gap: 16px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-footer {
+    gap: 12px;
+  }
+  
+  .last-updated {
+    display: none;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-footer {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    min-height: auto;
+  }
+  
+  .collection-footer-left,
+  .collection-footer-center,
+  .collection-footer-right {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .collection-footer-left {
+    order: 2;
+  }
+  
+  .collection-footer-center {
+    order: 1;
+  }
+  
+  .collection-footer-right {
+    order: 3;
+  }
+  
+  .collection-footer-pagination .bp5-button {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+  
+  .pagination-ellipsis {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .count-text {
+    font-size: 12px;
+  }
+  
+  .last-updated {
+    display: none;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-footer {
+    padding: 10px 12px;
+  }
+  
+  .collection-footer-pagination .bp5-button-group {
+    gap: 1px;
+  }
+  
+  .collection-footer-pagination .bp5-button {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 4px;
+    font-size: 11px;
+  }
+  
+  .pagination-ellipsis {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  
+  .collection-footer-status {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-footer:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.collection-footer-pagination .bp5-button:focus {
+  z-index: 1;
+  position: relative;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-footer {
+    border-top: 2px solid var(--bp5-text-color);
+  }
+  
+  .collection-footer-pagination .bp5-button.bp5-active {
+    border: 2px solid var(--bp5-intent-primary);
+  }
+  
+  .pagination-ellipsis {
+    color: var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .loading-tag {
+    animation: none;
+  }
+  
+  .collection-footer * {
+    transition: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-footer {
+  background: var(--bp5-dark-background-color);
+  border-top-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .count-text {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .last-updated {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .pagination-ellipsis {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .collection-footer-pagination .bp5-button:not(.bp5-active):hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+.bp5-dark .collection-footer-actions .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-footer.loading .collection-footer-pagination .bp5-button {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.collection-footer.loading .collection-footer-actions .bp5-button {
+  opacity: 0.6;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-footer {
+    border-top: 1px solid #ccc;
+    padding: 8px 0;
+    min-height: auto;
+  }
+  
+  .collection-footer-pagination,
+  .collection-footer-actions {
+    display: none;
+  }
+  
+  .collection-footer-center {
+    display: none;
+  }
+  
+  .collection-footer-left {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .collection-footer-status .bp5-tag {
+    display: none;
+  }
+}

@@ -17,7 +17,7 @@ test.describe('History Table Header Validation', () => {
     // Count header instances by checking all column headers
     const headerTexts = [
       'Deck Name', 
-      'Deck Status', 
+      'Collection Deck Status', 
       'Processing Status', 
       'Progress', 
       'Created', 
@@ -87,7 +87,7 @@ test.describe('History Table Header Validation', () => {
     // Verify header content
     const expectedHeaders = [
       'Deck Name',
-      'Deck Status', 
+      'Collection Deck Status', 
       'Processing Status',
       'Progress',
       'Created',

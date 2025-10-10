@@ -41,8 +41,8 @@ test('Final verification: History table header duplication check', async ({ page
   // Expected headers
   const expectedHeaders = [
     'Deck Name',
-    'Deck Status', 
-    'Processing Status',
+    'Collection Deck Status', 
+    'Matching status',
     'Progress',
     'Created',
     'Completed',

@@ -1,0 +1,268 @@
+/* Edit Opportunity Modal Styles */
+/* WCAG AA compliant modal with accessible form controls */
+
+.edit-opportunity-modal {
+  min-width: 600px;
+  max-width: 800px;
+}
+
+.edit-opportunity-modal .bp5-dialog-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Satellite info section */
+.satellite-info-section {
+  margin-bottom: 25px;
+  padding: 16px;
+  background-color: #f6f7f9;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.satellite-info-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #5c7080;
+}
+
+.satellite-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.capacity-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 14px;
+  color: #394b59;
+}
+
+/* Site selection */
+.sites-selection {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e1e8ed;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #f6f7f9;
+}
+
+.site-checkbox-wrapper {
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.site-checkbox-wrapper:hover {
+  background-color: #e1e8ed;
+}
+
+.site-checkbox-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+.site-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.site-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: #182026;
+}
+
+.site-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.site-metrics .bp5-progress-bar {
+  width: 200px;
+  height: 6px;
+}
+
+/* Capacity feedback */
+.capacity-feedback {
+  margin-top: 15px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.capacity-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.capacity-warnings {
+  margin: 8px 0 0 20px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.capacity-warnings li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+/* Form groups */
+.bp5-form-group {
+  margin-bottom: 20px;
+}
+
+.bp5-form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Radio group styling */
+.bp5-radio-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.bp5-radio {
+  margin: 0;
+}
+
+/* Validation errors */
+.validation-errors {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.validation-errors .bp5-callout {
+  margin: 0;
+}
+
+/* Dialog footer */
+.edit-opportunity-modal .bp5-dialog-footer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Accessibility improvements */
+.bp5-label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #182026;
+}
+
+.bp5-form-helper-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #5c7080;
+  margin-top: 4px;
+}
+
+/* Focus states */
+.site-checkbox-wrapper:focus-within {
+  outline: 2px solid #2b95d6;
+  outline-offset: 1px;
+}
+
+.bp5-radio input:focus {
+  outline: 2px solid #2b95d6;
+  outline-offset: 2px;
+}
+
+textarea:focus {
+  outline: 2px solid #2b95d6;
+  outline-offset: -2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .satellite-info-section,
+  .sites-selection,
+  .site-checkbox-wrapper {
+    border: 2px solid currentColor;
+  }
+
+  .capacity-feedback {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .capacity-feedback {
+    animation: none;
+  }
+
+  .site-checkbox-wrapper {
+    transition: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .edit-opportunity-modal {
+    min-width: unset;
+    width: 95vw;
+  }
+
+  .satellite-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .capacity-info {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .site-metrics .bp5-progress-bar {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .bp5-radio-group {
+    flex-wrap: wrap;
+  }
+}
+
+/* Loading states */
+.sites-selection.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Print styles */
+@media print {
+  .edit-opportunity-modal {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .sites-selection {
+    max-height: none;
+    overflow: visible;
+  }
+}

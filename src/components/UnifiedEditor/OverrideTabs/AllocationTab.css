@@ -1,0 +1,378 @@
+/**
+ * AllocationTab.css
+ * Workshop-compliant styling for Override Mode allocation workflow
+ *
+ * Blueprint Version: 6.1.0
+ * Namespace: bp6-
+ * Spacing System: 4px base ($pt-spacing)
+ *
+ * Evidence: MCP-validated against Blueprint v6 source
+ * See: ALLOCATIONTAB_MCP_VALIDATION_FINDINGS.md
+ */
+
+/* ============================================
+   CONTAINER LAYOUT
+   ============================================ */
+
+.allocation-tab {
+  display: flex;
+  gap: 16px; /* $pt-spacing * 4 */
+  height: 100%;
+}
+
+/* ============================================
+   LEFT PANEL - AVAILABLE PASSES
+   ============================================ */
+
+.allocation-tab__left-panel {
+  flex: 1 1 65%;
+  min-width: 0;
+  max-width: 70%;
+}
+
+.allocation-tab__description {
+  color: #5c7080; /* Blueprint muted text color */
+  margin-bottom: 16px; /* $pt-spacing * 4 */
+  font-size: 12px; /* $pt-font-size-small */
+}
+
+/* ============================================
+   SITES TABLE
+   ============================================ */
+
+.allocation-tab__sites-table {
+  width: 100%;
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  font-size: 13px; /* Blueprint default */
+  display: block; /* Required for horizontal scroll */
+}
+
+/* Table Column Widths - 8 columns without Operations (~850px total) */
+.sites-table__col-select {
+  width: 50px;
+  text-align: center;
+}
+
+.sites-table__col-site {
+  width: 150px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sites-table__col-location {
+  width: 110px;
+  font-size: 11px; /* $pt-font-size-small */
+}
+
+.sites-table__col-quality {
+  width: 80px;
+  text-align: center;
+}
+
+.sites-table__col-passes {
+  width: 70px;
+  text-align: center;
+}
+
+.sites-table__col-duration {
+  width: 130px;
+}
+
+.sites-table__col-elevation {
+  width: 80px;
+  text-align: right;
+}
+
+.sites-table__col-capacity {
+  width: 180px;
+  max-width: 180px;
+}
+
+/* Table Row Selection */
+.sites-table__row--selected {
+  background-color: rgba(19, 124, 189, 0.15); /* $pt-intent-primary with alpha */
+}
+
+.bp6-dark .sites-table__row--selected {
+  background-color: rgba(138, 187, 255, 0.25);
+}
+
+/* Table Cells - Prevent overflow */
+.sites-table__cell-select {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.allocation-tab__sites-table tbody td {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sites-table__site-name {
+  font-weight: 600;
+  color: #182026; /* Blueprint text-color */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bp6-dark .sites-table__site-name {
+  color: #f6f7f9; /* Blueprint dark text */
+}
+
+.sites-table__duration-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* $pt-spacing */
+}
+
+.sites-table__total-duration {
+  font-size: 13px;
+  color: #5c7080; /* Blueprint muted text */
+}
+
+.sites-table__min-duration {
+  font-size: 11px;
+}
+
+.sites-table__operations-compact {
+  font-size: 11px;
+}
+
+.sites-table__operational-hours {
+  color: #5c7080; /* Blueprint muted text */
+  margin-top: 2px;
+}
+
+/* ============================================
+   CAPACITY DISPLAY (Blueprint-aligned)
+   ============================================ */
+
+.capacity-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* $pt-spacing */
+  align-items: flex-start;
+}
+
+.capacity-display__available {
+  font-weight: 600;
+  font-size: 14px;
+  color: #182026; /* Blueprint text-color */
+}
+
+.bp6-dark .capacity-display__available {
+  color: #f6f7f9; /* Blueprint dark text */
+}
+
+.capacity-display__allocated {
+  font-size: 12px; /* $pt-font-size-small */
+  color: #5c7080; /* Blueprint muted text */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bp6-dark .capacity-display__allocated {
+  color: #a7b6c2; /* Blueprint dark mode muted text */
+}
+
+/* Status Indicator Dots */
+.capacity-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.capacity-status--success {
+  background: #0d8050; /* Blueprint intent-success */
+}
+
+.capacity-status--warning {
+  background: #bf7326; /* Blueprint intent-warning */
+}
+
+.capacity-status--danger {
+  background: #c23030; /* Blueprint intent-danger */
+}
+
+.capacity-status--critical {
+  background: #c23030; /* Blueprint intent-danger */
+  animation: capacity-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.bp6-dark .capacity-status--success {
+  background: #15b371; /* Blueprint dark intent-success */
+}
+
+.bp6-dark .capacity-status--warning {
+  background: #fbb360; /* Blueprint dark intent-warning */
+}
+
+.bp6-dark .capacity-status--danger {
+  background: #ff7373; /* Blueprint dark intent-danger */
+}
+
+.bp6-dark .capacity-status--critical {
+  background: #ff7373; /* Blueprint dark intent-danger */
+  animation: capacity-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes capacity-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ============================================
+   RIGHT PANEL - ALLOCATED SITES
+   ============================================ */
+
+.allocation-tab__right-panel {
+  flex: 1 1 35%;
+  min-width: 280px;
+  border-left: 1px solid #e1e8ed; /* Blueprint divider */
+  padding-left: 16px; /* $pt-spacing * 4 */
+}
+
+.allocation-tab__config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* $pt-spacing * 3 */
+}
+
+/* ============================================
+   ALLOCATED SITE CARDS
+   ============================================ */
+
+.allocated-site-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px; /* $pt-spacing * 3 */
+}
+
+.allocated-site-card__pass-count {
+  font-size: 12px; /* $pt-font-size-small */
+  color: #5c7080; /* Blueprint muted text */
+}
+
+.allocated-site-card__stepper-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; /* $pt-spacing * 3 */
+  margin-bottom: 12px; /* $pt-spacing * 3 */
+}
+
+.allocated-site-card__form-group {
+  margin-bottom: 0;
+}
+
+.allocated-site-card__readonly-field {
+  padding: 10px 12px; /* $pt-spacing * 2.5, $pt-spacing * 3 */
+  background: #f5f8fa; /* Blueprint light-gray5 */
+  border-radius: 2px; /* $pt-border-radius */
+  border: 1px solid #e1e8ed; /* Blueprint divider */
+}
+
+/* Dark theme support */
+.bp6-dark .allocated-site-card__readonly-field {
+  background: #252a31; /* Blueprint dark-gray5 (from bp6-card.bp6-dark) */
+  border-color: rgba(255, 255, 255, 0.2); /* Blueprint dark divider */
+}
+
+.allocated-site-card__operational-details {
+  font-size: 12px; /* $pt-font-size-small */
+  color: #5c7080; /* Blueprint muted text */
+  margin-top: 8px; /* $pt-spacing * 2 */
+}
+
+.bp6-dark .allocated-site-card__operational-details {
+  color: #a7b6c2; /* Blueprint dark mode muted text */
+}
+
+.allocated-site-card__immutable-note {
+  font-size: 11px;
+  color: #5c7080; /* Blueprint muted text */
+  font-style: italic;
+  margin-top: 8px; /* $pt-spacing * 2 */
+}
+
+.bp6-dark .allocated-site-card__immutable-note {
+  color: #a7b6c2; /* Blueprint dark mode muted text */
+}
+
+.allocated-site-card__summary {
+  font-size: 12px; /* $pt-font-size-small */
+  color: #5c7080; /* Blueprint muted text */
+  display: flex;
+  justify-content: space-between;
+}
+
+.bp6-dark .allocated-site-card__summary {
+  color: #a7b6c2; /* Blueprint dark mode muted text */
+}
+
+/* ============================================
+   EXPANDABLE SECTIONS
+   ============================================ */
+
+.allocated-site-card__expandable-section {
+  margin-top: 12px; /* $pt-spacing * 3 */
+  padding-top: 12px; /* $pt-spacing * 3 */
+  border-top: 1px solid #e1e8ed; /* Blueprint divider */
+}
+
+.bp6-dark .allocated-site-card__expandable-section {
+  border-top-color: rgba(255, 255, 255, 0.15); /* Blueprint dark divider */
+}
+
+.allocated-site-card__timestamps-header {
+  font-size: 12px; /* $pt-font-size-small */
+  font-weight: 600;
+  margin-bottom: 8px; /* $pt-spacing * 2 */
+}
+
+.allocated-site-card__timestamps-list {
+  font-size: 11px;
+  color: #5c7080; /* Blueprint muted text */
+}
+
+.bp6-dark .allocated-site-card__timestamps-list {
+  color: #a7b6c2; /* Blueprint dark mode muted text */
+}
+
+.allocated-site-card__timestamp-item {
+  margin-bottom: 4px; /* $pt-spacing */
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .allocation-tab {
+    flex-direction: column;
+  }
+
+  .allocation-tab__right-panel {
+    border-left: none;
+    border-top: 1px solid #e1e8ed;
+    padding-left: 0;
+    padding-top: 16px; /* $pt-spacing * 4 */
+  }
+
+  .bp6-dark .allocation-tab__right-panel {
+    border-top-color: rgba(255, 255, 255, 0.15);
+  }
+}

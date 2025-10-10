@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollectionDetailPanel Manual Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1, h2 { color: #333; }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .status-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        .complete { background: #d4edda; color: #155724; }
+        .in-progress { background: #cce5ff; color: #004085; }
+        .error { background: #f8d7da; color: #721c24; }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .danger { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <h1>CollectionDetailPanel Implementation - Manual Test Guide</h1>
+
+    <div class="test-section">
+        <h2>✅ What Was Implemented</h2>
+        <ul>
+            <li>✅ Conditional action enablement based on collection status</li>
+            <li>✅ Actions ONLY enabled when <code>algorithmStatus === 'converged'</code></li>
+            <li>✅ Disabled state with tooltips explaining why actions are unavailable</li>
+            <li>✅ Status banner (Callout) showing collection state</li>
+            <li>✅ Progress bar for in-progress collections</li>
+            <li>✅ Loading state for download button</li>
+            <li>✅ Retry button for failed collections</li>
+            <li>✅ Blueprint JS compliance for visual design</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Manual Testing Steps</h2>
+        <ol>
+            <li><strong>Navigate to History Page:</strong>
+                <br>Go to <code>http://localhost:3000/history</code>
+            </li>
+            <li><strong>Select Collections by Status:</strong>
+                <ul class="status-list">
+                    <li class="complete"><strong>Completed Collection (algorithmStatus: 'converged')</strong>
+                        <br>→ All action buttons should be ENABLED
+                        <br>→ Success callout: "Collection ready for all actions"
+                        <br>→ Download button has SUCCESS intent (green)
+                    </li>
+                    <li class="in-progress"><strong>In-Progress Collection (algorithmStatus: 'running', 'optimizing', 'queued')</strong>
+                        <br>→ All action buttons should be DISABLED
+                        <br>→ Primary callout: "Collection still processing..."
+                        <br>→ Progress bar visible with animation
+                        <br>→ Hover over buttons to see tooltips
+                    </li>
+                    <li class="error"><strong>Failed Collection (algorithmStatus: 'error', 'timeout')</strong>
+                        <br>→ All action buttons should be DISABLED
+                        <br>→ Warning callout: "Collection needs attention"
+                        <br>→ Retry button visible and enabled
+                    </li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test Scenarios</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Scenario</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Expected Behavior</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Visual Check</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Hover on disabled button</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Tooltip appears: "Complete collection to [action]"</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Dark tooltip, proper positioning</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Click disabled button</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Nothing happens (no navigation)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Cursor shows not-allowed</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Download from complete collection</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Button shows loading spinner</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Button disabled during download</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Progress bar animation</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Striped animated progress</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Blueprint primary color</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Visual Verification Checklist</h2>
+        <ul>
+            <li>☐ <span class="success">Success Callout</span> - Green background with checkmark icon</li>
+            <li>☐ <span class="info">Primary Callout</span> - Blue background with time icon</li>
+            <li>☐ <span class="warning">Warning Callout</span> - Yellow/orange background with warning icon</li>
+            <li>☐ Disabled buttons have reduced opacity (0.3-0.6)</li>
+            <li>☐ Download button changes from Intent.NONE to Intent.SUCCESS when enabled</li>
+            <li>☐ Progress bar has stripes and animation</li>
+            <li>☐ Tooltips appear on hover with proper Blueprint styling</li>
+            <li>☐ Help text updates based on collection state</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Implementation Summary</h2>
+        <p>The CollectionDetailPanel now implements a comprehensive conditional action system where:</p>
+        <ul>
+            <li>Actions are strictly controlled by <code>algorithmStatus === 'converged'</code></li>
+            <li>Visual feedback clearly indicates why actions are unavailable</li>
+            <li>Blueprint JS patterns are followed for consistency</li>
+            <li>User experience is enhanced with tooltips and status messages</li>
+            <li>Loading states provide feedback during async operations</li>
+        </ul>
+    </div>
+</body>
+</html>

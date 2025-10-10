@@ -1,0 +1,293 @@
+/* Split View Layout */
+.collection-opportunities-split-view {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: width 0.3s ease;
+}
+
+/* Split View Panel */
+.split-view-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--bp5-bg-color);
+    border-left: 1px solid var(--bp5-divider-black);
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.split-view-panel.open {
+    min-width: 320px;
+    max-width: 60%;
+}
+
+/* Resize Handle */
+.split-view-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: ew-resize;
+    background-color: transparent;
+    transition: background-color 0.2s;
+    z-index: 11;
+}
+
+.split-view-resize-handle:hover {
+    background-color: var(--bp5-intent-primary);
+}
+
+.resize-grip {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 40px;
+    background-color: var(--bp5-divider-black);
+    border-radius: 1px;
+}
+
+.split-view-resize-handle:hover .resize-grip {
+    background-color: var(--bp5-white);
+}
+
+/* Table Adjustments for Split View */
+.split-view-active .opportunities-navbar {
+    padding-right: 8px;
+}
+
+.split-view-active .table-container {
+    overflow-x: auto;
+}
+
+/* Row Selection States */
+.opportunities-table .selected-row {
+    background-color: rgba(19, 124, 189, 0.1) !important;
+}
+
+.opportunities-table .editing-row {
+    background-color: rgba(19, 124, 189, 0.2) !important;
+    border-left: 3px solid var(--bp5-intent-primary);
+}
+
+.opportunities-table .pending-row {
+    background-color: rgba(217, 130, 43, 0.1) !important;
+}
+
+/* Cell Styles */
+.opportunity-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.opportunity-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.match-status-cell {
+    display: flex;
+    align-items: center;
+}
+
+.capacity-cell {
+    position: relative;
+}
+
+.capacity-cell .capacity-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 500;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Progress Indicator */
+.allocation-progress {
+    margin: 16px 0;
+}
+
+/* Tabs */
+.opportunity-tabs {
+    margin-bottom: 0;
+}
+
+.opportunity-tabs .tab-count {
+    margin-left: 8px;
+}
+
+/* Help Card */
+.help-card {
+    margin: 16px 0;
+    padding: 12px;
+}
+
+/* Search and Filters */
+.opportunities-navbar .search-input {
+    width: 300px;
+}
+
+.opportunities-navbar .site-filter {
+    min-width: 150px;
+}
+
+/* Priority Tags */
+.priority-tag {
+    font-weight: bold;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Match Status Tags */
+.match-status {
+    cursor: pointer;
+}
+
+.match-status-baseline {
+    background-color: var(--bp5-intent-success) !important;
+}
+
+.match-status-suboptimal {
+    background-color: var(--bp5-intent-warning) !important;
+}
+
+.match-status-unmatched {
+    background-color: var(--bp5-intent-danger) !important;
+}
+
+/* Loading and Error States */
+.collection-opportunities-loading,
+.collection-opportunities-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .split-view-panel.open {
+        width: 100% !important;
+    }
+    
+    .split-view-active .main-content {
+        display: none;
+    }
+    
+    .split-view-resize-handle {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .opportunities-navbar .search-input {
+        width: 200px;
+    }
+    
+    .opportunity-tabs .bp5-tab {
+        padding: 5px 10px;
+    }
+    
+    .opportunity-tabs .tab-count {
+        display: none;
+    }
+}
+
+/* Dark Mode Support */
+.bp5-dark .split-view-panel {
+    background-color: var(--bp5-dark-bg-color);
+    border-left-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .split-view-resize-handle:hover {
+    background-color: var(--bp5-intent-primary);
+}
+
+.bp5-dark .resize-grip {
+    background-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .opportunities-table .selected-row {
+    background-color: rgba(137, 196, 244, 0.15) !important;
+}
+
+.bp5-dark .opportunities-table .editing-row {
+    background-color: rgba(137, 196, 244, 0.25) !important;
+}
+
+.bp5-dark .opportunities-table .pending-row {
+    background-color: rgba(255, 179, 102, 0.15) !important;
+}
+
+/* Animations */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.split-view-panel.open {
+    animation: slideInFromRight 0.3s ease;
+}
+
+/* Focus States */
+.opportunities-table .bp5-table-cell:focus {
+    outline: 2px solid var(--bp5-intent-primary);
+    outline-offset: -2px;
+}
+
+/* Keyboard Navigation Indicators */
+.keyboard-shortcuts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.keyboard-shortcuts-list li {
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.keyboard-shortcuts-list kbd {
+    background-color: var(--bp5-gray1);
+    border: 1px solid var(--bp5-gray3);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 12px;
+}

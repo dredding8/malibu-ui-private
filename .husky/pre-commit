@@ -1,0 +1,59 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit quality gates..."
+
+# 1. Import validation
+echo "📦 Checking imports..."
+npm run validate:imports || {
+  echo "❌ Import validation failed!"
+  echo "💡 Run 'npm run validate:imports -- --fix' to see suggestions"
+  exit 1
+}
+
+# 2. Type checking
+echo "📝 Type checking..."
+npm run typecheck || {
+  echo "❌ TypeScript errors found!"
+  exit 1
+}
+
+# 3. Security scan
+echo "🔒 Security scanning..."
+npm run security:scan || {
+  echo "❌ Security vulnerabilities detected!"
+  echo "💡 Run 'npm audit fix' or check security report"
+  exit 1
+}
+
+# 4. Lint with autofix
+echo "✨ Linting..."
+npm run lint:fix
+
+# 5. Check for 'any' types in changed files
+echo "🎯 Checking for 'any' types..."
+git diff --cached --name-only | grep -E '\.(ts|tsx)$' | while read file; do
+  if grep -E ':\s*any\b|<any>' "$file" > /dev/null; then
+    echo "⚠️  Warning: 'any' type found in $file"
+    echo "   Consider using proper types or unknown"
+  fi
+done
+
+# 6. Component complexity check
+echo "📊 Checking component complexity..."
+git diff --cached --name-only | grep -E 'components/.*\.(tsx)$' | while read file; do
+  lines=$(wc -l < "$file")
+  if [ "$lines" -gt 300 ]; then
+    echo "⚠️  Warning: $file has $lines lines (max recommended: 300)"
+    echo "   Consider splitting into smaller components"
+  fi
+done
+
+# 7. Test coverage for changed files
+echo "🧪 Checking test coverage..."
+npm run test:coverage:changed || {
+  echo "⚠️  Warning: Test coverage below threshold"
+  echo "   Add tests for new functionality"
+}
+
+echo "✅ Pre-commit checks passed!"

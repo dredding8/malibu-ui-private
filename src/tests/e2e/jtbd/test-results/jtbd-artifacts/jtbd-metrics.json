@@ -1,0 +1,30 @@
+{
+  "testRun": {
+    "startTime": "2025-09-29T21:25:30.705Z",
+    "environment": "development",
+    "config": {
+      "baseURL": "http://localhost:3000",
+      "workers": 4
+    },
+    "endTime": "2025-09-29T21:25:35.641Z",
+    "duration": 4936
+  },
+  "workflows": {
+    "unknown": {
+      "name": "Mobile analyst can verify plans on mobile device",
+      "passed": false,
+      "duration": 87,
+      "errors": 0,
+      "actionCount": 0,
+      "performanceScore": 0
+    }
+  },
+  "summary": {
+    "totalWorkflows": 1,
+    "passed": 0,
+    "failed": 1,
+    "averageDuration": 87,
+    "totalErrors": 0,
+    "performanceScore": 0
+  }
+}

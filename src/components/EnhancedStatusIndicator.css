@@ -1,0 +1,247 @@
+/* EnhancedStatusIndicator.css - Multi-dimensional status visualization */
+
+/* Base container */
+.enhanced-status-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Size variants */
+.enhanced-status-indicator.size-small {
+  width: 30px;
+  height: 30px;
+}
+
+.enhanced-status-indicator.size-medium {
+  width: 40px;
+  height: 40px;
+}
+
+.enhanced-status-indicator.size-large {
+  width: 50px;
+  height: 50px;
+}
+
+/* Capacity Ring */
+.capacity-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.capacity-background {
+  stroke: #E1E8ED;
+}
+
+.capacity-fill {
+  transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+  stroke-linecap: round;
+}
+
+/* Status Icon Container */
+.status-icon-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Pulse animation for critical status */
+.status-icon.pulse {
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* Priority Badge */
+.priority-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.priority-badge.pulse {
+  animation: pulse-badge 1.5s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3);
+  }
+}
+
+/* Conflict Counter */
+.conflict-counter {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: #DB3737;
+  color: white;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Overall health states */
+.enhanced-status-indicator.health-critical {
+  filter: drop-shadow(0 0 4px rgba(219, 55, 55, 0.4));
+}
+
+.enhanced-status-indicator.health-warning {
+  filter: drop-shadow(0 0 4px rgba(217, 130, 43, 0.4));
+}
+
+.enhanced-status-indicator.health-healthy {
+  filter: drop-shadow(0 0 4px rgba(15, 153, 96, 0.2));
+}
+
+/* Tooltip Styling */
+.status-indicator-tooltip .bp5-popover-content {
+  padding: 0;
+}
+
+.status-tooltip {
+  padding: 12px;
+  min-width: 200px;
+}
+
+.tooltip-header {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #5C7080;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #E1E8ED;
+}
+
+.tooltip-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.tooltip-label {
+  color: #738694;
+  font-weight: 500;
+}
+
+.tooltip-value {
+  color: #182026;
+  font-weight: 600;
+}
+
+.tooltip-value.conflict {
+  color: #DB3737;
+}
+
+.tooltip-message {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #E1E8ED;
+  font-size: 11px;
+  color: #5C7080;
+  font-style: italic;
+}
+
+.tooltip-timestamp {
+  margin-top: 6px;
+  font-size: 10px;
+  color: #738694;
+  opacity: 0.8;
+}
+
+/* Hover state */
+.enhanced-status-indicator:hover .status-icon {
+  transform: scale(1.05);
+}
+
+/* Focus state for accessibility */
+.enhanced-status-indicator:focus-visible {
+  outline: 2px solid #2D72D2;
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* Dark theme support */
+.bp5-dark .capacity-background {
+  stroke: #5C7080;
+}
+
+.bp5-dark .tooltip-header {
+  color: #A7B6C2;
+  border-bottom-color: #5C7080;
+}
+
+.bp5-dark .tooltip-label {
+  color: #A7B6C2;
+}
+
+.bp5-dark .tooltip-value {
+  color: #F5F8FA;
+}
+
+.bp5-dark .tooltip-message {
+  color: #A7B6C2;
+  border-top-color: #5C7080;
+}
+
+.bp5-dark .tooltip-timestamp {
+  color: #738694;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .status-icon.pulse,
+  .priority-badge.pulse,
+  .capacity-fill {
+    animation: none !important;
+    transition: none !important;
+  }
+}

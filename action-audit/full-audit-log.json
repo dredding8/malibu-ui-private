@@ -1,0 +1,112 @@
+[
+  {
+    "index": 0,
+    "text": "Data Sources",
+    "title": "Data Sources (cmd+1)",
+    "ariaLabel": null,
+    "testId": "nav-dashboard",
+    "className": "bp6-button bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 1,
+    "text": "SCCs",
+    "title": "SCCs (cmd+2)",
+    "ariaLabel": null,
+    "testId": "nav-sccs",
+    "className": "bp6-button bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 2,
+    "text": "Collections",
+    "title": "Collections (cmd+3)",
+    "ariaLabel": null,
+    "testId": "nav-collections",
+    "className": "bp6-button bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 3,
+    "text": "History",
+    "title": "History (cmd+4)",
+    "ariaLabel": null,
+    "testId": "nav-history",
+    "className": "bp6-button bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 4,
+    "text": "Analytics",
+    "title": "Analytics (cmd+5)",
+    "ariaLabel": null,
+    "testId": "nav-analytics",
+    "className": "bp6-button bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 5,
+    "text": "Logout",
+    "title": null,
+    "ariaLabel": null,
+    "testId": "nav-logout",
+    "className": "bp6-button bp6-intent-danger bp6-minimal",
+    "category": "navbar",
+    "y": 18
+  },
+  {
+    "index": 6,
+    "text": "Update Data",
+    "title": null,
+    "ariaLabel": "Update assignment data",
+    "testId": null,
+    "className": "bp6-button",
+    "category": "other",
+    "y": 260
+  },
+  {
+    "index": 7,
+    "text": "Download Report",
+    "title": null,
+    "ariaLabel": "Download assignment report",
+    "testId": null,
+    "className": "bp6-button",
+    "category": "other",
+    "y": 260
+  },
+  {
+    "index": 8,
+    "text": "Back to History",
+    "title": null,
+    "ariaLabel": "Return to history page",
+    "testId": null,
+    "className": "bp6-button",
+    "category": "other",
+    "y": 260
+  },
+  {
+    "index": 9,
+    "text": "Columns",
+    "title": null,
+    "ariaLabel": null,
+    "testId": null,
+    "className": "bp6-button bp6-minimal",
+    "category": "other",
+    "y": 461
+  },
+  {
+    "index": 10,
+    "text": "(empty)",
+    "title": null,
+    "ariaLabel": null,
+    "testId": null,
+    "className": "bp6-button bp6-intent-primary bp6-large navigation-fab",
+    "category": "navbar",
+    "y": 640
+  }
+]

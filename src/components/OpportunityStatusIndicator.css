@@ -1,0 +1,155 @@
+/* Opportunity Status Indicator Styles */
+/* WCAG AA compliant status indicators */
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+/* Status variants with WCAG AA contrast ratios */
+.status-indicator.status-optimal {
+  background-color: #e7f3ef;
+  color: #0d8050;
+}
+
+.status-indicator.status-warning {
+  background-color: #fef3e6;
+  color: #866103;
+}
+
+.status-indicator.status-critical {
+  background-color: #fae7e7;
+  color: #a82a2a;
+}
+
+/* Icon styling */
+.status-indicator .bp5-icon {
+  flex-shrink: 0;
+}
+
+.status-label {
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Tooltip styling */
+.status-tooltip {
+  max-width: 300px;
+  padding: 12px;
+}
+
+.tooltip-header {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.tooltip-description {
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.tooltip-conflicts {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-conflicts strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.tooltip-conflicts ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+}
+
+.tooltip-conflicts li {
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.tooltip-metrics {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Hover states */
+.status-indicator:hover {
+  cursor: default;
+}
+
+.status-indicator.status-optimal:hover {
+  background-color: #d4eddf;
+}
+
+.status-indicator.status-warning:hover {
+  background-color: #fde7cc;
+}
+
+.status-indicator.status-critical:hover {
+  background-color: #f5d6d6;
+}
+
+/* Focus states for keyboard navigation */
+.status-indicator:focus {
+  outline: 2px solid #2b95d6;
+  outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .status-indicator {
+    border: 1px solid currentColor;
+  }
+
+  .status-indicator.status-optimal {
+    background-color: transparent;
+    color: green;
+  }
+
+  .status-indicator.status-warning {
+    background-color: transparent;
+    color: orange;
+  }
+
+  .status-indicator.status-critical {
+    background-color: transparent;
+    color: red;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .status-indicator {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .status-indicator {
+    border: 1px solid currentColor;
+    background: transparent !important;
+  }
+  
+  .status-label {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLocalization } from '../hooks/useLocalization';
 import { useWebSocket, WebSocketMessage } from '../hooks/useWebSocket';
 import { realTimeUpdatesService, StatusUpdateNotification } from '../services/realTimeUpdatesService';
+import { useBackgroundProcessing } from '../contexts/BackgroundProcessingContext';
 import {
   Card,
   FormGroup,
@@ -28,11 +29,13 @@ import {
   MenuItem,
   Popover,
   Position,
-  Breadcrumbs
+  Breadcrumbs,
+  Tooltip
 } from '@blueprintjs/core';
 import { DateInput } from '@blueprintjs/datetime';
 import { IconNames } from '@blueprintjs/icons';
 import HistoryTable from '../components/HistoryTable';
+import CollectionDetailPanel from '../components/CollectionDetailPanel';
 import AppNavbar from '../components/AppNavbar';
 import ContextualHelp from '../components/ContextualHelp';
 import PredictiveProgress, { ProcessingJob } from '../components/PredictiveProgress';
@@ -42,11 +45,13 @@ const History: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLocalization();
+  const { jobs } = useBackgroundProcessing();
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
   const [refreshStatus, setRefreshStatus] = useState<string>('');
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   // URL state preservation for filters
   const [urlFilters, setUrlFilters] = useUrlState({
     search: '',
@@ -66,6 +71,35 @@ const History: React.FC = () => {
   
   // Extract navigation state from deck creation flow
   const navigationState = location.state as { newDeckId?: string; fromCreation?: boolean; deckName?: string } | null;
+
+  // Calculate matching status metrics with AlgorithmStatus granularity
+  const matchingMetrics = useMemo(() => {
+    // Group statuses for intuitive user understanding
+    const waiting = jobs.filter(j => j.algorithmStatus === 'queued').length;
+    const processing = jobs.filter(j => 
+      j.algorithmStatus === 'running' || j.algorithmStatus === 'optimizing'
+    ).length;
+    const completed = jobs.filter(j => j.algorithmStatus === 'converged').length;
+    const needsAttention = jobs.filter(j => 
+      j.algorithmStatus === 'error' || j.algorithmStatus === 'timeout'
+    ).length;
+
+    return {
+      waiting,
+      processing,
+      completed,
+      needsAttention,
+      // Detailed breakdown for tooltips and advanced views
+      detailed: {
+        queued: jobs.filter(j => j.algorithmStatus === 'queued').length,
+        running: jobs.filter(j => j.algorithmStatus === 'running').length,
+        optimizing: jobs.filter(j => j.algorithmStatus === 'optimizing').length,
+        converged: jobs.filter(j => j.algorithmStatus === 'converged').length,
+        error: jobs.filter(j => j.algorithmStatus === 'error').length,
+        timeout: jobs.filter(j => j.algorithmStatus === 'timeout').length
+      }
+    };
+  }, [jobs]);
 
   const handleReset = () => {
     setStartDate(null);
@@ -194,22 +228,22 @@ const History: React.FC = () => {
     <Menu>
       <MenuItem 
         icon={IconNames.TH}
-        text="Export as CSV"
+        text="Download CSV"
         onClick={() => handleExport('csv')}
       />
       <MenuItem 
         icon={IconNames.GRID_VIEW}
-        text="Export as Excel"
+        text="Download Excel"
         onClick={() => handleExport('excel')}
       />
       <MenuItem 
         icon={IconNames.DOCUMENT}
-        text="Export as PDF"
+        text="Download PDF"
         onClick={() => handleExport('pdf')}
       />
       <MenuItem 
         icon={IconNames.CODE}
-        text="Export as JSON"
+        text="Download JSON"
         onClick={() => handleExport('json')}
       />
     </Menu>
@@ -223,11 +257,11 @@ const History: React.FC = () => {
     try {
       // Simulate progressive loading with status updates
       const steps = [
-        { progress: 20, status: 'Fetching latest collection data...' },
-        { progress: 50, status: 'Updating status information...' },
-        { progress: 75, status: 'Processing background updates...' },
-        { progress: 90, status: 'Finalizing refresh...' },
-        { progress: 100, status: 'Complete!' }
+        { progress: 20, status: 'Fetching your latest collections...' },
+        { progress: 50, status: 'Updating collection statuses...' },
+        { progress: 75, status: 'Checking for new results...' },
+        { progress: 90, status: 'Almost ready...' },
+        { progress: 100, status: 'All set!' }
       ];
       
       for (const step of steps) {
@@ -238,7 +272,7 @@ const History: React.FC = () => {
       
       await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
-      setRefreshStatus('Refresh failed. Please try again.');
+      setRefreshStatus('Unable to refresh. Please try again.');
     } finally {
       setIsRefreshing(false);
       setRefreshProgress(0);
@@ -281,6 +315,40 @@ const History: React.FC = () => {
     
     setProcessingJobs(demoJobs);
   }, []);
+
+  // Keyboard navigation support
+  React.useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!selectedCollectionId) return;
+      
+      const selectedJob = jobs.find(job => job.id === selectedCollectionId);
+      if (!selectedJob) return;
+      
+      // Check if user is typing in an input field
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
+      
+      switch (e.key.toLowerCase()) {
+        case 'v':
+          // View collection
+          navigate(`/decks/${selectedCollectionId}`);
+          break;
+        case 'd':
+          // Download collection
+          console.log('Download collection:', selectedCollectionId);
+          break;
+        case 'escape':
+          // Deselect collection
+          setSelectedCollectionId(null);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedCollectionId, jobs, navigate]);
 
   const handleWelcomeDismiss = () => {
     setHasSeenWelcome(true);
@@ -357,7 +425,7 @@ const History: React.FC = () => {
               fontSize: '28px',
               fontWeight: '600'
             }}>
-              Your Collection Results
+              Your Collections
             </H3>
             <p className={Classes.TEXT_MUTED} style={{ 
               margin: 0,
@@ -365,7 +433,7 @@ const History: React.FC = () => {
               lineHeight: '1.5',
               color: Colors.GRAY1
             }}>
-              Monitor your collection progress and access completed results
+              Track progress and access your data collection results
             </p>
           </div>
           <div style={{ 
@@ -376,7 +444,7 @@ const History: React.FC = () => {
           }}>
             <Button 
               icon={IconNames.PLUS}
-              text="Create Collection"
+              text="New Collection"
               intent={Intent.PRIMARY}
               large
               onClick={() => navigate('/create-collection-deck/data')}
@@ -397,7 +465,7 @@ const History: React.FC = () => {
             </Popover>
             <Button 
               icon={bulkActionMode ? IconNames.CROSS : IconNames.SELECTION}
-              text={bulkActionMode ? 'Exit Select' : 'Select Multiple'}
+              text={bulkActionMode ? 'Cancel Selection' : 'Select Multiple'}
               onClick={toggleBulkActionMode}
               style={{ minWidth: '140px' }}
             />
@@ -440,7 +508,7 @@ const History: React.FC = () => {
               fontSize: '18px',
               fontWeight: '600'
             }}>
-              What's Happening Now
+              Matching Status
             </H5>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* Real-time Status Indicator */}
@@ -473,14 +541,14 @@ const History: React.FC = () => {
                     color: Colors.GREEN2,
                     fontStyle: 'italic'
                   }}>
-                    ({liveUpdateCount} updates)
+                    ({liveUpdateCount} new)
                   </span>
                 )}
               </div>
               
               <Button 
                 icon={isRefreshing ? undefined : IconNames.REFRESH}
-                text={isRefreshing ? "Refreshing..." : "Refresh Data"}
+                text={isRefreshing ? "Updating..." : "Refresh"}
                 intent={Intent.PRIMARY}
                 onClick={handleRefresh}
                 disabled={isRefreshing}
@@ -506,67 +574,74 @@ const History: React.FC = () => {
           </div>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
             gap: '20px'
           }}>
+            {/* Waiting (Queued) */}
             <Callout 
-              intent={Intent.SUCCESS} 
-              icon={IconNames.TICK_CIRCLE} 
+              intent={Intent.NONE} 
+              icon={IconNames.TIME} 
               style={{ 
                 margin: 0,
                 borderRadius: '6px',
-                border: `1px solid ${Colors.GREEN3}`,
+                border: `1px solid ${Colors.GRAY3}`,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
-              onClick={() => handleStatusFilterClick('ready')}
+              onClick={() => handleStatusFilterClick('queued')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-                e.currentTarget.style.borderColor = Colors.GREEN2;
+                e.currentTarget.style.borderColor = Colors.GRAY1;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = Colors.GREEN3;
+                e.currentTarget.style.borderColor = Colors.GRAY3;
               }}
             >
-              <div style={{ 
-                fontSize: '38px', 
-                fontWeight: '700', 
-                marginBottom: '8px',
-                color: Colors.GREEN1,
-                lineHeight: '1',
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                2
-              </div>
-              <div style={{ 
-                fontSize: '16px', 
-                color: Colors.DARK_GRAY1,
-                marginBottom: '4px',
-                fontWeight: '600'
-              }}>
-                Ready for You
-              </div>
-              <div style={{ 
-                fontSize: '14px', 
-                color: Colors.GRAY1,
-                lineHeight: '1.4'
-              }}>
-                Collections you can view and use
-              </div>
-              <div style={{ 
-                fontSize: '13px', 
-                color: Colors.GREEN2,
-                marginTop: '10px',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}>
-                → Click to filter
-              </div>
+              <Tooltip content={`${matchingMetrics.detailed.queued} queued`}>
+                <div>
+                  <div style={{ 
+                    fontSize: '38px', 
+                    fontWeight: '700', 
+                    marginBottom: '8px',
+                    color: Colors.GRAY1,
+                    lineHeight: '1',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {matchingMetrics.waiting}
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: Colors.DARK_GRAY1,
+                    marginBottom: '4px',
+                    fontWeight: '600'
+                  }}>
+                    Waiting
+                  </div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: Colors.GRAY1,
+                    lineHeight: '1.4'
+                  }}>
+                    Starting soon
+                  </div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: Colors.GRAY2,
+                    marginTop: '10px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    View all →
+                  </div>
+                </div>
+              </Tooltip>
             </Callout>
+            
+            {/* Processing (Running + Optimizing) */}
             <Callout 
               intent={Intent.PRIMARY} 
               icon={IconNames.PLAY} 
@@ -589,42 +664,112 @@ const History: React.FC = () => {
                 e.currentTarget.style.borderColor = Colors.BLUE3;
               }}
             >
-              <div style={{ 
-                fontSize: '38px', 
-                fontWeight: '700', 
-                marginBottom: '8px',
-                color: Colors.BLUE1,
-                lineHeight: '1',
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                0
-              </div>
-              <div style={{ 
-                fontSize: '16px', 
-                color: Colors.DARK_GRAY1,
-                marginBottom: '4px',
-                fontWeight: '600'
-              }}>
-                Working on It
-              </div>
-              <div style={{ 
-                fontSize: '14px', 
-                color: Colors.GRAY1,
-                lineHeight: '1.4'
-              }}>
-                Collections we're building for you
-              </div>
-              <div style={{ 
-                fontSize: '13px', 
-                color: Colors.BLUE2,
-                marginTop: '10px',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}>
-                → Click to filter
-              </div>
+              <Tooltip content={`${matchingMetrics.detailed.running} running, ${matchingMetrics.detailed.optimizing} optimizing`}>
+                <div>
+                  <div style={{ 
+                    fontSize: '38px', 
+                    fontWeight: '700', 
+                    marginBottom: '8px',
+                    color: Colors.BLUE1,
+                    lineHeight: '1',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {matchingMetrics.processing}
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: Colors.DARK_GRAY1,
+                    marginBottom: '4px',
+                    fontWeight: '600'
+                  }}>
+                    Processing
+                  </div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: Colors.GRAY1,
+                    lineHeight: '1.4'
+                  }}>
+                    Actively running
+                  </div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: Colors.BLUE2,
+                    marginTop: '10px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    View all →
+                  </div>
+                </div>
+              </Tooltip>
             </Callout>
+            
+            {/* Completed (Converged) */}
+            <Callout 
+              intent={Intent.SUCCESS} 
+              icon={IconNames.TICK_CIRCLE} 
+              style={{ 
+                margin: 0,
+                borderRadius: '6px',
+                border: `1px solid ${Colors.GREEN3}`,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={() => handleStatusFilterClick('converged')}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+                e.currentTarget.style.borderColor = Colors.GREEN2;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = Colors.GREEN3;
+              }}
+            >
+              <Tooltip content={`${matchingMetrics.detailed.converged} completed`}>
+                <div>
+                  <div style={{ 
+                    fontSize: '38px', 
+                    fontWeight: '700', 
+                    marginBottom: '8px',
+                    color: Colors.GREEN1,
+                    lineHeight: '1',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {matchingMetrics.completed}
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: Colors.DARK_GRAY1,
+                    marginBottom: '4px',
+                    fontWeight: '600'
+                  }}>
+                    Completed
+                  </div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: Colors.GRAY1,
+                    lineHeight: '1.4'
+                  }}>
+                    Ready to view
+                  </div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: Colors.GREEN2,
+                    marginTop: '10px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    View all →
+                  </div>
+                </div>
+              </Tooltip>
+            </Callout>
+            
+            {/* Needs Attention (Error + Timeout) */}
             <Callout 
               intent={Intent.WARNING} 
               icon={IconNames.WARNING_SIGN} 
@@ -635,7 +780,7 @@ const History: React.FC = () => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
-              onClick={() => handleStatusFilterClick('failed')}
+              onClick={() => handleStatusFilterClick('needs-attention')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
@@ -647,41 +792,45 @@ const History: React.FC = () => {
                 e.currentTarget.style.borderColor = Colors.ORANGE3;
               }}
             >
-              <div style={{ 
-                fontSize: '38px', 
-                fontWeight: '700', 
-                marginBottom: '8px',
-                color: Colors.ORANGE1,
-                lineHeight: '1',
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                1
-              </div>
-              <div style={{ 
-                fontSize: '16px', 
-                color: Colors.DARK_GRAY1,
-                marginBottom: '4px',
-                fontWeight: '600'
-              }}>
-                Need Your Help
-              </div>
-              <div style={{ 
-                fontSize: '14px', 
-                color: Colors.GRAY1,
-                lineHeight: '1.4'
-              }}>
-                Collections waiting for your input
-              </div>
-              <div style={{ 
-                fontSize: '13px', 
-                color: Colors.ORANGE2,
-                marginTop: '10px',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}>
-                → Click to filter
-              </div>
+              <Tooltip content={`${matchingMetrics.detailed.error} errors, ${matchingMetrics.detailed.timeout} timeouts`}>
+                <div>
+                  <div style={{ 
+                    fontSize: '38px', 
+                    fontWeight: '700', 
+                    marginBottom: '8px',
+                    color: Colors.ORANGE1,
+                    lineHeight: '1',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {matchingMetrics.needsAttention}
+                  </div>
+                  <div style={{ 
+                    fontSize: '16px', 
+                    color: Colors.DARK_GRAY1,
+                    marginBottom: '4px',
+                    fontWeight: '600'
+                  }}>
+                    Needs Attention
+                  </div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: Colors.GRAY1,
+                    lineHeight: '1.4'
+                  }}>
+                    Review required
+                  </div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: Colors.ORANGE2,
+                    marginTop: '10px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    View all →
+                  </div>
+                </div>
+              </Tooltip>
             </Callout>
           </div>
         </Card>
@@ -710,13 +859,13 @@ const History: React.FC = () => {
               fontSize: '18px',
               fontWeight: '600'
             }}>
-              Find Specific Collections
+              Search & Filter
             </H5>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Button 
                 minimal
                 icon={showAdvancedFilters ? IconNames.CHEVRON_UP : IconNames.CHEVRON_DOWN}
-                text="Advanced"
+                text="More Filters"
                 small
                 onClick={toggleAdvancedFilters}
                 style={{ minWidth: '100px' }}
@@ -724,7 +873,7 @@ const History: React.FC = () => {
               <Button 
                 minimal
                 icon={IconNames.CROSS}
-                text="Clear All"
+                text="Reset"
                 small
                 onClick={handleReset}
                 disabled={!startDate && !endDate && !searchQuery && statusFilter === 'all'}
@@ -749,7 +898,7 @@ const History: React.FC = () => {
               <InputGroup
                 id="search-input"
                 data-testid="collection-search-input"
-                placeholder="Search by collection name..."
+                placeholder="Search collections by name..."
                 leftIcon={IconNames.SEARCH}
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -766,7 +915,7 @@ const History: React.FC = () => {
               />
             </FormGroup>
             <FormGroup 
-              label="Status Filter" 
+              label="Show" 
               labelFor="status-filter"
               style={{ margin: 0 }}
             >
@@ -777,18 +926,18 @@ const History: React.FC = () => {
                 onChange={handleStatusFilterChange}
                 fill
                 options={[
-                  { label: 'All Statuses', value: 'all' },
-                  { label: 'Ready for You', value: 'ready' },
-                  { label: 'Working on It', value: 'processing' },
-                  { label: 'Need Your Help', value: 'failed' },
-                  { label: 'Stopped', value: 'cancelled' }
+                  { label: 'All Collections', value: 'all' },
+                  { label: 'Waiting', value: 'queued' },
+                  { label: 'Processing', value: 'processing' },
+                  { label: 'Completed', value: 'converged' },
+                  { label: 'Needs Attention', value: 'needs-attention' }
                 ]}
               />
             </FormGroup>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'end' }}>
               <Button 
                 icon={IconNames.TICK}
-                text="Apply Filters"
+                text="Apply"
                 intent={Intent.PRIMARY}
                 data-testid="apply-filter-button"
                 disabled={!startDate && !endDate && !searchQuery && statusFilter === 'all'}
@@ -820,7 +969,7 @@ const History: React.FC = () => {
                   data-testid="start-date-input"
                   value={startDate}
                   onChange={setStartDate}
-                  placeholder="Select start date..."
+                  placeholder="From date..."
                   fill
                   showActionsBar
                   maxDate={new Date()}
@@ -835,7 +984,7 @@ const History: React.FC = () => {
                   data-testid="end-date-input"
                   value={endDate}
                   onChange={setEndDate}
-                  placeholder="Select end date..."
+                  placeholder="To date..."
                   fill
                   showActionsBar
                   maxDate={new Date()}
@@ -849,8 +998,8 @@ const History: React.FC = () => {
                 color: Colors.GRAY1,
                 fontSize: '14px'
               }}>
-                <span style={{ marginRight: '6px' }}>ℹ️</span>
-                Use date filters to find collections from specific time periods
+                <span style={{ marginRight: '6px' }}>•</span>
+                Filter by date range to find collections from specific time periods
               </div>
             </div>
           </Collapse>
@@ -878,7 +1027,7 @@ const History: React.FC = () => {
                 alignItems: 'center', 
                 gap: '16px'
               }}>
-                <span style={{ color: Colors.BLUE1, fontSize: '16px' }}>☑️</span>
+                <span style={{ color: Colors.BLUE1, fontSize: '16px' }}>✓</span>
                 <div>
                   <div style={{ 
                     fontWeight: '600', 
@@ -891,7 +1040,7 @@ const History: React.FC = () => {
                     fontSize: '12px', 
                     color: Colors.BLUE2
                   }}>
-                    Choose an action to apply to selected items
+                    Choose what to do with selected collections
                   </div>
                 </div>
               </div>
@@ -915,7 +1064,7 @@ const History: React.FC = () => {
                   minimal
                   small
                   onClick={() => setSelectedCollections([])}
-                  title="Clear selection"
+                  title="Clear all selections"
                 />
               </div>
             </div>
@@ -944,7 +1093,7 @@ const History: React.FC = () => {
               fontWeight: '600',
               color: Colors.DARK_GRAY1
             }}>
-              All Your Collections
+              Collection Library
             </H5>
             <ControlGroup>
               <Button 
@@ -964,16 +1113,33 @@ const History: React.FC = () => {
             </ControlGroup>
           </div>
           <Divider className="bp6-margin-bottom" style={{ margin: '0 0 16px 0' }} />
-          <HistoryTable 
-            startDate={startDate} 
-            endDate={endDate}
-            searchQuery={searchQuery}
-            statusFilter={statusFilter}
-            onClearFilters={handleReset}
-            enableBulkActions={bulkActionMode}
-            onSelectionChange={handleSelectionChange}
-            newDeckId={navigationState?.newDeckId}
-          />
+          <div style={{ 
+            display: 'flex', 
+            gap: '16px', 
+            alignItems: 'stretch',
+            minHeight: '400px'
+          }}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <HistoryTable 
+                startDate={startDate} 
+                endDate={endDate}
+                searchQuery={searchQuery}
+                statusFilter={statusFilter}
+                onClearFilters={handleReset}
+                enableBulkActions={bulkActionMode}
+                onSelectionChange={handleSelectionChange}
+                newDeckId={navigationState?.newDeckId}
+                selectedCollectionId={selectedCollectionId}
+                onCollectionSelect={setSelectedCollectionId}
+              />
+            </div>
+            {selectedCollectionId && (
+              <CollectionDetailPanel 
+                collection={jobs.find(job => job.id === selectedCollectionId) || null}
+                onClose={() => setSelectedCollectionId(null)}
+              />
+            )}
+          </div>
         </Card>
       </div>
     </div>

@@ -1,0 +1,337 @@
+/* Collection Opportunities Enhanced Styles */
+
+.collection-opportunities-enhanced {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bp5-background-color);
+}
+
+/* Enhanced Navbar */
+.opportunities-navbar {
+  background: var(--bp5-card-background-color);
+  box-shadow: var(--bp5-elevation-shadow-1);
+  padding: calc(var(--bp5-grid-size) * 1) calc(var(--bp5-grid-size) * 2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.stats-badges {
+  display: flex;
+  gap: calc(var(--bp5-grid-size) * 1);
+  align-items: center;
+}
+
+.stats-badges .bp5-tag {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Changes summary */
+.changes-summary {
+  margin: calc(var(--bp5-grid-size) * 2);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced Table - Enterprise Pattern */
+.opportunities-table-enhanced {
+  flex: 1;
+  margin: calc(var(--bp5-grid-size) * 2);
+}
+
+/* Hover Actions - Reduced Visual Noise (Enterprise Pattern) */
+.bp5-table-row {
+  transition: background-color 150ms ease-in-out;
+}
+
+.bp5-table-row:hover {
+  background-color: var(--bp5-background-color-hover);
+}
+
+/* Hide secondary actions by default */
+.actions-cell-enhanced .secondary-actions {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+/* Show secondary actions on row hover */
+.bp5-table-row:hover .actions-cell-enhanced .secondary-actions {
+  opacity: 1;
+}
+
+/* Primary action always visible */
+.actions-cell-enhanced .primary-action {
+  opacity: 1;
+}
+
+/* Smooth button transitions */
+.actions-cell-enhanced .bp5-button {
+  transition: all 150ms ease-in-out;
+}
+
+.actions-cell-enhanced .bp5-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table container styling */
+.opportunities-table-enhanced {
+  background: var(--bp5-card-background-color);
+  border-radius: calc(var(--bp5-border-radius) * 1.5);
+  box-shadow: var(--bp5-elevation-shadow-1);
+  overflow: hidden;
+}
+
+.opportunities-table-enhanced .bp5-table-top-container {
+  background: var(--bp5-background-color);
+}
+
+.opportunities-table-enhanced .bp5-table-column-header-cell {
+  background: var(--bp5-background-color);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--bp5-text-color);
+  border-right: 1px solid var(--bp5-divider-black);
+  border-bottom: 2px solid var(--bp5-divider-black);
+}
+
+.sortable-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.5);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable-header:hover {
+  color: var(--bp5-intent-primary);
+}
+
+.sortable-header .bp5-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Cell styling */
+.opportunities-table-enhanced .bp5-table-cell {
+  vertical-align: middle;
+  padding: calc(var(--bp5-grid-size) * 1.5) calc(var(--bp5-grid-size) * 2);
+  border-right: 1px solid var(--bp5-divider-black);
+  border-bottom: 1px solid var(--bp5-divider-black);
+}
+
+.status-cell-enhanced {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 1);
+}
+
+.change-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 1);
+}
+
+.name-cell strong {
+  font-size: 14px;
+  color: var(--bp5-text-color);
+}
+
+.name-cell .bp5-icon {
+  color: var(--bp5-text-color-muted);
+}
+
+.name-cell.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: calc(var(--bp5-grid-size) * 0.5);
+  border-radius: var(--bp5-border-radius);
+}
+
+.name-cell.clickable:hover {
+  background-color: var(--bp5-intent-primary-transparent-10);
+}
+
+.name-cell.clickable:hover strong {
+  color: var(--bp5-intent-primary);
+  text-decoration: underline;
+}
+
+.satellite-info {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--bp5-grid-size) * 0.25);
+}
+
+.satellite-name {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--bp5-text-color);
+}
+
+.satellite-meta {
+  font-size: 11px;
+}
+
+.sites-summary {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--bp5-grid-size) * 0.25);
+}
+
+.site-count {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--bp5-text-color);
+}
+
+.site-names {
+  font-size: 11px;
+  color: var(--bp5-text-color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions-cell-enhanced {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-cell-enhanced .bp5-button-group {
+  box-shadow: none;
+}
+
+/* Card view */
+.opportunities-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: calc(var(--bp5-grid-size) * 2);
+  padding: calc(var(--bp5-grid-size) * 2);
+}
+
+.opportunity-card {
+  background: var(--bp5-card-background-color);
+  padding: calc(var(--bp5-grid-size) * 2);
+  transition: all 0.2s ease;
+}
+
+.opportunity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--bp5-elevation-shadow-2);
+}
+
+/* Row hover effects */
+.opportunities-table-enhanced .bp5-table-row-name:hover {
+  background: var(--bp5-background-color-hover);
+}
+
+.opportunities-table-enhanced .bp5-table-cell.bp5-table-cell-selected {
+  background: var(--bp5-background-color-selected);
+}
+
+/* Loading states */
+.opportunities-table-enhanced.bp5-loading .bp5-table-body {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Empty state */
+.collection-opportunities-enhanced .bp5-non-ideal-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .opportunities-navbar .bp5-navbar-group {
+    flex-wrap: wrap;
+    gap: calc(var(--bp5-grid-size) * 1);
+  }
+
+  .stats-badges {
+    order: 3;
+    width: 100%;
+    margin-top: calc(var(--bp5-grid-size) * 1);
+  }
+}
+
+@media (max-width: 768px) {
+  .opportunities-table-enhanced {
+    margin: calc(var(--bp5-grid-size) * 1);
+  }
+
+  .opportunities-cards {
+    grid-template-columns: 1fr;
+    padding: calc(var(--bp5-grid-size) * 1);
+  }
+
+  .opportunities-table-enhanced .bp5-table-cell {
+    padding: calc(var(--bp5-grid-size) * 1) calc(var(--bp5-grid-size) * 1.5);
+  }
+
+  .site-names {
+    display: none;
+  }
+
+  .actions-cell-enhanced .bp5-button-group {
+    flex-direction: column;
+  }
+}
+
+/* Dark theme support - Blueprint handles most automatically via CSS variables */
+.bp5-dark .opportunities-navbar {
+  box-shadow: var(--bp5-elevation-shadow-1);
+}
+
+/* Print styles */
+@media print {
+  .opportunities-navbar,
+  .changes-summary,
+  .actions-cell-enhanced {
+    display: none;
+  }
+
+  .collection-opportunities-enhanced {
+    background: white;
+  }
+
+  .opportunities-table-enhanced {
+    box-shadow: none;
+    margin: 0;
+  }
+}
+/* Satellite info with data integrity */
+.satellite-name {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 1);
+}
+
+.satellite-name .data-integrity-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 0.5);
+}

@@ -1,0 +1,467 @@
+/**
+ * Collection Actions Styles
+ * 
+ * Bulk actions component styling with progress indicators and confirmations.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Actions Container
+   ============================================================================= */
+
+.collection-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bp5-background-color);
+  border-bottom: 1px solid var(--bp5-border-color);
+}
+
+.collection-actions-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* =============================================================================
+   Selection Info
+   ============================================================================= */
+
+.collection-actions-selection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: var(--bp5-intent-primary-light);
+  border: 1px solid var(--bp5-intent-primary);
+  border-radius: 3px;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.collection-actions-selection .bp5-tag {
+  font-weight: 600;
+  border: none;
+}
+
+.collection-actions-selection .bp5-tag .bp5-icon {
+  margin-right: 6px;
+}
+
+.collection-actions-selection .bp5-button {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+  background-color: transparent;
+  border: 1px solid var(--bp5-intent-primary);
+}
+
+.collection-actions-selection .bp5-button:hover {
+  background-color: var(--bp5-intent-primary);
+  color: white;
+}
+
+/* =============================================================================
+   Individual Actions
+   ============================================================================= */
+
+.collection-actions-individual {
+  display: flex;
+  align-items: center;
+}
+
+.collection-actions-individual .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.collection-actions-individual .bp5-button {
+  border-radius: 0;
+  border: none;
+  margin: 0;
+  min-width: 32px;
+  min-height: 30px;
+}
+
+.collection-actions-individual .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+.collection-actions-individual .bp5-button:focus {
+  z-index: 1;
+  position: relative;
+}
+
+/* =============================================================================
+   Bulk Actions
+   ============================================================================= */
+
+.collection-actions-bulk {
+  display: flex;
+  align-items: center;
+}
+
+.collection-actions-bulk .bp5-button {
+  font-weight: 600;
+  min-width: 140px;
+}
+
+/* =============================================================================
+   Import/Export Actions
+   ============================================================================= */
+
+.collection-actions-import-export {
+  display: flex;
+  align-items: center;
+}
+
+.collection-actions-import-export .bp5-button {
+  min-width: 36px;
+  min-height: 30px;
+}
+
+.collection-actions-import-export .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+/* =============================================================================
+   Operation Progress
+   ============================================================================= */
+
+.collection-actions-progress {
+  margin-bottom: 8px;
+}
+
+.collection-actions-progress .bp5-callout {
+  margin: 0;
+  padding: 12px;
+}
+
+.operation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.operation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.operation-title {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.operation-header .bp5-tag {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: center;
+}
+
+.operation-details {
+  font-size: 12px;
+  color: var(--bp5-text-color-muted);
+  font-style: italic;
+}
+
+.collection-actions-progress .bp5-progress-bar {
+  height: 6px;
+}
+
+/* =============================================================================
+   Confirmation Dialog
+   ============================================================================= */
+
+.confirmation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.confirmation-content h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--bp5-text-color);
+}
+
+.confirmation-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--bp5-text-color);
+}
+
+.confirmation-details {
+  padding: 8px 12px;
+  background-color: var(--bp5-background-color-secondary);
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.confirmation-details strong {
+  color: var(--bp5-text-color);
+}
+
+.confirmation-content .bp5-callout {
+  margin-top: 8px;
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-actions {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+  
+  .collection-actions-controls {
+    gap: 16px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-actions {
+    gap: 10px;
+  }
+  
+  .collection-actions-controls {
+    gap: 10px;
+  }
+  
+  .collection-actions-bulk .bp5-button {
+    min-width: 120px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-actions {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  
+  .collection-actions-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .collection-actions-selection {
+    order: 1;
+    justify-content: center;
+  }
+  
+  .collection-actions-individual {
+    order: 2;
+    justify-content: center;
+  }
+  
+  .collection-actions-bulk {
+    order: 3;
+    justify-content: center;
+  }
+  
+  .collection-actions-import-export {
+    order: 4;
+    justify-content: center;
+  }
+  
+  .collection-actions-bulk .bp5-button {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .operation-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .operation-title {
+    text-align: center;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-actions {
+    padding: 10px 12px;
+  }
+  
+  .collection-actions-individual .bp5-button {
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .collection-actions-individual .bp5-button-group {
+    width: 100%;
+  }
+  
+  .collection-actions-individual .bp5-button {
+    flex: 1;
+  }
+  
+  .collection-actions-import-export .bp5-button {
+    width: 100%;
+  }
+  
+  .confirmation-content h4 {
+    font-size: 14px;
+  }
+  
+  .confirmation-content p {
+    font-size: 13px;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-actions:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.collection-actions .bp5-button:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 1px;
+  z-index: 1;
+  position: relative;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-actions {
+    border-bottom: 2px solid var(--bp5-text-color);
+  }
+  
+  .collection-actions-selection {
+    border: 2px solid var(--bp5-intent-primary);
+  }
+  
+  .collection-actions-individual .bp5-button-group {
+    box-shadow: 0 0 0 2px var(--bp5-text-color);
+  }
+  
+  .confirmation-details {
+    border: 2px solid var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .collection-actions-selection {
+    animation: none;
+  }
+  
+  .collection-actions * {
+    transition: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-actions {
+  background: var(--bp5-dark-background-color);
+  border-bottom-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-actions-selection {
+  background-color: var(--bp5-dark-intent-primary-light);
+  border-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .collection-actions-selection .bp5-button {
+  border-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .collection-actions-selection .bp5-button:hover {
+  background-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .collection-actions-individual .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-actions-individual .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+.bp5-dark .collection-actions-import-export .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+.bp5-dark .operation-details {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .confirmation-content h4 {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .confirmation-content p {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .confirmation-details {
+  background-color: var(--bp5-dark-background-color-secondary);
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .confirmation-details strong {
+  color: var(--bp5-dark-text-color);
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-actions.loading .collection-actions-controls {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.collection-actions.loading .bp5-button {
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-actions {
+    display: none;
+  }
+}

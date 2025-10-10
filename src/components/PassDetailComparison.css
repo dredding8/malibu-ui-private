@@ -1,0 +1,319 @@
+/* Pass Detail Comparison Component Styles */
+.pass-detail-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metrics-summary {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Table View Styles */
+.comparison-table {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pass-detail-table {
+  width: 100%;
+}
+
+.site-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.time-cell .text-muted {
+  font-size: 12px;
+  color: #666;
+}
+
+.quality-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.quality-cell .metrics {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #666;
+}
+
+.capacity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+/* Cards View Styles */
+.pass-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.pass-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.pass-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.pass-card.selected {
+  border-color: #2b95d6;
+  background: #e3f2fd;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-content h4 {
+  margin: 0 0 12px 0;
+  color: #1c2127;
+}
+
+.pass-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+.metric .bp5-icon {
+  color: #999;
+}
+
+/* Justification Form Styles */
+.justification-section {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.justification-form {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 16px;
+}
+
+.justification-form h3 {
+  margin: 0 0 24px 0;
+  color: #1c2127;
+  border-bottom: 1px solid #e1e8ed;
+  padding-bottom: 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.justification-text-group {
+  margin: 16px 0;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 24px;
+  margin: 16px 0;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.instructions-group {
+  margin-top: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .comparison-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .metrics-summary {
+    justify-content: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .checkbox-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pass-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode Support */
+.bp5-dark .pass-detail-comparison {
+  background: #293742;
+}
+
+.bp5-dark .comparison-header,
+.bp5-dark .comparison-table,
+.bp5-dark .justification-section {
+  background: #30404d;
+}
+
+.bp5-dark .pass-card.selected {
+  background: #1f2933;
+  border-color: #48aff0;
+}
+
+.bp5-dark .justification-form h3 {
+  color: #f5f8fa;
+  border-bottom-color: #394b59;
+}
+
+.bp5-dark .checkbox-group {
+  background: #394b59;
+}
+
+/* Animation Enhancements */
+.pass-card {
+  animation: cardEnter 0.3s ease-out;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.justification-form {
+  animation: formSlideIn 0.3s ease-out;
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility Enhancements */
+.pass-card:focus {
+  outline: 2px solid #2b95d6;
+  outline-offset: 2px;
+}
+
+.metric {
+  line-height: 1.4;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .pass-card {
+    border-width: 3px;
+  }
+  
+  .pass-card.selected {
+    border-color: #000;
+    background: #fff;
+  }
+  
+  .metric {
+    font-weight: 600;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .pass-detail-comparison {
+    background: white;
+    box-shadow: none;
+  }
+  
+  .comparison-header {
+    border-bottom: 2px solid #000;
+    margin-bottom: 16px;
+  }
+  
+  .view-controls {
+    display: none;
+  }
+  
+  .pass-card {
+    break-inside: avoid;
+    border: 1px solid #000;
+  }
+}

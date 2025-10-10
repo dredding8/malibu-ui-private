@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Cell, Column, Table2, SelectionModes } from '@blueprintjs/table';
+import { Cell, Table2 } from '@blueprintjs/table';
+// Import Column separately to avoid TypeScript issues
+import { Column } from '@blueprintjs/table';
 import { Intent, Tag, Tooltip, Button, Classes, Colors, Checkbox } from '@blueprintjs/core';
 import { useLocalization } from '../hooks/useLocalization';
 import { useBackgroundProcessing } from '../contexts/BackgroundProcessingContext';
-import { HistoryTableRow } from '../services/backgroundProcessingService';
 import { IconNames } from '@blueprintjs/icons';
 import { 
   CollectionDeckStatus, 
@@ -12,21 +12,10 @@ import {
   COLLECTION_STATUS_LABELS, 
   COLLECTION_STATUS_INTENTS,
   ALGORITHM_STATUS_LABELS,
-  ALGORITHM_STATUS_INTENTS
+  ALGORITHM_STATUS_INTENTS,
+  resolveCollectionStatus
 } from '../constants/statusTypes';
-import { NAVIGATION_LABELS, NAVIGATION_ROUTES, NAVIGATION_DESCRIPTIONS } from '../constants/navigation';
 import './HistoryTable.css';
-
-// Data interface as per requirements
-interface HistoryTableRowData {
-  id: string;
-  name: string;
-  collectionDeckStatus: CollectionDeckStatus;
-  algorithmStatus: AlgorithmStatus;
-  progress: number;
-  createdDate: Date;
-  completionDate?: Date;
-}
 
 interface HistoryTableProps {
   startDate: string | null;
@@ -37,14 +26,14 @@ interface HistoryTableProps {
   enableBulkActions?: boolean;
   onSelectionChange?: (selectedIndices: number[]) => void;
   newDeckId?: string; // For highlighting newly created deck
+  selectedCollectionId?: string | null; // Currently selected collection
+  onCollectionSelect?: (collectionId: string | null) => void; // Selection callback
 }
 
 // Enterprise table styling constants following design best practices
 const TABLE_STYLES = {
   container: `${Classes.ELEVATION_1} bp6-table-container`,
-  nameCell: `${Classes.TEXT_OVERFLOW_ELLIPSIS}`,
   statusCell: 'bp6-status-cell',
-  progressCell: 'bp6-progress-cell',
   actionCell: 'bp6-action-cell',
   dateCell: 'bp6-date-cell',
   numericCell: 'bp6-numeric-cell',
@@ -59,9 +48,10 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   onClearFilters,
   enableBulkActions = false,
   onSelectionChange,
-  newDeckId
+  newDeckId,
+  selectedCollectionId,
+  onCollectionSelect
 }) => {
-  const navigate = useNavigate();
   const { jobs } = useBackgroundProcessing();
   const { t } = useLocalization();
   const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
@@ -71,6 +61,12 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   const isNewlyCreatedDeck = React.useCallback((deckId: string): boolean => {
     return newDeckId === deckId;
   }, [newDeckId]);
+
+  // Extract column names to avoid TypeScript issues
+  const algorithmStatusColumnName = t('history.columns.algorithmStatus') || 'Matching status';
+  const completedColumnName = t('history.columns.completed') || 'Completed';
+  const createdColumnName = t('history.columns.created') || 'Created Date';
+  const collectionStatusColumnName = t('history.columns.collectionStatus') || 'Collection Deck Status';
 
   const filteredData = useMemo(() => {
     let filtered = jobs;
@@ -83,11 +79,19 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       );
     }
 
-    // Apply status filter
+    // Apply status filter using granular algorithmStatus model
     if (statusFilter && statusFilter !== 'all') {
-      filtered = filtered.filter(job => 
-        job.collectionDeckStatus === statusFilter
-      );
+      filtered = filtered.filter(job => {
+        // Handle grouped status filters
+        if (statusFilter === 'processing') {
+          return job.algorithmStatus === 'running' || job.algorithmStatus === 'optimizing';
+        } else if (statusFilter === 'needs-attention') {
+          return job.algorithmStatus === 'error' || job.algorithmStatus === 'timeout';
+        } else {
+          // Direct algorithmStatus match for individual statuses
+          return job.algorithmStatus === statusFilter;
+        }
+      });
     }
 
     // Apply date filters (if implemented)
@@ -179,45 +183,26 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
   };
 
   // Cell Renderers with Blueprint design system compliance
-  const nameCellRenderer = (rowIndex: number) => {
+  const createdByCellRenderer = (rowIndex: number) => {
     const item = filteredData[rowIndex];
     if (!item) return <Cell />;
     
-    const isNewDeck = isNewlyCreatedDeck(item.id);
-    
     return (
-      <Cell 
-        className={TABLE_STYLES.nameCell}
-        style={isNewDeck ? {
-          backgroundColor: Colors.GREEN5,
-          border: `2px solid ${Colors.GREEN3}`,
-          boxShadow: '0 0 8px rgba(19, 124, 189, 0.3)',
-          borderRadius: '4px'
-        } : undefined}
-      >
+      <Cell className={TABLE_STYLES.dateCell}>
         <div 
-          className="bp6-name-cell-content"
-          title={item.name}
-          style={isNewDeck ? {
-            fontWeight: 'bold',
-            color: Colors.GREEN1,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          } : undefined}
+          className="bp6-created-by-content" 
+          style={{
+            fontSize: '14px',
+            color: Colors.DARK_GRAY1,
+            fontWeight: '500',
+            cursor: 'pointer',
+            width: '100%',
+            height: '100%',
+            padding: '8px'
+          }}
+          onClick={() => handleCellClick(item.id)}
         >
-          {isNewDeck && <span style={{ fontSize: '16px' }}>✨</span>}
-          {item.name}
-          {isNewDeck && <span style={{ 
-            fontSize: '11px', 
-            backgroundColor: Colors.GREEN2,
-            color: Colors.WHITE,
-            padding: '2px 6px',
-            borderRadius: '10px',
-            textTransform: 'uppercase',
-            fontWeight: '600',
-            letterSpacing: '0.5px'
-          }}>Just Created</span>}
+          {item.createdBy}
         </div>
       </Cell>
     );
@@ -228,6 +213,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
     if (!item) return <Cell />;
     
     const isNewDeck = isNewlyCreatedDeck(item.id);
+    
+    // Use simplified status resolution
+    const simplifiedStatus = resolveCollectionStatus(item.algorithmStatus);
 
     const getIntent = (status: CollectionDeckStatus): Intent => {
       const intentString = COLLECTION_STATUS_INTENTS[status];
@@ -238,7 +226,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
       return COLLECTION_STATUS_LABELS[status];
     };
 
-    const statusText = getCollectionStatusText(item.collectionDeckStatus);
+    const statusText = getCollectionStatusText(simplifiedStatus);
 
     return (
       <Cell
@@ -248,28 +236,40 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
           borderRadius: '4px'
         } : undefined}
       >
-        <Tooltip content={t('history.tooltips.collectionStatus')} position="top">
-          <Tag
-            intent={getIntent(item.collectionDeckStatus)}
-            aria-label={`Collection deck status: ${statusText}`}
-            data-testid="collection-status-tag"
-            className={Classes.TEXT_SMALL}
-            style={{
-              fontWeight: 600,
-              minWidth: '100px',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '13px', /* Ensure accessibility minimum */
-              ...(isNewDeck && {
-                boxShadow: '0 2px 6px rgba(19, 124, 189, 0.2)',
-                transform: 'scale(1.05)'
-              })
-            }}
-          >
-            {statusText}
-          </Tag>
-        </Tooltip>
+        <div 
+          style={{ 
+            cursor: 'pointer', 
+            width: '100%', 
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={() => handleCellClick(item.id)}
+        >
+          <Tooltip content={t('history.tooltips.collectionStatus')} position="top">
+            <Tag
+              intent={getIntent(simplifiedStatus)}
+              aria-label={`Collection deck status: ${statusText}`}
+              data-testid="collection-status-tag"
+              className={Classes.TEXT_SMALL}
+              style={{
+                fontWeight: 600,
+                minWidth: '100px',
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontSize: '13px', /* Ensure accessibility minimum */
+                ...(isNewDeck && {
+                  boxShadow: '0 2px 6px rgba(19, 124, 189, 0.2)',
+                  transform: 'scale(1.05)'
+                })
+              }}
+            >
+              {statusText}
+            </Tag>
+          </Tooltip>
+        </div>
       </Cell>
     );
   };
@@ -291,175 +291,162 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
 
     return (
       <Cell className={TABLE_STYLES.statusCell}>
-        <Tooltip content={t('history.tooltips.algorithmStatus')} position="top">
-          <Tag
-            intent={getAlgorithmIntent(item.algorithmStatus)}
-            aria-label={`Processing status: ${statusText}`}
-            data-testid="algorithm-status-indicator"
-            className={Classes.TEXT_SMALL}
-            style={{
-              fontWeight: 600,
-              minWidth: '100px',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '13px' /* Ensure accessibility minimum */
-            }}
-          >
-            {statusText}
-          </Tag>
-        </Tooltip>
-      </Cell>
-    );
-  };
-
-  const progressCellRenderer = (rowIndex: number) => {
-    const item = filteredData[rowIndex];
-    if (!item) return <Cell />;
-    
-    // Workshop-compatible progress indicator using simple text and status badge
-    const getProgressIntent = (progress: number): Intent => {
-      if (progress === 100) return Intent.SUCCESS;
-      if (progress >= 75) return Intent.PRIMARY;
-      if (progress >= 25) return Intent.WARNING;
-      return Intent.NONE;
-    };
-    
-    const getProgressStatus = (progress: number): string => {
-      if (progress === 100) return 'Complete';
-      if (progress >= 75) return 'Almost Complete';
-      if (progress >= 25) return 'In Progress';
-      return 'Initializing';
-    };
-    
-    return (
-      <Cell className={TABLE_STYLES.progressCell}>
-        <Tooltip content={t('history.tooltips.progressBar')} position="top">
-          <div className="bp6-progress-container" style={{
+        <div 
+          style={{ 
+            cursor: 'pointer',
+            width: '100%',
+            height: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }}>
+            justifyContent: 'center'
+          }}
+          onClick={() => handleCellClick(item.id)}
+        >
+          <Tooltip content={t('history.tooltips.algorithmStatus')} position="top">
             <Tag
-              intent={getProgressIntent(item.progress)}
-              minimal
+              intent={getAlgorithmIntent(item.algorithmStatus)}
+              aria-label={`Processing status: ${statusText}`}
+              data-testid="algorithm-status-indicator"
+              className={Classes.TEXT_SMALL}
               style={{
-                fontWeight: 400,
-                fontSize: '12px',
-                minWidth: '45px',
+                fontWeight: 600,
+                minWidth: '100px',
                 textAlign: 'center',
-                opacity: 0.8,
-                color: 'var(--bp-color-gray-500)'
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontSize: '13px' /* Ensure accessibility minimum */
               }}
             >
-              {item.progress}%
+              {statusText}
             </Tag>
-            {item.progress < 100 && (
-              <span 
-                className="bp6-progress-status"
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--bp-color-gray-500)',
-                  fontStyle: 'italic'
-                }}
-              >
-                {getProgressStatus(item.progress)}
-              </span>
-            )}
-          </div>
-        </Tooltip>
-      </Cell>
-    );
-  };
-
-  const actionsCellRenderer = (rowIndex: number) => {
-    const item = filteredData[rowIndex];
-    if (!item) return <Cell />;
-
-    const isReady = item.collectionDeckStatus === 'ready';
-    const isFailed = item.collectionDeckStatus === 'failed';
-    const isProcessing = item.collectionDeckStatus === 'processing';
-
-    return (
-      <Cell className={TABLE_STYLES.actionCell}>
-        <div className="bp6-action-buttons">
-          {isReady && (
-            <>
-              <Button
-                icon={IconNames.EYE_OPEN}
-                text={NAVIGATION_LABELS.VIEW_COLLECTION}
-                intent={Intent.SUCCESS}
-                data-testid={`view-deck-${rowIndex}`}
-                className={Classes.TEXT_SMALL}
-                style={{ fontSize: '12px', padding: '4px 8px', marginBottom: '4px' }}
-              />
-              <Tooltip content={NAVIGATION_DESCRIPTIONS.COLLECTION_OPPORTUNITIES}>
-                <Button
-                  icon={IconNames.SATELLITE}
-                  text={NAVIGATION_LABELS.COLLECTION_OPPORTUNITIES_BTN}
-                  intent={Intent.SUCCESS}
-                  data-testid={`view-opportunities-${rowIndex}`}
-                  className={Classes.TEXT_SMALL}
-                  style={{ fontSize: '12px', padding: '4px 8px', marginRight: '4px' }}
-                  onClick={() => {
-                    navigate(NAVIGATION_ROUTES.COLLECTION_OPPORTUNITIES_VIEW(item.id));
-                  }}
-                />
-              </Tooltip>
-              <Tooltip content={NAVIGATION_DESCRIPTIONS.FIELD_MAPPING_REVIEW}>
-                <Button
-                  icon={IconNames.FLOWS}
-                  text={NAVIGATION_LABELS.FIELD_MAPPINGS}
-                  intent={Intent.PRIMARY}
-                  data-testid={`view-mappings-${rowIndex}`}
-                  className={Classes.TEXT_SMALL}
-                  style={{ fontSize: '12px', padding: '4px 8px' }}
-                  onClick={() => {
-                    navigate(NAVIGATION_ROUTES.FIELD_MAPPING_REVIEW(item.id));
-                  }}
-                />
-              </Tooltip>
-            </>
-          )}
-          {isFailed && (
-            <Button
-              icon={IconNames.REFRESH}
-              text="Retry"
-              intent={Intent.WARNING}
-              data-testid={`retry-deck-${rowIndex}`}
-              className={Classes.TEXT_SMALL}
-              style={{ fontSize: '12px', padding: '4px 8px' }}
-            />
-          )}
-          {isReady && (
-            <Button
-              icon={IconNames.DOWNLOAD}
-              text={t('history.actions.downloadResults') || 'Download'}
-              intent={Intent.PRIMARY}
-              data-testid={`download-deck-${rowIndex}`}
-              className={Classes.TEXT_SMALL}
-              style={{ fontSize: '12px', padding: '4px 8px' }}
-            />
-          )}
-          {isProcessing && (
-            <div className="bp6-processing-indicator">
-              {t('history.status.processing')}
-            </div>
-          )}
+          </Tooltip>
         </div>
       </Cell>
     );
   };
 
-  const dateCellRenderer = (date?: Date) => (
+
+
+  const dateCellRenderer = (date?: Date, itemId?: string) => (
     <Cell className={TABLE_STYLES.dateCell}>
-      <div className="bp6-date-content">
+      <div 
+        className="bp6-date-content"
+        style={{
+          cursor: itemId ? 'pointer' : 'default',
+          width: '100%',
+          height: '100%',
+          padding: '8px'
+        }}
+        onClick={itemId ? () => handleCellClick(itemId) : undefined}
+      >
         {date ? date.toLocaleString() : '—'}
       </div>
     </Cell>
   );
 
+  // Helper function to handle row clicks
+  const handleCellClick = React.useCallback((itemId: string) => {
+    if (onCollectionSelect) {
+      onCollectionSelect(itemId === selectedCollectionId ? null : itemId);
+    }
+  }, [onCollectionSelect, selectedCollectionId]);
+
+  // Define columns to work around TypeScript issue
+  const columns = React.useMemo(() => {
+    const cols = [];
+    
+    // Collection Name column
+    cols.push(
+      <Column 
+        key="name"
+        name="Collection Name"
+        cellRenderer={(rowIndex) => {
+          const item = filteredData[rowIndex];
+          if (!item) return <Cell />;
+          const isSelected = item.id === selectedCollectionId;
+          const isNew = isNewlyCreatedDeck(item.id);
+          
+          return (
+            <Cell
+              style={{
+                backgroundColor: isSelected ? Colors.BLUE5 : isNew ? Colors.GREEN5 : undefined,
+                borderLeft: isSelected ? `3px solid ${Colors.BLUE3}` : undefined,
+                transition: 'background-color 0.15s ease'
+              }}
+            >
+              <div 
+                style={{ 
+                  fontWeight: isSelected ? 600 : 500,
+                  fontSize: '14px',
+                  color: Colors.DARK_GRAY1,
+                  padding: '8px 4px',
+                  cursor: 'pointer',
+                  width: '100%',
+                  height: '100%'
+                }}
+                onClick={() => handleCellClick(item.id)}
+              >
+                {item.name}
+              </div>
+            </Cell>
+          );
+        }}
+      />
+    );
+    
+    // Created Date column
+    cols.push(
+      <Column 
+        key="created"
+        name={createdColumnName}
+        cellRenderer={(rowIndex) => {
+          const item = filteredData[rowIndex];
+          return dateCellRenderer(item?.createdDate, item?.id);
+        }}
+      />
+    );
+    
+    // Created By column
+    cols.push(
+      <Column 
+        key="createdBy"
+        name="Created By"
+        cellRenderer={createdByCellRenderer}
+      />
+    );
+    
+    // Collection Status column
+    cols.push(
+      <Column 
+        key="collectionStatus"
+        name={collectionStatusColumnName}
+        cellRenderer={collectionStatusCellRenderer}
+      />
+    );
+    
+    // Algorithm Status column
+    cols.push(
+      <Column 
+        key="algorithmStatus"
+        name={algorithmStatusColumnName}
+        cellRenderer={algorithmStatusCellRenderer}
+      />
+    );
+    
+    // Completed Date column
+    cols.push(
+      <Column 
+        key="completed"
+        name={completedColumnName}
+        cellRenderer={(rowIndex) => {
+          const item = filteredData[rowIndex];
+          return dateCellRenderer(item?.completionDate, item?.id);
+        }}
+      />
+    );
+    
+    return cols;
+  }, [filteredData, selectedCollectionId, isNewlyCreatedDeck, createdColumnName, collectionStatusColumnName, algorithmStatusColumnName, completedColumnName, dateCellRenderer, createdByCellRenderer, collectionStatusCellRenderer, algorithmStatusCellRenderer, handleCellClick]);
 
   return (
     <div 
@@ -476,43 +463,21 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
         enableColumnReordering={false}
         enableMultipleSelection={false}
         enableGhostCells={false}
-        columnWidths={enableBulkActions ? [50, 200, 140, 180, 100, 120, 120, 140] : [200, 140, 180, 100, 120, 120, 140]}
+        columnWidths={enableBulkActions ? [50, 250, 120, 120, 140, 180, 120] : [250, 120, 120, 140, 180, 120]}
+        onSelection={(regions) => {
+          if (regions.length > 0 && regions[0].rows) {
+            const rowIndex = regions[0].rows[0];
+            const item = filteredData[rowIndex];
+            if (item && onCollectionSelect) {
+              onCollectionSelect(item.id === selectedCollectionId ? null : item.id);
+            }
+          }
+        }}
+        getCellClipboardData={(row) => {
+          return filteredData[row]?.name || '';
+        }}
       >
-        {/* Temporary comment out bulk selection column due to TypeScript constraints */}
-        {/* {enableBulkActions && (
-          <Column 
-            name=""
-            cellRenderer={selectionCellRenderer}
-          />
-        )} */}
-        <Column 
-          name={t('history.columns.name') || 'Collection Name'}
-          cellRenderer={nameCellRenderer}
-        />
-        <Column 
-          name={t('history.columns.collectionStatus') || 'Status'}
-          cellRenderer={collectionStatusCellRenderer}
-        />
-        <Column 
-          name={t('history.columns.algorithmStatus') || 'Processing Update'}
-          cellRenderer={algorithmStatusCellRenderer}
-        />
-        <Column 
-          name={t('history.columns.progress') || 'Progress'}
-          cellRenderer={progressCellRenderer}
-        />
-        <Column 
-          name={t('history.columns.created') || 'Created'}
-          cellRenderer={(rowIndex) => dateCellRenderer(filteredData[rowIndex]?.createdDate)}
-        />
-        <Column 
-          name={t('history.columns.completed') || 'Completed'}
-          cellRenderer={(rowIndex) => dateCellRenderer(filteredData[rowIndex]?.completionDate)}
-        />
-        <Column 
-          name="Actions"
-          cellRenderer={actionsCellRenderer}
-        />
+        {columns}
       </Table2>
       {filteredData.length === 0 && (
         <div 
@@ -551,11 +516,12 @@ const HistoryTable: React.FC<HistoryTableProps> = ({
             </div>
           )}
           {(searchQuery || statusFilter !== 'all' || startDate || endDate) && (
-            <Button 
+            <Button
               text="Clear All Filters"
               intent={Intent.PRIMARY}
               icon={IconNames.CROSS}
               onClick={onClearFilters}
+              aria-label="Clear all filters"
             />
           )}
         </div>

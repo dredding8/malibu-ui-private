@@ -1,0 +1,312 @@
+/* Collection Opportunities Page Styles */
+
+.collection-opportunities-page {
+  min-height: 100vh;
+  background-color: #f5f8fa;
+  padding: 24px;
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-header h1 {
+  margin-bottom: 12px;
+  color: #182026;
+}
+
+.page-description {
+  font-size: 16px;
+  color: #5c7080;
+  line-height: 1.5;
+}
+
+/* Loading state */
+.opportunities-page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+  color: #5c7080;
+}
+
+/* Main opportunities card */
+.opportunities-card {
+  margin-bottom: 24px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.opportunities-card .collection-opportunities {
+  padding: 0;
+}
+
+/* Help card */
+.help-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f6f7f9;
+  border: 1px solid #e1e8ed;
+}
+
+.help-card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #182026;
+}
+
+.help-card ul {
+  margin: 0;
+  padding-left: 24px;
+  line-height: 1.8;
+  color: #394b59;
+}
+
+.help-card li {
+  margin-bottom: 8px;
+}
+
+.help-card strong {
+  color: #182026;
+  font-weight: 600;
+}
+
+/* Success toast notification */
+.success-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #0d8050;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+/* Quick start guide card */
+.quick-start-card {
+  margin-bottom: 24px;
+  background-color: #ebf1f5;
+  border: 1px solid #c5cbd3;
+  transition: opacity 0.3s ease;
+}
+
+.quick-start-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #182026;
+}
+
+.quick-start-card p {
+  margin: 0;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.quick-start-card .bp5-icon-lightbulb {
+  color: #106ba3;
+}
+
+/* System health tags */
+.system-health-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Reference guide grid */
+.reference-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.reference-guide-grid h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #182026;
+}
+
+.reference-guide-grid dl {
+  margin: 0;
+}
+
+.reference-guide-grid dt {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #182026;
+}
+
+.reference-guide-grid dd {
+  margin: 0 0 12px 0;
+  color: #5c7080;
+}
+
+/* Keyboard shortcuts styling */
+.reference-guide-grid kbd {
+  padding: 2px 6px;
+  background: #f5f8fa;
+  border: 1px solid #c5cbd3;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .collection-opportunities-page {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .collection-opportunities-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    text-align: left;
+  }
+
+  .page-description {
+    font-size: 14px;
+  }
+
+  .help-card {
+    font-size: 14px;
+  }
+
+  .success-toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    justify-content: center;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .collection-opportunities-page {
+    background-color: #182026;
+  }
+
+  .page-header h1 {
+    color: #f6f7f9;
+  }
+
+  .page-description {
+    color: #a7b6c2;
+  }
+
+  .help-card {
+    background-color: #293742;
+    border-color: #394b59;
+    color: #f6f7f9;
+  }
+
+  .help-card h3 {
+    color: #f6f7f9;
+  }
+
+  .help-card ul {
+    color: #bfccd6;
+  }
+
+  .help-card strong {
+    color: #f6f7f9;
+  }
+
+  /* Quick start guide in dark mode */
+  .quick-start-card {
+    background-color: #293742;
+    border-color: #394b59;
+  }
+
+  .quick-start-card h3 {
+    color: #f6f7f9;
+  }
+
+  .quick-start-card p {
+    color: #f6f7f9;
+  }
+
+  .quick-start-card p:last-child {
+    color: #a7b6c2;
+  }
+
+  /* Reference guide in dark mode */
+  .reference-guide-grid h4 {
+    color: #f6f7f9;
+  }
+
+  .reference-guide-grid dt {
+    color: #f6f7f9;
+  }
+
+  .reference-guide-grid dd {
+    color: #a7b6c2;
+  }
+
+  .reference-guide-grid kbd {
+    background: #293742;
+    border-color: #394b59;
+    color: #f6f7f9;
+  }
+}
+
+/* Print styles */
+@media print {
+  .success-toast {
+    display: none;
+  }
+
+  .collection-opportunities-page {
+    background: white;
+    padding: 0;
+  }
+
+  .help-card {
+    page-break-before: always;
+  }
+}

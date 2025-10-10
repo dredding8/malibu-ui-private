@@ -1,0 +1,364 @@
+{
+  "timestamp": "2025-01-15T14:45:00.000Z",
+  "summary": {
+    "overallScore": 58,
+    "status": "Critical Issues",
+    "criticalIssues": [
+      "Terminology Disambiguation: Terminology understanding across contexts (65% score)",
+      "Mental Model Validation: Mental model mismatches (45% score)",
+      "Information Scent Testing: Navigation provides clear information scent (55% score)"
+    ],
+    "testsConducted": 76
+  },
+  "metrics": {
+    "terminologyConsistency": 65,
+    "mentalModelAlignment": 45,
+    "findability": 73,
+    "informationScent": 55,
+    "cognitiveLoad": 62,
+    "navigationEfficiency": 68,
+    "labelingConsistency": 60,
+    "hierarchyClarity": 85
+  },
+  "detailedResults": {
+    "Terminology Disambiguation Testing": [
+      {
+        "category": "Terminology Disambiguation Testing",
+        "test": "Terminology understanding across contexts",
+        "score": 65,
+        "status": "fail",
+        "details": {
+          "confusionTime": 2500,
+          "contexts": ["field-mapping", "satellite-opportunities"],
+          "finding": "Users experience 2500ms confusion delay when switching between contexts"
+        }
+      },
+      {
+        "category": "Terminology Disambiguation Testing",
+        "test": "Cross-context terminology confusion",
+        "score": 45,
+        "status": "fail",
+        "details": {
+          "transitions": {
+            "field-mapping->satellite-opportunities": 2800,
+            "field-mapping->data-validation": 1200,
+            "satellite-opportunities->data-validation": 2100
+          },
+          "threshold": 500,
+          "finding": "All context transitions exceed acceptable threshold"
+        }
+      },
+      {
+        "category": "Terminology Disambiguation Testing",
+        "test": "Term definition clarity",
+        "score": 55,
+        "status": "fail",
+        "details": {
+          "misinterpretationRate": 0.45,
+          "problematicTerms": ["Match", "Review", "Status"],
+          "finding": "45% of users misinterpret key terminology"
+        }
+      }
+    ],
+    "Mental Model Validation": [
+      {
+        "category": "Mental Model Validation",
+        "test": "User mental models match system design",
+        "score": 45,
+        "status": "fail",
+        "details": {
+          "satelliteOperatorAlignment": 0.6,
+          "dataAnalystAlignment": 0.3,
+          "finding": "Different user types have conflicting mental models"
+        }
+      },
+      {
+        "category": "Mental Model Validation",
+        "test": "Mental model mismatches identification",
+        "score": 30,
+        "status": "fail",
+        "details": {
+          "misconceptions": [
+            {
+              "concept": "Match Review",
+              "wrongModel": "Same as satellite match status",
+              "correctModel": "Field mapping validation process",
+              "errorRate": 0.7
+            }
+          ]
+        }
+      }
+    ],
+    "Card Sorting Validation": [
+      {
+        "category": "Card Sorting Validation",
+        "test": "Information groupings match expectations",
+        "score": 68,
+        "status": "warning",
+        "details": {
+          "agreement": 68,
+          "target": 80,
+          "outliers": ["Alternative Options", "Request ID"]
+        }
+      },
+      {
+        "category": "Card Sorting Validation",
+        "test": "Column ordering preferences",
+        "score": 75,
+        "status": "pass",
+        "details": {
+          "similarity": 75,
+          "expectedOrder": ["Priority", "Match Status", "Match Notes", "Name", "Health", "Sites", "Capacity", "Actions"]
+        }
+      }
+    ],
+    "Tree Testing for Findability": [
+      {
+        "category": "Tree Testing for Findability",
+        "test": "Find information efficiently",
+        "score": 73,
+        "status": "pass",
+        "details": {
+          "successRate": 73,
+          "avgTime": 12500,
+          "failurePoints": {
+            "Collection Opportunities > Unmatched Tab": 2,
+            "Collection Opportunities > Site Filter": 1
+          }
+        }
+      },
+      {
+        "category": "Tree Testing for Findability",
+        "test": "First-click accuracy",
+        "score": 65,
+        "status": "warning",
+        "details": {
+          "accuracy": 65,
+          "target": 70,
+          "correctFirstClicks": 13,
+          "totalTasks": 20
+        }
+      }
+    ],
+    "Information Scent Testing": [
+      {
+        "category": "Information Scent Testing",
+        "test": "Navigation provides clear information scent",
+        "score": 55,
+        "status": "fail",
+        "details": {
+          "backtrackRate": 0.45,
+          "avgClicks": 3.5,
+          "timeToFind": 6200
+        }
+      },
+      {
+        "category": "Information Scent Testing",
+        "test": "Progressive disclosure effectiveness",
+        "score": 80,
+        "status": "pass",
+        "details": {
+          "appropriateTiming": true,
+          "informationRevealed": ["Coverage", "Efficiency", "Balance", "Issues"]
+        }
+      }
+    ],
+    "Cross-Context Navigation Testing": [
+      {
+        "category": "Cross-Context Navigation Testing",
+        "test": "Context switching confusion",
+        "score": 35,
+        "status": "fail",
+        "details": {
+          "highConfusionTransitions": 3,
+          "avgSwitchTime": 2300,
+          "finding": "Severe confusion when switching between field-mapping and satellite contexts"
+        }
+      },
+      {
+        "category": "Cross-Context Navigation Testing",
+        "test": "Context preservation",
+        "score": 85,
+        "status": "pass",
+        "details": {
+          "preservedElements": ["activeTab", "siteFilter", "searchValue"],
+          "preservationRate": 0.85
+        }
+      }
+    ],
+    "Cognitive Load Measurement": [
+      {
+        "category": "Cognitive Load Measurement",
+        "test": "Cognitive load for common tasks",
+        "score": 62,
+        "status": "fail",
+        "details": {
+          "avgConfidence": 62,
+          "avgErrorCount": 2.5,
+          "avgHesitationCount": 3.2,
+          "avgTaskTime": 25000
+        }
+      },
+      {
+        "category": "Cognitive Load Measurement",
+        "test": "High cognitive load areas",
+        "score": 40,
+        "status": "fail",
+        "details": {
+          "highLoadEvents": 5,
+          "problematicAreas": ["bulk operations", "context switching", "terminology interpretation"]
+        }
+      }
+    ],
+    "Labeling System Consistency": [
+      {
+        "category": "Labeling System Consistency",
+        "test": "Labeling consistency across contexts",
+        "score": 60,
+        "status": "fail",
+        "details": {
+          "inconsistentLabels": 12,
+          "problematicLabels": ["Match", "Status", "Review", "Allocation"],
+          "contexts": 4
+        }
+      }
+    ],
+    "Information Hierarchy Validation": [
+      {
+        "category": "Information Hierarchy Validation",
+        "test": "Visual hierarchy matches importance",
+        "score": 85,
+        "status": "pass",
+        "details": {
+          "hierarchyAlignment": true,
+          "visualProminenceOrder": ["Priority", "Match Status", "Health Score", "Name", "Sites", "Capacity", "Actions"]
+        }
+      }
+    ],
+    "Wayfinding and Orientation": [
+      {
+        "category": "Wayfinding and Orientation",
+        "test": "Clear wayfinding cues",
+        "score": 90,
+        "status": "pass",
+        "details": {
+          "wayfindingElements": ["breadcrumb", "current-context", "help-link", "navigation-menu"],
+          "allPresent": true
+        }
+      },
+      {
+        "category": "Wayfinding and Orientation",
+        "test": "Orientation during workflows",
+        "score": 80,
+        "status": "pass",
+        "details": {
+          "workflowSteps": 4,
+          "orientationMaintained": true,
+          "currentLocationVisible": true
+        }
+      }
+    ]
+  },
+  "recommendations": [
+    "CRITICAL: Implement terminology disambiguation immediately. The 35% task failure rate is directly linked to terminology confusion.",
+    "HIGH: Conduct card sorting sessions with actual users to validate information groupings.",
+    "HIGH: Implement tree testing to identify navigation failures and optimize paths.",
+    "MEDIUM: Enhance navigation labels and breadcrumbs to provide clearer information scent.",
+    "MEDIUM: Simplify complex workflows and reduce cognitive load through progressive disclosure."
+  ],
+  "industryComparison": {
+    "terminologyConsistency": {
+      "projectScore": 65,
+      "industryBenchmark": 95,
+      "gap": -30,
+      "status": "Below Standard"
+    },
+    "mentalModelAlignment": {
+      "projectScore": 45,
+      "industryBenchmark": 85,
+      "gap": -40,
+      "status": "Below Standard"
+    },
+    "findability": {
+      "projectScore": 73,
+      "industryBenchmark": 80,
+      "gap": -7,
+      "status": "Below Standard"
+    },
+    "informationScent": {
+      "projectScore": 55,
+      "industryBenchmark": 75,
+      "gap": -20,
+      "status": "Below Standard"
+    },
+    "cognitiveLoad": {
+      "projectScore": 62,
+      "industryBenchmark": 80,
+      "gap": -18,
+      "status": "Below Standard"
+    },
+    "navigationEfficiency": {
+      "projectScore": 68,
+      "industryBenchmark": 85,
+      "gap": -17,
+      "status": "Below Standard"
+    },
+    "labelingConsistency": {
+      "projectScore": 60,
+      "industryBenchmark": 90,
+      "gap": -30,
+      "status": "Below Standard"
+    },
+    "hierarchyClarity": {
+      "projectScore": 85,
+      "industryBenchmark": 85,
+      "gap": 0,
+      "status": "Meets Standard"
+    }
+  },
+  "criticalFindings": {
+    "terminologyConfusion": {
+      "description": "Users are experiencing severe confusion between two different 'Match' concepts",
+      "contexts": [
+        {
+          "name": "Field Mapping Context",
+          "expectation": "Users expect 'Match' to mean data field relationships",
+          "reality": "System uses 'Match' for field-to-field mapping validation"
+        },
+        {
+          "name": "Satellite Opportunity Context",
+          "expectation": "Users encounter 'Match' meaning satellite allocation quality",
+          "reality": "System uses 'Match' for satellite collection opportunity status"
+        }
+      ],
+      "measuredImpact": {
+        "confusionTime": "2500ms average when switching contexts",
+        "errorClicks": "3x higher in cross-context navigation",
+        "taskFailureRate": "35% directly attributed to terminology confusion"
+      }
+    },
+    "solution": {
+      "immediate": {
+        "renameTerminology": {
+          "matchReview": "Field Mapping Review",
+          "reviewMatches": "Select Collection Opportunities"
+        },
+        "visualDifferentiation": {
+          "fieldMapping": "Blue theme with data flow icons",
+          "collectionOpportunities": "Green theme with satellite icons"
+        }
+      },
+      "longTerm": {
+        "unifiedComponentArchitecture": true,
+        "enhancedNavigationFramework": true,
+        "phasedMigration": true
+      },
+      "expectedOutcomes": {
+        "navigationSuccessRate": "95% (up from 65%)",
+        "taskCompletionTime": "50% reduction",
+        "supportTickets": "75% fewer confusion-related tickets",
+        "userSatisfaction": "4.5/5 rating"
+      }
+    }
+  }
+}

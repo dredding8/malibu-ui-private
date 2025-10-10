@@ -1,15 +1,24 @@
 /**
  * Unified status types and mappings for collection decks across the application
+ * 
+ * UBIQUITOUS LANGUAGE MAPPING:
+ * These status labels maintain consistency across all UI components:
+ * - "Ready to View" - Collections that are complete and ready for user access
+ * - "In Progress" - Collections actively being processed or optimized
+ * - "Action Required" - Collections that need user intervention (errors/timeouts/failures)
+ * - "Starting Soon" - Collections queued for processing
+ * 
+ * These labels are used consistently in:
+ * - History page metric cards
+ * - HistoryTable status columns
+ * - Status filter dropdowns
+ * - All user-facing status displays
  */
 
-// Collection Deck Status - Primary status used across both Collection Deck and History pages
+// Collection Deck Status - Simplified binary status model
 export type CollectionDeckStatus = 
-  | "draft" 
-  | "processing" 
-  | "review" 
-  | "ready" 
-  | "failed" 
-  | "cancelled";
+  | "complete" 
+  | "in-progress";
 
 // Algorithm Status - Used only in History page for processing details
 export type AlgorithmStatus = 
@@ -22,31 +31,24 @@ export type AlgorithmStatus =
 
 // Status display mappings with user-friendly, empathetic language
 export const COLLECTION_STATUS_LABELS: Record<CollectionDeckStatus, string> = {
-  draft: "Getting Started",
-  processing: "Working on It", 
-  review: "Almost There",
-  ready: "Ready for You",
-  failed: "Need Your Help",
-  cancelled: "Stopped"
+  complete: "Complete",
+  "in-progress": "In Progress"
 };
 
+// Algorithm Status labels - Keep original detailed labels for Matching status column
 export const ALGORITHM_STATUS_LABELS: Record<AlgorithmStatus, string> = {
   queued: "Starting Soon",
-  running: "Finding Matches", 
-  optimizing: "Fine-tuning Results",
-  converged: "All Set",
-  error: "Something Went Wrong",
-  timeout: "Taking Longer Than Expected"
+  running: "Processing", 
+  optimizing: "Optimizing",
+  converged: "Completed",
+  error: "Error",
+  timeout: "Timed Out"
 };
 
 // Intent mappings for consistent UI styling
 export const COLLECTION_STATUS_INTENTS: Record<CollectionDeckStatus, string> = {
-  draft: "NONE",
-  processing: "PRIMARY",
-  review: "WARNING", 
-  ready: "SUCCESS",
-  failed: "DANGER",
-  cancelled: "WARNING"
+  complete: "SUCCESS",
+  "in-progress": "PRIMARY"
 };
 
 export const ALGORITHM_STATUS_INTENTS: Record<AlgorithmStatus, string> = {
@@ -58,15 +60,34 @@ export const ALGORITHM_STATUS_INTENTS: Record<AlgorithmStatus, string> = {
   timeout: "WARNING"
 };
 
-// Legacy status migration mappings
+// Status resolution function - Maps algorithm status to simplified collection deck status
+export const resolveCollectionStatus = (algorithmStatus: AlgorithmStatus): CollectionDeckStatus => {
+  // Complete states: converged, completed
+  if (algorithmStatus === 'converged') {
+    return 'complete';
+  }
+  
+  // All other states are considered "in-progress"
+  // This includes: queued, running, optimizing, error, timeout
+  return 'in-progress';
+};
+
+// Legacy status migration mappings - Updated for binary model
 export const LEGACY_STATUS_MIGRATION: Record<string, CollectionDeckStatus> = {
-  "In Progress": "processing",
-  "Review": "review",
-  "Pending Approval": "review",
-  "Completed": "ready",
-  "Initializing": "processing",
-  "Processing": "processing",
-  "Ready": "ready",
-  "Failed": "failed",
-  "Cancelled": "cancelled"
+  "In Progress": "in-progress",
+  "Review": "in-progress",
+  "Pending Approval": "in-progress",
+  "Completed": "complete",
+  "Initializing": "in-progress",
+  "Processing": "in-progress",
+  "Ready": "complete",
+  "Failed": "in-progress",
+  "Cancelled": "in-progress",
+  // Legacy binary mappings
+  "draft": "in-progress",
+  "processing": "in-progress",
+  "review": "in-progress",
+  "ready": "complete",
+  "failed": "in-progress",
+  "cancelled": "in-progress"
 };

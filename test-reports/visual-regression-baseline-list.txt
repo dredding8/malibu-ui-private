@@ -1,0 +1,41 @@
+# Collection Opportunities Visual Regression Baseline Screenshots
+
+## Component States
+- default-state.png
+- selected-state.png
+- needs-review-tab.png
+- unmatched-tab.png
+- search-active.png
+- site-filtered.png
+
+## Interactive Elements
+- health-tooltip.png
+- priority-tags.png
+- match-status-indicators.png
+- action-buttons.png
+- bulk-selection.png
+
+## Empty/Loading States
+- empty-state-search.png
+- loading-state.png
+- error-state.png
+
+## Accessibility States
+- focus-indicators.png
+- high-contrast.png
+- reduced-motion.png
+
+## Theme Variations
+- dark-mode.png
+- dark-mode-selected.png
+
+## Responsive Breakpoints
+- responsive-mobile.png (375x667)
+- responsive-mobile-large.png (414x896)
+- responsive-tablet-portrait.png (768x1024)
+- responsive-tablet-landscape.png (1024x768)
+- responsive-laptop.png (1366x768)
+- responsive-desktop.png (1440x900)
+- responsive-desktop-xl.png (1920x1080)
+
+Total: 27 baseline screenshots captured

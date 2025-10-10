@@ -37,7 +37,7 @@ export const ContextualNavigator: React.FC = () => {
           { 
             text: 'Collection Opportunities', 
             icon: IconNames.SATELLITE,
-            path: location.pathname.replace('field-mapping-review', 'collection-opportunities'),
+            path: location.pathname.replace(/\/history\/(.*)\/field-mapping-review/, '/collection/$1/manage'),
             description: 'View satellite passes for this collection'
           },
           { 
@@ -53,7 +53,7 @@ export const ContextualNavigator: React.FC = () => {
           { 
             text: 'Field Mappings', 
             icon: IconNames.FLOWS,
-            path: location.pathname.replace('collection-opportunities', 'field-mapping-review'),
+            path: location.pathname.replace(/\/collection\/(.*)\/manage/, '/history/$1/field-mapping-review'),
             description: 'Review field mapping details'
           },
           { 

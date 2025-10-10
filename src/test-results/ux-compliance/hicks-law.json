@@ -1,0 +1,146 @@
+{
+  "config": {
+    "rootDir": "/Users/damon/malibu/src",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/damon/malibu/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/damon/malibu/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 7,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+      "file": "components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UX Laws Compliance - Collection Opportunities",
+          "file": "components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+          "line": 9,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "2. Hick's Law - Decision Complexity",
+              "file": "components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+              "line": 50,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "measures decision time with varying choices",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "",
+                      "projectName": "",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 59,
+                          "error": {
+                            "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/operations/collections/opportunities\", waiting until \"load\"\u001b[22m\n",
+                            "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/operations/collections/opportunities\", waiting until \"load\"\u001b[22m\n\n    at /Users/damon/malibu/src/components/__tests__/CollectionOpportunitiesUXLaws.test.tsx:11:16",
+                            "location": {
+                              "file": "/Users/damon/malibu/src/components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+                              "column": 16,
+                              "line": 11
+                            },
+                            "snippet": "   9 | test.describe('UX Laws Compliance - Collection Opportunities', () => {\n  10 |   test.beforeEach(async ({ page }) => {\n> 11 |     await page.goto('/operations/collections/opportunities');\n     |                ^\n  12 |     await page.waitForLoadState('networkidle');\n  13 |   });\n  14 |"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/damon/malibu/src/components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+                                "column": 16,
+                                "line": 11
+                              },
+                              "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/operations/collections/opportunities\", waiting until \"load\"\u001b[22m\n\n\n   9 | test.describe('UX Laws Compliance - Collection Opportunities', () => {\n  10 |   test.beforeEach(async ({ page }) => {\n> 11 |     await page.goto('/operations/collections/opportunities');\n     |                ^\n  12 |     await page.waitForLoadState('networkidle');\n  13 |   });\n  14 |\n    at /Users/damon/malibu/src/components/__tests__/CollectionOpportunitiesUXLaws.test.tsx:11:16"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-09-24T20:21:05.564Z",
+                          "annotations": [],
+                          "attachments": [],
+                          "errorLocation": {
+                            "file": "/Users/damon/malibu/src/components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+                            "column": 16,
+                            "line": 11
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "30dd5c3f721a992dc943-eba05b15ab97ad151546",
+                  "file": "components/__tests__/CollectionOpportunitiesUXLaws.test.tsx",
+                  "line": 51,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-24T20:21:05.337Z",
+    "duration": 390.887,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

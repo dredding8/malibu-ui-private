@@ -1,0 +1,447 @@
+/**
+ * Collection Filters Styles
+ * 
+ * Advanced filtering interface styling with responsive design and theming.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Filters Container
+   ============================================================================= */
+
+.collection-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bp5-background-color);
+}
+
+.collection-filters.panel {
+  background: transparent;
+  padding: 0;
+}
+
+.collection-filters.inline {
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 4px;
+}
+
+/* =============================================================================
+   Filter Sections
+   ============================================================================= */
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bp5-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.filter-count {
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  background-color: var(--bp5-intent-primary);
+  color: white;
+}
+
+/* =============================================================================
+   Search Filter
+   ============================================================================= */
+
+.filter-section .bp5-input-group {
+  width: 100%;
+}
+
+.filter-section .bp5-input-group .bp5-input {
+  font-size: 14px;
+  padding-left: 32px;
+}
+
+.filter-section .bp5-input-group .bp5-icon {
+  left: 10px;
+  color: var(--bp5-icon-color);
+}
+
+/* =============================================================================
+   Checkbox Filters
+   ============================================================================= */
+
+.filter-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-checkboxes .bp5-checkbox {
+  margin: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.checkbox-label .bp5-icon {
+  color: var(--bp5-icon-color);
+}
+
+.status-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================================================
+   Tag Filter
+   ============================================================================= */
+
+.filter-section .bp5-tag-input {
+  min-height: 32px;
+}
+
+.filter-section .bp5-tag-input .bp5-tag-input-values {
+  gap: 4px;
+}
+
+.filter-section .bp5-tag-input .bp5-tag {
+  margin: 2px;
+  font-size: 11px;
+}
+
+.available-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 8px;
+  background-color: var(--bp5-background-color-secondary);
+  border-radius: 3px;
+}
+
+.available-tags small {
+  font-size: 11px;
+  color: var(--bp5-text-color-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.available-tags .bp5-tag {
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.available-tags .bp5-tag:hover {
+  background-color: var(--bp5-intent-primary);
+  color: white;
+}
+
+/* =============================================================================
+   Date Filter
+   ============================================================================= */
+
+.filter-section .bp5-daterangeinput {
+  width: 100%;
+}
+
+.filter-section .bp5-daterangeinput .bp5-input-group {
+  width: 100%;
+}
+
+/* =============================================================================
+   Advanced Filters
+   ============================================================================= */
+
+.advanced-toggle {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.advanced-toggle .bp5-button {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.advanced-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+/* =============================================================================
+   Filter Actions
+   ============================================================================= */
+
+.filter-actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bp5-border-color);
+}
+
+.filter-actions .bp5-button-group {
+  width: 100%;
+}
+
+.filter-actions .bp5-button {
+  font-weight: 600;
+}
+
+/* =============================================================================
+   Divider Styles
+   ============================================================================= */
+
+.collection-filters .bp5-divider {
+  margin: 8px 0;
+  border-color: var(--bp5-border-color);
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-filters {
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .advanced-filters {
+    gap: 20px;
+    padding-top: 20px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-filters {
+    gap: 14px;
+    padding: 14px;
+  }
+  
+  .available-tags {
+    gap: 2px;
+  }
+  
+  .available-tags .bp5-tag {
+    font-size: 9px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-filters {
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .filter-section {
+    gap: 6px;
+  }
+  
+  .filter-checkboxes {
+    gap: 4px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+  }
+  
+  .available-tags {
+    gap: 2px;
+    padding: 6px;
+  }
+  
+  .available-tags small {
+    font-size: 10px;
+  }
+  
+  .available-tags .bp5-tag {
+    font-size: 9px;
+  }
+  
+  .advanced-filters {
+    gap: 12px;
+    padding-top: 12px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-filters {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .filter-label {
+    font-size: 12px;
+  }
+  
+  .checkbox-label {
+    font-size: 11px;
+  }
+  
+  .filter-checkboxes {
+    gap: 2px;
+  }
+  
+  .available-tags {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .available-tags small {
+    margin-bottom: 2px;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-filters:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.filter-checkboxes .bp5-checkbox:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.available-tags .bp5-tag:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-filters.inline {
+    border: 2px solid var(--bp5-text-color);
+  }
+  
+  .available-tags {
+    border: 1px solid var(--bp5-text-color);
+  }
+  
+  .filter-actions {
+    border-top: 2px solid var(--bp5-text-color);
+  }
+  
+  .collection-filters .bp5-divider {
+    border-color: var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .available-tags .bp5-tag {
+    transition: none;
+  }
+  
+  .collection-filters * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-filters {
+  background: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-filters.inline {
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .filter-label {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .checkbox-label .bp5-icon {
+  color: var(--bp5-dark-icon-color);
+}
+
+.bp5-dark .available-tags {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+.bp5-dark .available-tags small {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .available-tags .bp5-tag:hover {
+  background-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .filter-actions {
+  border-top-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-filters .bp5-divider {
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .filter-section .bp5-input-group .bp5-icon {
+  color: var(--bp5-dark-icon-color);
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-filters {
+    break-inside: avoid;
+    padding: 12px;
+    border: 1px solid #ccc;
+  }
+  
+  .filter-actions {
+    display: none;
+  }
+  
+  .advanced-toggle {
+    display: none;
+  }
+  
+  .available-tags {
+    background-color: transparent;
+    border: 1px solid #ccc;
+  }
+}

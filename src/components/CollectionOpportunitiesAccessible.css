@@ -1,0 +1,284 @@
+/* Collection Opportunities Accessible - Enterprise UX Styling */
+
+/* Skip navigation link */
+.skip-navigation {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--bp5-intent-primary);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  z-index: 1000;
+  transition: top 0.2s ease;
+}
+
+.skip-navigation:focus,
+.skip-navigation.focused {
+  top: 0;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Main container */
+.collection-opportunities-accessible {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bp5-app-background-color);
+}
+
+/* Enhanced navbar */
+.opportunities-navbar {
+  box-shadow: 0 1px 0 rgba(16, 22, 26, 0.15);
+  padding: 0 20px;
+}
+
+.opportunities-navbar h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.search-input {
+  width: 300px;
+  margin: 0 16px;
+}
+
+/* Table enhancements */
+.opportunities-table-accessible {
+  flex: 1;
+  overflow: auto;
+}
+
+.opportunities-table-accessible .bp5-table-quadrant-main {
+  background: white;
+}
+
+.opportunities-table-accessible .bp5-table-header {
+  background: var(--bp5-gray1);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.sortable-header:hover {
+  background: var(--bp5-gray2);
+}
+
+.sortable-header:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.sortable-header .bp5-icon {
+  margin-left: 4px;
+  opacity: 0.6;
+}
+
+/* Cell styling */
+.priority-cell,
+.match-status-cell,
+.match-notes-cell {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.match-notes-cell .bp5-tag {
+  font-size: 11px;
+}
+
+.site-codes {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.site-codes .bp5-tag {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Classification styling */
+.classification-unclassified { color: var(--bp5-gray5); }
+.classification-confidential { color: var(--bp5-intent-warning); }
+.classification-secret { color: var(--bp5-intent-danger); }
+.classification-top_secret { 
+  color: var(--bp5-intent-danger);
+  font-weight: 600;
+}
+
+/* Name cell button */
+.name-cell-accessible {
+  padding: 0;
+}
+
+.opportunity-name-button {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  font-weight: 600;
+  color: var(--bp5-intent-primary);
+  text-decoration: underline;
+}
+
+.opportunity-name-button:hover {
+  background: var(--bp5-gray1);
+}
+
+.opportunity-name-button:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+/* Row selection */
+.row-checkbox {
+  margin: 0;
+}
+
+/* High contrast mode */
+.high-contrast {
+  filter: contrast(1.2);
+}
+
+.high-contrast .bp5-table-header {
+  background: #000;
+  color: #fff;
+}
+
+.high-contrast .bp5-table-cell {
+  border-color: #000;
+}
+
+.high-contrast .sortable-header:focus,
+.high-contrast .opportunity-name-button:focus,
+.high-contrast button:focus {
+  outline: 3px solid #ff0;
+  outline-offset: 0;
+}
+
+.high-contrast .bp5-tag {
+  border: 1px solid currentColor;
+}
+
+/* Keyboard help dialog */
+.keyboard-shortcuts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.keyboard-shortcuts-table th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 2px solid var(--bp5-gray3);
+  font-weight: 600;
+}
+
+.keyboard-shortcuts-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--bp5-gray2);
+}
+
+.keyboard-shortcuts-table kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--bp5-text-color);
+  background: var(--bp5-gray1);
+  border: 1px solid var(--bp5-gray3);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(16, 22, 26, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .opportunities-navbar {
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+
+  .search-input {
+    width: 100%;
+    margin: 10px 0 0 0;
+  }
+
+  .opportunities-table-accessible {
+    font-size: 12px;
+  }
+
+  .sortable-header {
+    padding: 4px;
+  }
+}
+
+/* Focus indicators */
+*:focus-visible {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.bp5-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+/* Empty states */
+.bp5-non-ideal-state {
+  padding: 40px;
+}
+
+/* Animations */
+@media (prefers-reduced-motion: no-preference) {
+  .bp5-tag,
+  .bp5-button {
+    transition: all 0.2s ease;
+  }
+}
+
+/* Print styles */
+@media print {
+  .skip-navigation,
+  .opportunities-navbar,
+  .keyboard-shortcuts-table {
+    display: none;
+  }
+
+  .opportunities-table-accessible {
+    font-size: 10pt;
+    color: #000;
+    background: #fff;
+  }
+}

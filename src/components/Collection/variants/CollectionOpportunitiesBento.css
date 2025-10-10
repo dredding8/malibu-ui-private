@@ -1,0 +1,350 @@
+/* Collection Opportunities Bento Layout Styles */
+
+/* Main container - true split view */
+.collection-opportunities-bento {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--bp5-bg-color);
+}
+
+/* Left panel - Table (62% golden ratio) */
+.bento-table-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+/* Right panel - Dynamic content (38%) */
+.bento-content-panel {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: var(--bp5-bg-color-secondary, #f5f5f5);
+  border-left: 1px solid var(--bp5-divider-black);
+  transition: width 0.2s ease;
+  padding: 20px;
+}
+
+/* Resizable splitter */
+.bento-splitter {
+  width: 4px;
+  cursor: col-resize;
+  background-color: var(--bp5-divider-black);
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.bento-splitter:hover {
+  background-color: var(--bp5-intent-primary);
+  width: 6px;
+}
+
+/* Dashboard Panel Styles */
+.bento-dashboard-panel h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--bp5-text-color);
+}
+
+/* KPI Grid - Following Context7 recommendations */
+.bento-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.bento-kpi-card {
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bento-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 8px;
+  color: var(--bp5-text-color);
+}
+
+.kpi-label {
+  font-size: 14px;
+  color: var(--bp5-text-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-percentage {
+  font-size: 12px;
+  color: var(--bp5-text-color-muted);
+  margin-top: 4px;
+}
+
+/* KPI Card Intent Colors */
+.bento-kpi-card.success .kpi-value {
+  color: var(--bp5-intent-success);
+}
+
+.bento-kpi-card.warning .kpi-value {
+  color: var(--bp5-intent-warning);
+}
+
+.bento-kpi-card.danger .kpi-value {
+  color: var(--bp5-intent-danger);
+}
+
+/* Progress Section */
+.bento-progress-section {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.bento-progress-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+/* Quick Actions */
+.bento-quick-actions {
+  padding: 20px;
+}
+
+.bento-quick-actions h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.action-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background: var(--bp5-button-background-color);
+  border: 1px solid var(--bp5-divider-black);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-tile:hover {
+  background: var(--bp5-button-background-color-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.action-label {
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Bulk Operations Panel */
+.bento-bulk-panel h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.bento-bulk-panel p {
+  color: var(--bp5-text-color-muted);
+  margin-bottom: 20px;
+}
+
+.bulk-summary {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.bulk-summary h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.bulk-summary ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.bulk-summary li {
+  margin-bottom: 8px;
+}
+
+.bulk-actions {
+  padding: 16px;
+}
+
+.bulk-actions h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.bulk-actions button {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Table Container Adjustments */
+.opportunities-table-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.opportunities-table-container .table-navbar {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  background: var(--bp5-navbar-background-color);
+  min-height: 50px;
+}
+
+.opportunities-table-container .bp5-table-container {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Table Cell Styles */
+.capacity-cell {
+  position: relative;
+  height: 20px;
+  background: var(--bp5-gray5);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.capacity-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--bp5-intent-primary);
+  transition: width 0.3s ease;
+}
+
+.capacity-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bp5-text-color);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.selected-cell {
+  background-color: rgba(19, 124, 189, 0.1) !important;
+}
+
+/* Loading State */
+.collection-opportunities-bento.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  /* Stack panels vertically on tablets */
+  .collection-opportunities-bento {
+    flex-direction: column;
+  }
+  
+  .bento-table-panel,
+  .bento-content-panel {
+    width: 100% !important;
+    height: 50%;
+  }
+  
+  .bento-splitter {
+    width: 100%;
+    height: 4px;
+    cursor: row-resize;
+  }
+  
+  .bento-content-panel {
+    border-left: none;
+    border-top: 1px solid var(--bp5-divider-black);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile: Show one panel at a time */
+  .bento-table-panel {
+    display: none;
+  }
+  
+  .bento-content-panel {
+    width: 100% !important;
+    height: 100%;
+    padding: 16px;
+  }
+  
+  .bento-splitter {
+    display: none;
+  }
+  
+  /* Add toggle button for mobile */
+  .bento-mobile-toggle {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+  }
+  
+  .bento-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .action-tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode Support */
+.bp5-dark .bento-content-panel {
+  background-color: var(--bp5-dark-bg-color-secondary, #30363d);
+  border-left-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .bento-splitter {
+  background-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .capacity-cell {
+  background: var(--bp5-dark-gray5);
+}
+
+.bp5-dark .action-tile {
+  background: var(--bp5-dark-button-background-color);
+  border-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .action-tile:hover {
+  background: var(--bp5-dark-button-background-color-hover);
+}

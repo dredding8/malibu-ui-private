@@ -1,0 +1,82 @@
+/* Bento Layout Styles */
+
+.bento-layout {
+  width: 100%;
+  padding: 1rem;
+}
+
+.bento-grid {
+  display: grid;
+  width: 100%;
+  auto-rows: minmax(200px, auto);
+}
+
+/* Item Size Variants */
+.bento-item {
+  position: relative;
+  border-radius: 8px;
+  background: var(--bp5-card-background-color, #fff);
+  border: 1px solid var(--bp5-divider-black, rgba(16, 22, 26, 0.15));
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.bento-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.bento-item-small {
+  min-height: 150px;
+}
+
+.bento-item-medium {
+  min-height: 200px;
+}
+
+.bento-item-large {
+  min-height: 300px;
+  grid-column: span 2;
+}
+
+.bento-item-content {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 640px) {
+  .bento-layout {
+    padding: 0.5rem;
+  }
+
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bento-item-large {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .bento-item-large {
+    grid-column: span 1;
+  }
+}
+
+/* Drag and Drop States */
+.bento-layout[data-reorderable="true"] .bento-item {
+  cursor: move;
+}
+
+.bento-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.bento-item.drop-target {
+  border: 2px dashed var(--bp5-intent-primary, #2965cc);
+}

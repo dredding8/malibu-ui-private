@@ -1,0 +1,66 @@
+[
+  {
+    "selector": ".hub-header",
+    "name": "Header",
+    "buttons": 4,
+    "visibleButtons": 4,
+    "visible": true,
+    "buttonLabels": [
+      "Refresh",
+      "Export",
+      "Back",
+      "More actions (4)"
+    ]
+  },
+  {
+    "selector": ".hub-actions",
+    "name": "Hub Actions",
+    "buttons": 0,
+    "visibleButtons": 0,
+    "visible": true,
+    "buttonLabels": []
+  },
+  {
+    "selector": ".action-group",
+    "name": "Action Groups",
+    "buttons": 0,
+    "visible": false
+  },
+  {
+    "selector": ".smart-views-container",
+    "name": "Smart Views",
+    "buttons": 6,
+    "visibleButtons": 6,
+    "visible": true,
+    "buttonLabels": [
+      "All Opportunities50",
+      "My Sensors",
+      "Needs Review18",
+      "Critical Issues",
+      "Unmatched15",
+      "Needs Validation50"
+    ]
+  },
+  {
+    "selector": ".hub-stats-container",
+    "name": "Statistics",
+    "buttons": 1,
+    "visibleButtons": 1,
+    "visible": true,
+    "buttonLabels": [
+      "Hide insights"
+    ]
+  },
+  {
+    "selector": ".bp5-tabs",
+    "name": "Tabs Area",
+    "buttons": 0,
+    "visible": false
+  },
+  {
+    "selector": ".bp5-tab-panel",
+    "name": "Tab Panels",
+    "buttons": 0,
+    "visible": false
+  }
+]

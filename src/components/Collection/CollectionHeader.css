@@ -1,0 +1,409 @@
+/**
+ * Collection Header Styles
+ * 
+ * Header component styling with search, filters, view controls, and actions.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Header Container
+   ============================================================================= */
+
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 20px;
+  background: var(--bp5-background-color);
+  border-bottom: 1px solid var(--bp5-border-color);
+  min-height: 60px;
+  box-sizing: border-box;
+}
+
+.collection-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.collection-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   Search Styles
+   ============================================================================= */
+
+.collection-header-search {
+  flex: 1;
+  max-width: 400px;
+  min-width: 200px;
+}
+
+.collection-header-search .bp5-input-group {
+  width: 100%;
+}
+
+.collection-header-search .bp5-input-group .bp5-input {
+  font-size: 14px;
+  padding-left: 35px;
+  padding-right: 30px;
+}
+
+.collection-header-search .bp5-input-group .bp5-icon {
+  left: 12px;
+  color: var(--bp5-icon-color);
+}
+
+/* =============================================================================
+   Filter Styles
+   ============================================================================= */
+
+.collection-header-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.active-filters .bp5-tag {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.active-filters .bp5-button {
+  font-size: 12px;
+}
+
+/* =============================================================================
+   Count Styles
+   ============================================================================= */
+
+.collection-header-count {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.count-text {
+  font-size: 13px;
+  color: var(--bp5-text-color-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   View Toggle Styles
+   ============================================================================= */
+
+.collection-header-view-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.collection-header-view-toggle .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.collection-header-view-toggle .bp5-button {
+  border-radius: 0;
+  border: none;
+  margin: 0;
+}
+
+.collection-header-view-toggle .bp5-button.bp5-active {
+  background-color: var(--bp5-intent-primary);
+  color: white;
+}
+
+.collection-header-view-toggle .bp5-button:not(.bp5-active):hover {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+/* =============================================================================
+   Bulk Actions Styles
+   ============================================================================= */
+
+.collection-header-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background-color: var(--bp5-intent-primary-light);
+  border: 1px solid var(--bp5-intent-primary);
+  border-radius: 3px;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selection-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bp5-intent-primary-dark);
+  white-space: nowrap;
+}
+
+.collection-header-bulk-actions .bp5-button-group .bp5-button {
+  background-color: transparent;
+  border-color: var(--bp5-intent-primary);
+}
+
+.collection-header-bulk-actions .bp5-button-group .bp5-button:hover {
+  background-color: var(--bp5-intent-primary);
+  color: white;
+}
+
+/* =============================================================================
+   Actions Styles
+   ============================================================================= */
+
+.collection-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.collection-header-actions .bp5-button {
+  font-weight: 500;
+  min-width: 120px;
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-header {
+    padding: 20px 24px;
+    gap: 24px;
+  }
+  
+  .collection-header-left {
+    gap: 20px;
+  }
+  
+  .collection-header-search {
+    max-width: 500px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-header {
+    gap: 16px;
+  }
+  
+  .collection-header-search {
+    max-width: 300px;
+  }
+  
+  .count-text {
+    display: none;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  
+  .collection-header-left {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .collection-header-right {
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .collection-header-search {
+    max-width: none;
+    min-width: auto;
+  }
+  
+  .collection-header-filters {
+    justify-content: space-between;
+  }
+  
+  .collection-header-actions .bp5-button {
+    min-width: auto;
+    flex: 1;
+  }
+  
+  .count-text {
+    font-size: 12px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-header {
+    padding: 10px 12px;
+  }
+  
+  .collection-header-view-toggle {
+    order: -1;
+  }
+  
+  .collection-header-bulk-actions {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  
+  .collection-header-bulk-actions .bp5-button-group {
+    width: 100%;
+  }
+  
+  .collection-header-bulk-actions .bp5-button {
+    flex: 1;
+  }
+  
+  .active-filters {
+    flex-wrap: wrap;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-header:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.collection-header-search .bp5-input:focus {
+  box-shadow: 0 0 0 1px var(--bp5-intent-primary), 0 0 0 3px rgba(var(--bp5-intent-primary-rgb), 0.3);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-header {
+    border-bottom: 2px solid var(--bp5-text-color);
+  }
+  
+  .collection-header-bulk-actions {
+    border: 2px solid var(--bp5-intent-primary);
+  }
+  
+  .collection-header-view-toggle .bp5-button-group {
+    box-shadow: 0 0 0 2px var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .collection-header-bulk-actions {
+    animation: none;
+  }
+  
+  .collection-header * {
+    transition: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-header {
+  background: var(--bp5-dark-background-color);
+  border-bottom-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-header-search .bp5-input-group .bp5-icon {
+  color: var(--bp5-dark-icon-color);
+}
+
+.bp5-dark .count-text {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .collection-header-bulk-actions {
+  background-color: var(--bp5-dark-intent-primary-light);
+  border-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .selection-count {
+  color: var(--bp5-dark-intent-primary-dark);
+}
+
+.bp5-dark .collection-header-view-toggle .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-header-view-toggle .bp5-button:not(.bp5-active):hover {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-header.loading .collection-header-actions .bp5-button {
+  opacity: 0.6;
+}
+
+.collection-header.loading .collection-header-search .bp5-input {
+  opacity: 0.8;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-header {
+    border-bottom: 1px solid #ccc;
+    padding: 12px 0;
+    min-height: auto;
+  }
+  
+  .collection-header-actions,
+  .collection-header-bulk-actions,
+  .collection-header-view-toggle {
+    display: none;
+  }
+  
+  .collection-header-filters .bp5-button {
+    display: none;
+  }
+  
+  .collection-header-search .bp5-input-group .bp5-button {
+    display: none;
+  }
+}

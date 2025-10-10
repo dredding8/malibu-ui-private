@@ -19,8 +19,8 @@ test('Detailed history table issue analysis', async ({ page }) => {
   
   // Check for header issues - look for duplicate headers
   const deckNameHeaders = await page.locator('text="Deck Name"').count();
-  const deckStatusHeaders = await page.locator('text="Deck Status"').count();
-  const processingHeaders = await page.locator('text="Processing Status"').count();
+  const deckStatusHeaders = await page.locator('text="Collection Deck Status"').count();
+  const processingHeaders = await page.locator('text="Matching status"').count();
   const progressHeaders = await page.locator('text="Progress"').count();
   const createdHeaders = await page.locator('text="Created"').count();
   const completedHeaders = await page.locator('text="Completed"').count();
@@ -28,8 +28,8 @@ test('Detailed history table issue analysis', async ({ page }) => {
   
   console.log('=== HEADER DUPLICATION ANALYSIS ===');
   console.log(`"Deck Name" headers: ${deckNameHeaders} (${deckNameHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
-  console.log(`"Deck Status" headers: ${deckStatusHeaders} (${deckStatusHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
-  console.log(`"Processing Status" headers: ${processingHeaders} (${processingHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
+  console.log(`"Collection Deck Status" headers: ${deckStatusHeaders} (${deckStatusHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
+  console.log(`"Matching status" headers: ${processingHeaders} (${processingHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
   console.log(`"Progress" headers: ${progressHeaders} (${progressHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
   console.log(`"Created" headers: ${createdHeaders} (${createdHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);
   console.log(`"Completed" headers: ${completedHeaders} (${completedHeaders > 1 ? 'DUPLICATE!' : 'OK'})`);

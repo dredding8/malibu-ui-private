@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-10-03T16:53:41.526Z",
+  "url": "http://localhost:3000/collection/DECK-1758570229031/manage",
+  "metrics": {
+    "visualHierarchy": [
+      {
+        "tagName": "H2",
+        "text": "Keyboard Navigation",
+        "isVisible": true
+      },
+      {
+        "tagName": "H1",
+        "text": "Review Assignments - Deck DECK-1758570229031",
+        "isVisible": true
+      }
+    ],
+    "cognitiveLoad": {
+      "interactiveElements": 218,
+      "buttons": 161,
+      "inputs": 54,
+      "links": 3,
+      "tables": 0,
+      "forms": 0,
+      "assessment": "HIGH - May overwhelm users with choices"
+    },
+    "informationDensity": {
+      "wordCount": 275,
+      "viewportSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "density": "0.30",
+      "assessment": "OPTIMAL - Good balance of content and whitespace"
+    },
+    "navigationComplexity": {
+      "tabs": 4,
+      "panels": 1,
+      "sections": 0,
+      "navItems": 0,
+      "maxNestingDepth": 25,
+      "assessment": "COMPLEX - Deep nesting may impact comprehension"
+    },
+    "jtbdCompliance": {
+      "hasCollectionInfo": true,
+      "hasStatusIndicators": true,
+      "hasActionButtons": false,
+      "hasSearchFilter": true,
+      "hasBulkActions": false,
+      "score": 60
+    }
+  },
+  "criticalFindings": [
+    "Excessive interactive elements detected (>50)",
+    "Excessive DOM nesting detected (>20 levels)",
+    "Accessibility issues detected - missing labels or alt text"
+  ],
+  "recommendations": [
+    "Address critical findings before additional features",
+    "Group related actions into menus or progressive disclosure patterns"
+  ]
+}

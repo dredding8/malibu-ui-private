@@ -30,9 +30,9 @@ export interface UnifiedMatch {
   selected: boolean;
   notes?: string;
   lastModified?: Date;
-  
+
   // Collection opportunity fields
-  sccNumber?: string;
+  sccNumber?: number; // Numeric SCC (1-99999)
   orbit?: string;
   periodicity?: number;
   collectionType?: string;

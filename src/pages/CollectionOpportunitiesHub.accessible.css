@@ -1,0 +1,191 @@
+/* Accessibility enhancements for CollectionOpportunitiesHub */
+
+/* Skip to main content link */
+.skip-to-main:focus {
+  position: fixed !important;
+  top: 10px !important;
+  left: 10px !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  background-color: #000 !important;
+  color: #fff !important;
+  z-index: 9999 !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Focus indicators */
+.collection-opportunities-hub *:focus-visible {
+  outline: 2px solid #0066CC !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2) !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .stat-card {
+    border: 2px solid currentColor !important;
+  }
+  
+  .bp5-button {
+    border: 2px solid currentColor !important;
+  }
+  
+  .bp5-tab[aria-selected="true"] {
+    border-bottom: 4px solid currentColor !important;
+  }
+  
+  .stat-value {
+    font-weight: 900 !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .collection-opportunities-hub * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Improved color contrast */
+.stat-card.critical {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+.stat-card.critical .stat-value,
+.stat-card.critical .stat-label {
+  color: #ffffff;
+}
+
+.stat-card.warning {
+  background-color: #f57c00;
+  color: #000000;
+}
+
+.stat-card.warning .stat-value,
+.stat-card.warning .stat-label {
+  color: #000000;
+}
+
+/* Ensure interactive elements are large enough */
+.collection-opportunities-hub button,
+.collection-opportunities-hub a,
+.collection-opportunities-hub [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+/* Focus trap for modals */
+.workspace-modal:focus-within {
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+}
+
+/* Keyboard navigation indicators */
+.hub-tabs .bp5-tab:focus-visible {
+  background-color: rgba(0, 102, 204, 0.1);
+}
+
+/* Status indicators with sufficient contrast */
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+/* Ensure table headers are readable */
+.bp5-html-table th {
+  background-color: #f5f5f5;
+  color: #000000;
+  font-weight: 600;
+  border-bottom: 2px solid #333333;
+}
+
+/* Row hover with keyboard support */
+.bp5-html-table tbody tr:hover,
+.bp5-html-table tbody tr:focus-within {
+  background-color: rgba(0, 102, 204, 0.05);
+}
+
+/* Form field focus */
+.bp5-input:focus,
+.bp5-html-select select:focus,
+.bp5-button:focus {
+  box-shadow: 0 0 0 2px #0066CC, 0 0 0 4px rgba(0, 102, 204, 0.2);
+}
+
+/* Error states with icons */
+.field-error {
+  color: #d32f2f;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.field-error::before {
+  content: "⚠️";
+  font-size: 16px;
+}
+
+/* Required field indicators */
+.required-indicator {
+  color: #d32f2f;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* Loading states with announcements */
+.hub-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+/* Ensure sufficient spacing for touch targets */
+@media (pointer: coarse) {
+  .collection-opportunities-hub button,
+  .collection-opportunities-hub a,
+  .collection-opportunities-hub [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Print styles for accessibility */
+@media print {
+  .skip-to-main,
+  .keyboard-instructions,
+  .hub-status-bar,
+  .bp5-button {
+    display: none !important;
+  }
+  
+  .stat-card {
+    border: 1px solid #000 !important;
+    page-break-inside: avoid;
+  }
+}

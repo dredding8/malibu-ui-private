@@ -1,0 +1,319 @@
+{
+  "config": {
+    "configFile": "/Users/damon/malibu/playwright.jtbd.config.ts",
+    "rootDir": "/Users/damon/malibu/src/tests/e2e/jtbd",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/damon/malibu/src/tests/e2e/jtbd/global-setup.ts",
+    "globalTeardown": "/Users/damon/malibu/src/tests/e2e/jtbd/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/damon/malibu/test-results/jtbd-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop-chrome",
+        "name": "desktop-chrome",
+        "testDir": "/Users/damon/malibu/src/tests/e2e/jtbd",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.jtbd.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm start",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000,
+      "stdout": "pipe",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "jtbd-complete.jtbd.spec.ts",
+      "file": "jtbd-complete.jtbd.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "JTBD Complete Validation Suite",
+          "file": "jtbd-complete.jtbd.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "JTBD #1: Verify and Validate Collection Plans",
+              "file": "jtbd-complete.jtbd.spec.ts",
+              "line": 91,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Analyst can verify collection plans against satellite capabilities",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "desktop-chrome",
+                      "projectName": "desktop-chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 1995,
+                          "error": {
+                            "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+                            "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "fixtures/jtbd-test.fixture.ts",
+                                "column": 30,
+                                "line": 190
+                              },
+                              "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "🎯 Starting comprehensive JTBD validation suite\n"
+                            },
+                            {
+                              "text": "📊 Testing 5 workflows\n"
+                            },
+                            {
+                              "text": "👥 Testing with 3 personas\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-09-29T19:59:09.468Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/damon/malibu/test-results/jtbd-results/jtbd-complete.jtbd-JTBD-Co-c7d9e--satellite-capabilities-desktop-chrome/test-failed-1.png"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "fixtures/jtbd-test.fixture.ts",
+                            "column": 30,
+                            "line": 190
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7d9ed78e07f74e1c8be-2ab42fbe8a4d59a87b6b",
+                  "file": "jtbd-complete.jtbd.spec.ts",
+                  "line": 92,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "JTBD #2: Override and Customize Allocations",
+              "file": "jtbd-complete.jtbd.spec.ts",
+              "line": 172,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Analyst can override suboptimal allocations",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "desktop-chrome",
+                      "projectName": "desktop-chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 378,
+                          "error": {
+                            "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+                            "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                          },
+                          "startTime": "2025-09-29T19:59:11.502Z"
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7d9ed78e07f74e1c8be-dccdaa847c7b54f06ba9",
+                  "file": "jtbd-complete.jtbd.spec.ts",
+                  "line": 173,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "JTBD #3: Fix Data Integrity Issues",
+              "file": "jtbd-complete.jtbd.spec.ts",
+              "line": 246,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Analyst can identify and resolve data integrity issues",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "desktop-chrome",
+                      "projectName": "desktop-chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 386,
+                          "error": {
+                            "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+                            "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                          },
+                          "startTime": "2025-09-29T19:59:11.925Z"
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7d9ed78e07f74e1c8be-f9b8d38c8abcc89bac4e",
+                  "file": "jtbd-complete.jtbd.spec.ts",
+                  "line": 247,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "JTBD #4: Analyze Performance Trends",
+              "file": "jtbd-complete.jtbd.spec.ts",
+              "line": 316,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Manager can analyze collection performance trends",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "desktop-chrome",
+                      "projectName": "desktop-chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 393,
+                          "error": {
+                            "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+                            "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                          },
+                          "startTime": "2025-09-29T19:59:12.356Z"
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7d9ed78e07f74e1c8be-32bafc41fd4c1a2f8a6a",
+                  "file": "jtbd-complete.jtbd.spec.ts",
+                  "line": 317,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "JTBD #5: Bulk Operations Management", 
+              "file": "jtbd-complete.jtbd.spec.ts",
+              "line": 388,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Analyst can perform bulk updates on multiple opportunities",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "desktop-chrome",
+                      "projectName": "desktop-chrome",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "status": "failed",
+                          "duration": 393,
+                          "error": {
+                            "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+                            "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+                          },
+                          "startTime": "2025-09-29T19:59:12.798Z"
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7d9ed78e07f74e1c8be-1e85ad2c3a7dc74b9c8f",
+                  "file": "jtbd-complete.jtbd.spec.ts",
+                  "line": 389,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-29T19:59:09.362Z",
+    "duration": 22787.246,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 13,
+    "flaky": 0
+  }
+}

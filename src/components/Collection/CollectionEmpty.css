@@ -1,0 +1,297 @@
+/**
+ * Collection Empty Styles
+ * 
+ * Empty state component styling with contextual messaging and actions.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Empty State Container
+   ============================================================================= */
+
+.collection-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.collection-empty .bp5-non-ideal-state {
+  max-width: 500px;
+  text-align: center;
+}
+
+/* =============================================================================
+   Icon Styles
+   ============================================================================= */
+
+.collection-empty-icon {
+  color: var(--bp5-icon-color-disabled);
+  margin-bottom: 20px;
+}
+
+.collection-empty .bp5-non-ideal-state-visual {
+  margin-bottom: 24px;
+}
+
+/* =============================================================================
+   Content Styles
+   ============================================================================= */
+
+.collection-empty .bp5-non-ideal-state-title {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--bp5-text-color);
+  line-height: 1.3;
+}
+
+.collection-empty-description {
+  margin-bottom: 24px;
+  color: var(--bp5-text-color-muted);
+  line-height: 1.5;
+}
+
+.collection-empty-description p {
+  margin: 0 0 12px 0;
+}
+
+.collection-empty-description p:last-child {
+  margin-bottom: 0;
+}
+
+/* =============================================================================
+   Filter Information
+   ============================================================================= */
+
+.collection-empty-filter-info {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: var(--bp5-background-color-secondary);
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.filter-summary {
+  margin: 0;
+  color: var(--bp5-text-color-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   Actions Styles
+   ============================================================================= */
+
+.collection-empty-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.collection-empty-actions .bp5-button {
+  min-width: 140px;
+}
+
+/* Horizontal layout for multiple actions */
+.collection-empty-actions:has(.bp5-button:nth-child(2)) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.collection-empty-actions:has(.bp5-button:nth-child(2)) .bp5-button {
+  min-width: 120px;
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-empty {
+    min-height: 400px;
+    padding: 60px 40px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state {
+    max-width: 600px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state-title {
+    font-size: 24px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-empty {
+    min-height: 350px;
+    padding: 50px 30px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state-title {
+    font-size: 22px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-empty {
+    min-height: 250px;
+    padding: 30px 16px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state {
+    max-width: 400px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state-title {
+    font-size: 18px;
+  }
+  
+  .collection-empty-description {
+    font-size: 14px;
+  }
+  
+  .collection-empty-filter-info {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .collection-empty-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .collection-empty-actions .bp5-button {
+    min-width: 120px;
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-empty {
+    min-height: 200px;
+    padding: 20px 12px;
+  }
+  
+  .collection-empty .bp5-non-ideal-state-title {
+    font-size: 16px;
+  }
+  
+  .collection-empty-icon {
+    font-size: 36px !important;
+  }
+  
+  .collection-empty-actions .bp5-button {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-empty:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.collection-empty-actions .bp5-button:focus {
+  z-index: 1;
+  position: relative;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-empty-filter-info {
+    border: 2px solid var(--bp5-text-color);
+    background-color: var(--bp5-background-color);
+  }
+  
+  .collection-empty-icon {
+    color: var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .collection-empty * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-empty-filter-info {
+  background-color: var(--bp5-dark-background-color-secondary);
+  border-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-empty-icon {
+  color: var(--bp5-dark-icon-color-disabled);
+}
+
+.bp5-dark .collection-empty .bp5-non-ideal-state-title {
+  color: var(--bp5-dark-text-color);
+}
+
+.bp5-dark .collection-empty-description {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+.bp5-dark .filter-summary {
+  color: var(--bp5-dark-text-color-muted);
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-empty.loading .collection-empty-actions {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.collection-empty.loading .bp5-button {
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-empty {
+    break-inside: avoid;
+    padding: 20px;
+    min-height: auto;
+  }
+  
+  .collection-empty-actions {
+    display: none;
+  }
+  
+  .collection-empty-filter-info {
+    background-color: transparent;
+    border: 1px solid #ccc;
+  }
+}

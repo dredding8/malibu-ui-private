@@ -1,0 +1,80 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - heading "Collection Opportunities Test Page" [level=1] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e9]: Review Assignments
+        - generic [ref=e10]:
+          - generic [ref=e11]:
+            - img [ref=e13]
+            - textbox "Search assignments..." [ref=e15]
+          - button "Columns" [ref=e17] [cursor=pointer]:
+            - img [ref=e19] [cursor=pointer]
+            - generic [ref=e21] [cursor=pointer]: Columns
+            - img [ref=e23] [cursor=pointer]
+      - tablist [ref=e26]:
+        - tab "ALL" [expanded] [selected] [ref=e27] [cursor=pointer]
+        - tab "NEEDS REVIEW (1)" [ref=e28] [cursor=pointer]
+        - tab "UNMATCHED (1)" [ref=e29] [cursor=pointer]
+      - generic [ref=e31]:
+        - generic [ref=e33]:
+          - generic [ref=e37]:
+            - checkbox [ref=e40]
+            - generic "Priority" [ref=e43]:
+              - generic:
+                - generic: Priority
+            - generic "Match" [ref=e47]:
+              - generic:
+                - generic: Match
+            - generic "Match Notes" [ref=e51]:
+              - generic:
+                - generic: Match Notes
+            - generic "SCC" [ref=e55]:
+              - generic:
+                - generic: SCC
+            - generic "Function" [ref=e59]:
+              - generic:
+                - generic: Function
+          - generic [ref=e65]:
+            - generic:
+              - checkbox [ref=e69]
+              - generic [ref=e73]: "4"
+              - generic [ref=e78] [cursor=pointer]: BASELINE
+              - generic [ref=e82]: "-"
+              - generic [ref=e86]: "00124"
+              - generic [ref=e90]: Imaging
+              - checkbox [ref=e94]
+              - generic [ref=e98]: "3"
+              - generic [ref=e103] [cursor=pointer]: SUBOPTIMAL
+              - generic [ref=e107]: "-"
+              - generic [ref=e111]: "00412"
+              - generic [ref=e115]: Communication
+              - checkbox [ref=e119]
+              - generic [ref=e123]: "2"
+              - generic [ref=e128] [cursor=pointer]: UNMATCHED
+              - generic [ref=e132]: "-"
+              - generic [ref=e136]: SAT-003
+              - generic [ref=e140]: Weather
+        - generic [ref=e146]:
+          - checkbox [ref=e149]
+          - generic "Priority" [ref=e152]:
+            - generic:
+              - generic: Priority
+          - generic "Match" [ref=e156]:
+            - generic:
+              - generic: Match
+          - generic "Match Notes" [ref=e160]:
+            - generic:
+              - generic: Match Notes
+          - generic "SCC" [ref=e164]:
+            - generic:
+              - generic: SCC
+          - generic "Function" [ref=e168]:
+            - generic:
+              - generic: Function
+  - button [ref=e173] [cursor=pointer]:
+    - img [ref=e175] [cursor=pointer]
+```

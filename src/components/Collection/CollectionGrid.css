@@ -1,0 +1,332 @@
+/**
+ * Collection Grid Styles
+ * 
+ * Responsive grid layout with virtualization support and Blueprint.js theming.
+ * Follows the 10px grid system and operational color palette.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Grid Container
+   ============================================================================= */
+
+.collection-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.collection-grid.standard {
+  overflow-y: auto;
+}
+
+.collection-grid.virtualized {
+  overflow: hidden;
+}
+
+/* =============================================================================
+   Grid Content
+   ============================================================================= */
+
+.collection-grid-content {
+  display: grid;
+  grid-template-columns: repeat(var(--items-per-row), 1fr);
+  gap: var(--grid-gap);
+  padding: var(--grid-gap);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Auto-sizing for flexible layouts */
+.collection-grid-content[data-auto-size="true"] {
+  grid-template-columns: repeat(auto-fill, minmax(var(--item-width), 1fr));
+}
+
+/* =============================================================================
+   Grid Items
+   ============================================================================= */
+
+.collection-grid-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: var(--item-height);
+  min-width: 0; /* Prevent overflow */
+  min-height: 0; /* Prevent overflow */
+}
+
+/* Ensure items fill their grid cells */
+.collection-grid-item-wrapper > * {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* =============================================================================
+   Density Variations
+   ============================================================================= */
+
+/* Compact density */
+.collection-grid.compact {
+  --grid-gap: 8px;
+}
+
+.collection-grid.compact .collection-grid-content {
+  padding: 8px;
+}
+
+/* Comfortable density (default) */
+.collection-grid.comfortable {
+  --grid-gap: 16px;
+}
+
+.collection-grid.comfortable .collection-grid-content {
+  padding: 16px;
+}
+
+/* Spacious density */
+.collection-grid.spacious {
+  --grid-gap: 24px;
+}
+
+.collection-grid.spacious .collection-grid-content {
+  padding: 24px;
+}
+
+/* =============================================================================
+   Responsive Breakpoints
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-grid-content {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-grid-content {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Small screens */
+@media (min-width: 480px) and (max-width: 767px) {
+  .collection-grid-content {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-grid-content {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+/* =============================================================================
+   Virtualization Styles
+   ============================================================================= */
+
+.collection-grid-virtual-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bp5-icon-color) var(--bp5-background-color);
+}
+
+.collection-grid-virtual-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.collection-grid-virtual-container::-webkit-scrollbar-track {
+  background: var(--bp5-background-color);
+}
+
+.collection-grid-virtual-container::-webkit-scrollbar-thumb {
+  background-color: var(--bp5-icon-color);
+  border-radius: 4px;
+  border: 2px solid var(--bp5-background-color);
+}
+
+.collection-grid-virtual-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bp5-text-color-muted);
+}
+
+.collection-grid-virtual-content {
+  position: relative;
+  width: 100%;
+}
+
+.collection-grid-virtual-item {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-grid-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+  color: var(--bp5-text-color-muted);
+}
+
+.collection-grid-loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  color: var(--bp5-text-color-muted);
+  font-size: 14px;
+}
+
+/* =============================================================================
+   Empty State
+   ============================================================================= */
+
+.collection-grid-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 40px 20px;
+}
+
+.collection-grid-empty .bp5-non-ideal-state {
+  max-width: 400px;
+  text-align: center;
+}
+
+.collection-grid-empty .bp5-non-ideal-state-visual {
+  margin-bottom: 20px;
+}
+
+.collection-grid-empty .bp5-icon {
+  font-size: 48px;
+  color: var(--bp5-icon-color-disabled);
+}
+
+.collection-grid-empty .bp5-heading {
+  margin-bottom: 12px;
+  color: var(--bp5-text-color);
+}
+
+.collection-grid-empty .bp5-non-ideal-state-description {
+  color: var(--bp5-text-color-muted);
+  line-height: 1.5;
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-grid:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.collection-grid-item-wrapper:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-grid-content {
+    border: 1px solid var(--bp5-text-color);
+  }
+  
+  .collection-grid-item-wrapper {
+    border: 1px solid var(--bp5-text-color-muted);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .collection-grid * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-grid-virtual-container {
+  scrollbar-color: var(--bp5-dark-icon-color) var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-grid-virtual-container::-webkit-scrollbar-track {
+  background: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-grid-virtual-container::-webkit-scrollbar-thumb {
+  background-color: var(--bp5-dark-icon-color);
+  border-color: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-grid-virtual-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bp5-dark-text-color-muted);
+}
+
+/* =============================================================================
+   Performance Optimizations
+   ============================================================================= */
+
+.collection-grid-content {
+  /* Enable GPU acceleration for smooth scrolling */
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.collection-grid-virtual-item {
+  /* Optimize rendering for virtualized items */
+  contain: layout style paint;
+  will-change: transform;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-grid {
+    overflow: visible;
+    height: auto;
+  }
+  
+  .collection-grid-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0;
+  }
+  
+  .collection-grid-virtual-container {
+    overflow: visible;
+    height: auto;
+  }
+  
+  .collection-grid-loading,
+  .collection-grid-loading-more {
+    display: none;
+  }
+}

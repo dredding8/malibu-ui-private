@@ -1,0 +1,484 @@
+/**
+ * Collection List Styles
+ * 
+ * Table-like list layout with sorting, selection, and responsive design.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   List Container
+   ============================================================================= */
+
+.collection-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--bp5-background-color);
+  border: 1px solid var(--bp5-border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* =============================================================================
+   Header Styles
+   ============================================================================= */
+
+.collection-list-header {
+  background: var(--bp5-background-color-secondary);
+  border-bottom: 1px solid var(--bp5-border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.collection-list-header-row {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 10px;
+}
+
+.collection-list-header-cell {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bp5-text-color);
+  border-right: 1px solid var(--bp5-border-color);
+  user-select: none;
+}
+
+.collection-list-header-cell:last-child {
+  border-right: none;
+}
+
+.collection-list-header-cell.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.collection-list-header-cell.sortable:hover {
+  background-color: var(--bp5-background-color);
+}
+
+.collection-list-header-cell .header-label {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.collection-list-header-cell .sort-icon {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.collection-list-header-cell.sortable:hover .sort-icon,
+.collection-list-header-cell[aria-sort="ascending"] .sort-icon,
+.collection-list-header-cell[aria-sort="descending"] .sort-icon {
+  opacity: 1;
+}
+
+/* Special header cells */
+.collection-list-header-cell.selection-cell {
+  width: 40px;
+  min-width: 40px;
+  padding: 8px;
+  justify-content: center;
+}
+
+.collection-list-header-cell.actions-cell {
+  width: 120px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* =============================================================================
+   Body Styles
+   ============================================================================= */
+
+.collection-list-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =============================================================================
+   Row Styles
+   ============================================================================= */
+
+.collection-list-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--bp5-border-color);
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.collection-list-row:last-child {
+  border-bottom: none;
+}
+
+.collection-list-row:hover {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+.collection-list-row.selected {
+  background-color: var(--bp5-intent-primary-light);
+  color: var(--bp5-intent-primary-dark);
+}
+
+.collection-list-row.editing {
+  background-color: var(--bp5-intent-warning-light);
+  border-left: 3px solid var(--bp5-intent-warning);
+}
+
+.collection-list-row.even {
+  background-color: var(--bp5-background-color);
+}
+
+.collection-list-row.odd {
+  background-color: rgba(var(--bp5-text-color-rgb), 0.02);
+}
+
+/* Row height variations */
+.collection-list.compact .collection-list-row {
+  min-height: 32px;
+  padding: 2px 10px;
+}
+
+.collection-list.comfortable .collection-list-row {
+  min-height: 44px;
+  padding: 6px 10px;
+}
+
+.collection-list.spacious .collection-list-row {
+  min-height: 56px;
+  padding: 10px;
+}
+
+/* =============================================================================
+   Cell Styles
+   ============================================================================= */
+
+.collection-list-cell {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-right: 1px solid var(--bp5-border-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-list-cell:last-child {
+  border-right: none;
+}
+
+/* Special cells */
+.collection-list-cell.selection-cell {
+  width: 40px;
+  min-width: 40px;
+  padding: 4px 8px;
+  justify-content: center;
+}
+
+.collection-list-cell.actions-cell {
+  width: 120px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* =============================================================================
+   Content Styles
+   ============================================================================= */
+
+/* Name cell */
+.collection-list-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.collection-name {
+  font-weight: 500;
+  color: var(--bp5-text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-description {
+  font-size: 11px;
+  color: var(--bp5-text-color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Type cell */
+.collection-type {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collection-type.type-satellite {
+  background-color: var(--bp5-intent-primary-light);
+  color: var(--bp5-intent-primary-dark);
+}
+
+.collection-type.type-ground_station {
+  background-color: var(--bp5-intent-success-light);
+  color: var(--bp5-intent-success-dark);
+}
+
+.collection-type.type-mission {
+  background-color: var(--bp5-intent-warning-light);
+  color: var(--bp5-intent-warning-dark);
+}
+
+.collection-type.type-campaign {
+  background-color: var(--bp5-intent-danger-light);
+  color: var(--bp5-intent-danger-dark);
+}
+
+.collection-type.type-analysis {
+  background-color: var(--bp5-background-color-secondary);
+  color: var(--bp5-text-color);
+}
+
+.collection-type.type-custom {
+  background-color: var(--bp5-background-color-secondary);
+  color: var(--bp5-text-color-muted);
+}
+
+/* Progress cell */
+.collection-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background-color: var(--bp5-background-color-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--bp5-intent-success);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 11px;
+  color: var(--bp5-text-color-muted);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Tags cell */
+.collection-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.collection-tags .bp5-tag {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Date cell */
+.collection-date {
+  font-size: 12px;
+  color: var(--bp5-text-color-muted);
+}
+
+/* Actions cell */
+.collection-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.collection-list-row:hover .collection-actions,
+.collection-list-row.selected .collection-actions {
+  opacity: 1;
+}
+
+/* =============================================================================
+   Loading and Empty States
+   ============================================================================= */
+
+.collection-list-loading,
+.collection-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 16px;
+  color: var(--bp5-text-color-muted);
+}
+
+.collection-list-loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  color: var(--bp5-text-color-muted);
+  font-size: 14px;
+  border-top: 1px solid var(--bp5-border-color);
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-list-row:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.collection-list-header-cell:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -1px;
+}
+
+/* Keyboard navigation */
+.collection-list-row[tabindex="0"]:focus {
+  background-color: var(--bp5-background-color-secondary);
+}
+
+.collection-list-row.selected:focus {
+  box-shadow: inset 0 0 0 2px var(--bp5-intent-primary);
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-list-cell.name-cell {
+    min-width: 250px;
+  }
+  
+  .collection-list-cell.tags-cell {
+    min-width: 200px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-list-cell.tags-cell {
+    display: none;
+  }
+  
+  .collection-list-header-cell.tags-cell {
+    display: none;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-list-cell.progress-cell,
+  .collection-list-cell.tags-cell,
+  .collection-list-cell.actions-cell {
+    display: none;
+  }
+  
+  .collection-list-header-cell.progress-cell,
+  .collection-list-header-cell.tags-cell,
+  .collection-list-header-cell.actions-cell {
+    display: none;
+  }
+  
+  .collection-list-cell.name-cell {
+    flex: 1;
+  }
+  
+  .collection-actions {
+    opacity: 1;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-list-row.even {
+  background-color: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-list-row.odd {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.bp5-dark .collection-list-row:hover {
+  background-color: var(--bp5-dark-background-color-secondary);
+}
+
+.bp5-dark .collection-list-row.selected {
+  background-color: var(--bp5-dark-intent-primary-light);
+  color: var(--bp5-dark-intent-primary-dark);
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-list {
+    border: none;
+    overflow: visible;
+    height: auto;
+  }
+  
+  .collection-list-header {
+    position: static;
+  }
+  
+  .collection-list-body {
+    overflow: visible;
+  }
+  
+  .collection-list-cell.selection-cell,
+  .collection-list-cell.actions-cell,
+  .collection-list-header-cell.selection-cell,
+  .collection-list-header-cell.actions-cell {
+    display: none;
+  }
+  
+  .collection-list-row {
+    break-inside: avoid;
+  }
+  
+  .collection-actions {
+    display: none;
+  }
+}

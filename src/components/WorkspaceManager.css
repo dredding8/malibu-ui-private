@@ -1,0 +1,112 @@
+.workspace-drawer {
+  z-index: 1000;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.auto-save-status {
+  font-size: 12px;
+  color: #5c7080;
+  font-weight: normal;
+}
+
+.drawer-footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+}
+
+.footer-left {
+  flex: 1;
+}
+
+.footer-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* Quick Edit Mode */
+.quick-edit-container {
+  padding: 20px;
+}
+
+.quick-edit-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #182026;
+}
+
+.capacity-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.capacity-value {
+  font-size: 20px;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Guided Workflow Mode */
+.guided-workflow-container {
+  padding: 20px;
+  height: 100%;
+}
+
+.workflow-step {
+  padding: 20px 0;
+}
+
+.workflow-step h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #182026;
+}
+
+.workflow-step p {
+  color: #5c7080;
+  margin-bottom: 20px;
+}
+
+/* Responsive drawer sizes */
+@media (max-width: 768px) {
+  .bp5-drawer.bp5-drawer-size-large {
+    width: 100% !important;
+  }
+}
+
+/* Animation for auto-save indicator */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.auto-save-status {
+  animation: pulse 2s ease-in-out;
+}

@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "jobHistory",
+          "value": "[{\"id\":\"TEST-001\",\"name\":\"UX Test Collection Deck\",\"collectionDeckStatus\":\"in-progress\",\"algorithmStatus\":\"running\",\"progress\":45,\"createdDate\":\"2025-09-29T18:20:54.809Z\",\"createdBy\":\"John Smith\"},{\"id\":\"TEST-002\",\"name\":\"Sample Analytics Deck\",\"collectionDeckStatus\":\"complete\",\"algorithmStatus\":\"converged\",\"progress\":100,\"createdDate\":\"2025-09-29T18:16:54.809Z\",\"createdBy\":\"Sarah Johnson\",\"completionDate\":\"2025-09-29T18:20:54.809Z\"},{\"id\":\"TEST-003\",\"name\":\"Failed Processing Test\",\"collectionDeckStatus\":\"in-progress\",\"algorithmStatus\":\"error\",\"progress\":23,\"createdDate\":\"2025-09-29T18:06:54.809Z\",\"createdBy\":\"Mike Chen\",\"completionDate\":\"2025-09-29T18:16:54.809Z\"}]"
+        }
+      ]
+    }
+  ]
+}

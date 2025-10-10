@@ -1,0 +1,334 @@
+/**
+ * Override Export Badge Styles
+ * Evidence-based design from QA and UX perspectives
+ *
+ * Design Goals:
+ * - Unmissable visual priority (high-contrast colors)
+ * - Progressive disclosure (badge → category → details)
+ * - Print-friendly (works on physical tasking sheets)
+ * - Accessible (WCAG 2.1 AA, screen reader support)
+ */
+
+/* === Inline Variant === */
+.override-badge-inline {
+  display: inline-flex;
+  align-items: center;
+}
+
+.override-tag-inline {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: help;
+  border: 2px solid currentColor;
+}
+
+/* === Compact Variant === */
+.override-badge-compact {
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+/* === Card Variant === */
+.override-badge-card {
+  margin: 1rem 0;
+  border-left: 4px solid var(--intent-danger, #db3737);
+}
+
+.override-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color, #e1e8ed);
+}
+
+.override-tag-primary {
+  font-weight: 700;
+  letter-spacing: 0.75px;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid currentColor;
+}
+
+.override-summary {
+  margin-bottom: 1rem;
+  background: var(--intent-warning-background, #fef5e6);
+  border-left: 3px solid var(--intent-warning, #d9822b);
+}
+
+.override-summary strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.override-sites-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.site-change {
+  flex: 1;
+}
+
+.site-change strong {
+  display: inline;
+  color: var(--intent-primary, #137cbd);
+  font-weight: 600;
+}
+
+/* Details Section */
+.override-details {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--background-light, #f5f8fa);
+  border-radius: 4px;
+}
+
+.detail-section {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #e1e8ed);
+}
+
+.detail-section:last-of-type {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-section.metadata {
+  opacity: 0.8;
+}
+
+.detail-content {
+  flex: 1;
+}
+
+.detail-content strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #5c7080);
+}
+
+.detail-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-primary, #182026);
+}
+
+.operator-instruction {
+  margin-top: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.operator-instruction strong {
+  display: inline;
+  margin-right: 0.5rem;
+}
+
+/* === Export Variant (Print-Optimized) === */
+.override-badge-export {
+  padding: 1.5rem;
+  border: 3px solid #000;
+  background: #fff;
+  margin: 1rem 0;
+  page-break-inside: avoid;
+}
+
+.override-header-export {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #000;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.override-category-export,
+.override-explanation-export,
+.override-context-export {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.override-category-export strong,
+.override-explanation-export strong,
+.override-context-export strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.override-metadata-export {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #ccc;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* === Print Styles === */
+@media print {
+  .override-badge-export {
+    border-width: 2px;
+    box-shadow: none;
+  }
+
+  .override-badge-card,
+  .override-badge-inline {
+    border: 2px solid #000;
+    padding: 0.5rem;
+    background: #fff !important;
+  }
+
+  .override-tag-primary,
+  .override-tag-inline {
+    color: #000 !important;
+    background: #fff !important;
+    border: 2px solid #000 !important;
+  }
+
+  /* Hide interactive elements */
+  button {
+    display: none !important;
+  }
+
+  /* Always expand details for print */
+  .override-details {
+    display: block !important;
+  }
+}
+
+/* === Accessibility Enhancements === */
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .override-badge-card,
+  .override-badge-export {
+    border-width: 3px;
+  }
+
+  .override-tag-primary,
+  .override-tag-inline,
+  .override-badge-compact {
+    border-width: 2px;
+    font-weight: 800;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .override-badge-card,
+  .override-details {
+    transition: none;
+  }
+}
+
+/* Focus Indicators (WCAG 2.1 AA) */
+.override-badge-card:focus-within {
+  outline: 3px solid var(--intent-primary, #137cbd);
+  outline-offset: 2px;
+}
+
+button:focus {
+  outline: 2px solid var(--intent-primary, #137cbd);
+  outline-offset: 2px;
+}
+
+/* Screen Reader Support */
+.override-badge-inline[aria-label],
+.override-badge-compact[aria-label] {
+  cursor: help;
+}
+
+/* === Dark Mode Support === */
+@media (prefers-color-scheme: dark) {
+  .override-badge-card {
+    --background-light: #30404d;
+    --border-color: #394b59;
+    --text-primary: #f5f8fa;
+    --text-muted: #a7b6c2;
+  }
+
+  .override-details {
+    background: var(--background-light);
+  }
+
+  .override-sites-summary {
+    background: #293742;
+  }
+
+  /* Export variant stays light for print */
+  .override-badge-export {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .override-badge-card {
+    margin: 0.5rem 0;
+  }
+
+  .override-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .override-sites-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .detail-section {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .override-metadata-export {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* === Animation === */
+.override-details {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

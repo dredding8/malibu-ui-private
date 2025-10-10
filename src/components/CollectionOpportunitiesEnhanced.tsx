@@ -1,0 +1,1420 @@
+import React, { useState, useMemo, useCallback, useReducer, useEffect } from 'react';
+import {
+  Cell,
+  Column,
+  Table2,
+  SelectionModes,
+  RenderMode,
+} from '@blueprintjs/table';
+import {
+  Button,
+  Tag,
+  Intent,
+  Checkbox,
+  Menu,
+  MenuItem,
+  MenuDivider,
+  Popover,
+  Position,
+  Tooltip,
+  InputGroup,
+  Callout,
+  Card,
+  Navbar,
+  NavbarGroup,
+  NavbarHeading,
+  NavbarDivider,
+  ButtonGroup,
+  Classes,
+  NonIdealState,
+  Spinner,
+  Tabs,
+  Tab
+} from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
+import {
+  CollectionOpportunity,
+  OpportunityStatus,
+  OpportunityManagementState,
+  OpportunityChange,
+  SortConfig,
+  FilterConfig,
+  Priority,
+  Site,
+  Pass,
+  OverrideExportIndicator,
+  createExportIndicator,
+  createSiteId
+} from '../types/collectionOpportunities';
+import { calculateOpportunityHealth, calculateBatchHealth, OpportunityHealth } from '../utils/opportunityHealth';
+import { aggregateOperationalDays, formatOperationalDays } from '../utils/siteOperationalHelpers';
+import { createSiteAllocationCellRenderer } from './SiteAllocationCell';
+import { formatSccNumber } from '../utils/sccFormatting';
+import { OperationalDaysCompact } from './OperationalDaysDisplay';
+import OpportunityStatusIndicatorEnhanced from './OpportunityStatusIndicatorEnhanced';
+import QuickEditModal from './QuickEditModal';
+import InlineOverrideButtonEnhanced from './InlineOverrideButtonEnhanced';
+import { OverrideImpact } from './OverrideImpactCalculator';
+import DataIntegrityIndicator from './DataIntegrityIndicator';
+import OpportunityDetailsModal from './OpportunityDetailsModal';
+import { OverrideExportBadge } from './OverrideExportBadge';
+import { ManualOverrideModalRefactored } from './ManualOverrideModalRefactored';
+import UnifiedOpportunityEditor from './UnifiedOpportunityEditor';
+import {
+  UndoRedoOperation,
+  AuditTrailEntry
+} from '../types/collectionOpportunities';
+import { useFeatureFlags } from '../hooks/useFeatureFlags';
+import './CollectionOpportunitiesEnhanced.css';
+
+interface CollectionOpportunitiesEnhancedProps {
+  opportunities: CollectionOpportunity[];
+  availableSites: Site[];
+  onBatchUpdate: (changes: OpportunityChange[]) => Promise<void>;
+  onOpenWorkspace?: (opportunityId: string) => void;
+  onValidate?: (opportunityId: string) => void;
+  onEdit?: (opportunityId: string) => void; // NEW: Support external edit handler
+  capacityThresholds?: {
+    critical: number;
+    warning: number;
+    optimal: number;
+  };
+  enableRealTimeValidation?: boolean;
+  enableHealthAnalysis?: boolean;
+  showWorkspaceOption?: boolean;
+  showValidationOption?: boolean;
+}
+
+// Enhanced state with health tracking
+interface EnhancedManagementState extends OpportunityManagementState {
+  healthScores: Map<string, OpportunityHealth>;
+  quickEditOpportunityId?: string;
+  selectedOpportunityId?: string;
+  showDetailsModal: boolean;
+  showOverrideModal: boolean;
+  overrideModalDeckId: string | null;
+  showUnifiedEditor: boolean; // NEW: UnifiedEditor control
+  searchQuery: string;
+  viewMode: 'table' | 'cards';
+  activeTab: 'all' | 'needs-review' | 'unmatched';
+  undoStack: UndoRedoOperation[];
+  redoStack: UndoRedoOperation[];
+  auditTrail: AuditTrailEntry[];
+}
+
+// Action types
+type ActionType =
+  | { type: 'SET_DATA'; payload: CollectionOpportunity[] }
+  | { type: 'UPDATE_HEALTH'; payload: Map<string, OpportunityHealth> }
+  | { type: 'EDIT_OPPORTUNITY'; payload: { id: string; changes: Partial<CollectionOpportunity> } }
+  | { type: 'SET_QUICK_EDIT'; payload: string | undefined }
+  | { type: 'SHOW_DETAILS'; payload: string }
+  | { type: 'HIDE_DETAILS' }
+  | { type: 'OPEN_OVERRIDE_MODAL'; payload: { opportunityIds: string[]; deckId: string } }
+  | { type: 'CLOSE_OVERRIDE_MODAL' }
+  | { type: 'OPEN_UNIFIED_EDITOR'; payload: string }
+  | { type: 'CLOSE_UNIFIED_EDITOR' }
+  | { type: 'SET_SORT'; payload: SortConfig }
+  | { type: 'SET_FILTER'; payload: FilterConfig }
+  | { type: 'SET_SEARCH'; payload: string }
+  | { type: 'SET_VIEW_MODE'; payload: 'table' | 'cards' }
+  | { type: 'SET_ACTIVE_TAB'; payload: 'all' | 'needs-review' | 'unmatched' }
+  | { type: 'COMMIT_START' }
+  | { type: 'COMMIT_SUCCESS'; payload: string[] }
+  | { type: 'COMMIT_FAILURE'; payload: Error }
+  | { type: 'UNDO_CHANGE'; payload: string }
+  | { type: 'CLEAR_CHANGES' }
+  | { type: 'BULK_UPDATE'; payload: { opportunityIds: string[]; changes: Partial<CollectionOpportunity>; undoOperation: UndoRedoOperation } }
+  | { type: 'UNDO_OPERATION'; payload: string }
+  | { type: 'REDO_OPERATION'; payload: string }
+  | { type: 'ADD_AUDIT_ENTRY'; payload: AuditTrailEntry };
+
+// Enhanced reducer
+const enhancedOpportunityReducer = (
+  state: EnhancedManagementState,
+  action: ActionType
+): EnhancedManagementState => {
+  switch (action.type) {
+    case 'SET_DATA':
+      return {
+        ...state,
+        originalData: action.payload,
+        workingData: action.payload,
+      };
+
+    case 'UPDATE_HEALTH':
+      return {
+        ...state,
+        healthScores: action.payload
+      };
+
+    case 'EDIT_OPPORTUNITY': {
+      const { id, changes } = action.payload;
+      const workingData = state.workingData.map(opp =>
+        opp.id === id ? { ...opp, ...changes } : opp
+      );
+
+      const change: OpportunityChange = {
+        opportunityId: id,
+        changes,
+        timestamp: new Date().toISOString(),
+        previousValues: state.originalData.find(o => o.id === id),
+      };
+
+      const pendingChanges = new Map(state.pendingChanges);
+      pendingChanges.set(id, change);
+
+      return {
+        ...state,
+        workingData,
+        pendingChanges,
+      };
+    }
+
+    case 'SET_QUICK_EDIT':
+      return { ...state, quickEditOpportunityId: action.payload };
+
+    case 'SET_SORT':
+      return {
+        ...state,
+        sortColumn: action.payload.column,
+        sortDirection: action.payload.direction,
+      };
+
+    case 'SET_FILTER':
+      return { ...state, filter: action.payload };
+
+    case 'SET_SEARCH':
+      return { ...state, searchQuery: action.payload };
+
+    case 'SET_VIEW_MODE':
+      return { ...state, viewMode: action.payload };
+
+    case 'SET_ACTIVE_TAB':
+      return { ...state, activeTab: action.payload };
+
+    case 'SHOW_DETAILS':
+      return { 
+        ...state, 
+        selectedOpportunityId: action.payload,
+        showDetailsModal: true 
+      };
+
+    case 'HIDE_DETAILS':
+      return {
+        ...state,
+        selectedOpportunityId: undefined,
+        showDetailsModal: false
+      };
+
+    case 'OPEN_OVERRIDE_MODAL':
+      return {
+        ...state,
+        showOverrideModal: true,
+        overrideModalDeckId: action.payload.deckId
+      };
+
+    case 'CLOSE_OVERRIDE_MODAL':
+      return {
+        ...state,
+        showOverrideModal: false,
+        overrideModalDeckId: null
+      };
+
+    case 'OPEN_UNIFIED_EDITOR':
+      return {
+        ...state,
+        showUnifiedEditor: true,
+        selectedOpportunityId: action.payload
+      };
+
+    case 'CLOSE_UNIFIED_EDITOR':
+      return {
+        ...state,
+        showUnifiedEditor: false,
+        selectedOpportunityId: undefined
+      };
+
+    case 'COMMIT_START':
+      return { ...state, isCommitting: true };
+
+    case 'COMMIT_SUCCESS':
+      const updatedOriginal = state.workingData.filter(opp =>
+        action.payload.includes(opp.id)
+      );
+      return {
+        ...state,
+        originalData: updatedOriginal,
+        pendingChanges: new Map(),
+        isCommitting: false,
+      };
+
+    case 'COMMIT_FAILURE':
+      return {
+        ...state,
+        isCommitting: false,
+        validationErrors: [],
+      };
+
+    case 'UNDO_CHANGE': {
+      const pendingChanges = new Map(state.pendingChanges);
+      pendingChanges.delete(action.payload);
+      
+      const original = state.originalData.find(o => o.id === action.payload);
+      const workingData = state.workingData.map(opp =>
+        opp.id === action.payload && original ? original : opp
+      );
+
+      return { ...state, workingData, pendingChanges };
+    }
+
+    case 'CLEAR_CHANGES':
+      return {
+        ...state,
+        workingData: state.originalData,
+        pendingChanges: new Map(),
+      };
+
+    case 'BULK_UPDATE': {
+      const { opportunityIds, changes, undoOperation } = action.payload;
+      const workingData = state.workingData.map(opp =>
+        opportunityIds.includes(opp.id) ? { ...opp, ...changes } : opp
+      );
+
+      return {
+        ...state,
+        workingData,
+        undoStack: [...state.undoStack, undoOperation],
+        redoStack: [] // Clear redo stack when new operation is performed
+      };
+    }
+
+    case 'UNDO_OPERATION': {
+      const operationId = action.payload;
+      const operation = state.undoStack.find(op => op.id === operationId);
+      if (!operation) return state;
+
+      const workingData = operation.previousState;
+      const undoStack = state.undoStack.filter(op => op.id !== operationId);
+      const redoStack = [...state.redoStack, operation];
+
+      return {
+        ...state,
+        workingData,
+        undoStack,
+        redoStack,
+      };
+    }
+
+    case 'REDO_OPERATION': {
+      const operationId = action.payload;
+      const operation = state.redoStack.find(op => op.id === operationId);
+      if (!operation) return state;
+
+      // Re-apply the operation
+      const workingData = state.workingData.map(opp =>
+        operation.affectedOpportunities.includes(opp.id) 
+          ? { ...opp, ...operation.details.changes }
+          : opp
+      );
+
+      const redoStack = state.redoStack.filter(op => op.id !== operationId);
+      const undoStack = [...state.undoStack, operation];
+
+      return {
+        ...state,
+        workingData,
+        undoStack,
+        redoStack,
+      };
+    }
+
+    case 'ADD_AUDIT_ENTRY':
+      return {
+        ...state,
+        auditTrail: [...state.auditTrail, action.payload],
+      };
+
+    default:
+      return state;
+  }
+};
+
+const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedProps> = React.memo(({
+  opportunities,
+  availableSites,
+  onBatchUpdate,
+  onOpenWorkspace,
+  onValidate,
+  onEdit, // NEW: External edit handler
+  capacityThresholds = { critical: 10, warning: 30, optimal: 70 },
+  enableRealTimeValidation = true,
+  enableHealthAnalysis = true,
+  showWorkspaceOption = true,
+  showValidationOption = false,
+}) => {
+  // Feature flags
+  const featureFlags = useFeatureFlags();
+  const useAccessibleVersion = false; // Temporarily disabled for testing
+
+  if (useAccessibleVersion) {
+    const CollectionOpportunitiesAccessible = React.lazy(() => import('./CollectionOpportunitiesAccessible'));
+    return (
+      <React.Suspense fallback={<Spinner />}>
+        <CollectionOpportunitiesAccessible
+          opportunities={opportunities}
+          availableSites={availableSites}
+          onBatchUpdate={onBatchUpdate}
+          onOpenWorkspace={onOpenWorkspace}
+          capacityThresholds={capacityThresholds}
+          enableRealTimeValidation={enableRealTimeValidation}
+          enableHealthAnalysis={enableHealthAnalysis}
+          showWorkspaceOption={showWorkspaceOption}
+        />
+      </React.Suspense>
+    );
+  }
+  const initialState: EnhancedManagementState = {
+    originalData: opportunities,
+    workingData: opportunities,
+    pendingChanges: new Map(),
+    validationErrors: [],
+    isCommitting: false,
+    healthScores: new Map(),
+    selectedOpportunityId: undefined,
+    showDetailsModal: false,
+    showOverrideModal: false,
+    overrideModalDeckId: null,
+    showUnifiedEditor: false,
+    searchQuery: '',
+    viewMode: 'table',
+    activeTab: 'all',
+    undoStack: [],
+    redoStack: [],
+    auditTrail: [],
+  };
+
+  const [state, dispatch] = useReducer(enhancedOpportunityReducer, initialState);
+  const [showQuickEdit, setShowQuickEdit] = useState(false);
+
+  // Mock passes for UnifiedEditor - must have siteCapabilities array
+  const mockPasses: Pass[] = useMemo(() => {
+    if (!availableSites || availableSites.length === 0) return [];
+
+    return [
+      {
+        id: 'pass-001',
+        name: 'Satellite Pass Alpha',
+        startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 2.5 * 60 * 60 * 1000),
+        quality: 4,
+        elevation: 45,
+        azimuth: 180,
+        siteCapabilities: availableSites.slice(0, 3), // First 3 sites can receive this pass
+        priority: 'normal',
+        classificationLevel: 'UNCLASSIFIED',
+      },
+      {
+        id: 'pass-002',
+        name: 'Satellite Pass Beta',
+        startTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 6.5 * 60 * 60 * 1000),
+        quality: 5,
+        elevation: 60,
+        azimuth: 270,
+        siteCapabilities: availableSites.slice(1, 5), // Sites 1-4 can receive this pass
+        priority: 'high',
+        classificationLevel: 'UNCLASSIFIED',
+      },
+      {
+        id: 'pass-003',
+        name: 'Satellite Pass Gamma',
+        startTime: new Date(Date.now() + 10 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 10.5 * 60 * 60 * 1000),
+        quality: 3,
+        elevation: 30,
+        azimuth: 90,
+        siteCapabilities: availableSites.slice(2, 6), // Sites 2-5 can receive this pass
+        priority: 'normal',
+        classificationLevel: 'UNCLASSIFIED',
+      }
+    ];
+  }, [availableSites]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + E for edit selected
+      // Cmd/Ctrl + S for save changes
+      if ((e.metaKey || e.ctrlKey) && e.key === 's' && state.pendingChanges.size > 0) {
+        e.preventDefault();
+        handleCommitChanges();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [state.pendingChanges]);
+
+  // Calculate health scores when data changes
+  useEffect(() => {
+    if (enableHealthAnalysis) {
+      const healthScores = calculateBatchHealth(state.workingData, capacityThresholds);
+      dispatch({ type: 'UPDATE_HEALTH', payload: healthScores });
+    }
+  }, [state.workingData, capacityThresholds, enableHealthAnalysis]);
+
+  // Filter, sort, and search data
+  const processedData = useMemo(() => {
+    let data = [...state.workingData];
+
+    console.log('[CollectionOpportunitiesEnhanced] processedData - workingData:', state.workingData.length);
+
+    // Tab filter (legacy view tabs)
+    if (state.activeTab !== 'all') {
+      if (state.activeTab === 'needs-review') {
+        // Show suboptimal matches that need attention
+        data = data.filter(opp => opp.matchStatus === 'suboptimal');
+      } else if (state.activeTab === 'unmatched') {
+        // Show unmatched opportunities
+        data = data.filter(opp => opp.matchStatus === 'unmatched');
+      }
+    }
+
+    // Search filter
+    if (state.searchQuery) {
+      const query = state.searchQuery.toLowerCase();
+      console.log('[CollectionOpportunitiesEnhanced] Filtering with searchQuery:', query);
+      data = data.filter(opp =>
+        opp.name?.toLowerCase().includes(query) ||
+        opp.satellite?.name?.toLowerCase().includes(query) ||
+        opp.notes?.toLowerCase().includes(query)
+      );
+      console.log('[CollectionOpportunitiesEnhanced] After search filter:', data.length);
+    }
+
+    // Apply filters
+    if (state.filter) {
+      data = data.filter(opp => {
+        if (state.filter?.status && state.filter.status.length > 0) {
+          const health = state.healthScores.get(opp.id);
+          if (!health || !state.filter.status.includes(health.level)) return false;
+        }
+        if (state.filter?.priority && state.filter.priority.length > 0) {
+          if (!state.filter.priority.includes(opp.priority as Priority)) return false;
+        }
+        if (state.filter?.capacityRange) {
+          const [min, max] = state.filter.capacityRange;
+          if (opp.capacityPercentage < min || opp.capacityPercentage > max) return false;
+        }
+        return true;
+      });
+    }
+
+    // Apply sorting
+    if (state.sortColumn) {
+      console.log('[CollectionOpportunitiesEnhanced] Sorting by:', state.sortColumn, state.sortDirection);
+      data.sort((a, b) => {
+        let aVal, bVal;
+
+        // Special handling for health score
+        if (state.sortColumn === 'health') {
+          aVal = state.healthScores.get(a.id)?.score || 0;
+          bVal = state.healthScores.get(b.id)?.score || 0;
+        } else {
+          aVal = a[state.sortColumn as keyof CollectionOpportunity];
+          bVal = b[state.sortColumn as keyof CollectionOpportunity];
+        }
+
+        if (aVal === undefined || bVal === undefined) return 0;
+        if (aVal < bVal) return state.sortDirection === 'asc' ? -1 : 1;
+        if (aVal > bVal) return state.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    console.log('[CollectionOpportunitiesEnhanced] FINAL processedData length:', data.length);
+    return data;
+  }, [state.workingData, state.filter, state.sortColumn, state.sortDirection, state.searchQuery, state.healthScores, state.activeTab]);
+
+  // Status cell renderer with enhanced indicator
+  const statusCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    if (!opportunity) return <Cell />;
+
+    const health = state.healthScores.get(opportunity.id);
+    const hasChanges = state.pendingChanges.has(opportunity.id);
+
+    return (
+      <Cell className="status-cell-enhanced">
+        {health ? (
+          <OpportunityStatusIndicatorEnhanced
+            health={health}
+            showDetails={false}
+            compact={true}
+          />
+        ) : (
+          <Spinner size={16} />
+        )}
+        {hasChanges && (
+          <Tooltip content="Modified">
+            <Tag 
+              icon={IconNames.DOT} 
+              intent={Intent.PRIMARY}
+              className="change-indicator"
+              minimal
+            />
+          </Tooltip>
+        )}
+      </Cell>
+    );
+  }, [processedData, state.healthScores, state.pendingChanges]);
+
+  // Actions cell renderer with dropdown menu
+  const actionsCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    if (!opportunity) return <Cell />;
+
+    const health = state.healthScores.get(opportunity.id);
+    const hasChanges = state.pendingChanges.has(opportunity.id);
+
+    const actionMenu = (
+      <Menu>
+        <MenuItem
+          icon={IconNames.EDIT}
+          text="Edit Assignment"
+          intent={Intent.PRIMARY}
+          onClick={() => onEdit ? onEdit(opportunity.id) : handleQuickEdit(opportunity.id)}
+        />
+        {showWorkspaceOption && (
+          <MenuItem
+            icon={IconNames.FLOWS}
+            text="Reallocate"
+            intent={Intent.NONE}
+            onClick={() => handleOpenWorkspace(opportunity.id)}
+          />
+        )}
+        {showValidationOption && (
+          <MenuItem
+            icon={IconNames.ENDORSED}
+            text="Review Impact"
+            intent={Intent.PRIMARY}
+            onClick={() => onValidate?.(opportunity.id)}
+          />
+        )}
+        <MenuDivider />
+        <MenuItem
+          icon={IconNames.LIGHTBULB}
+          text="Optimize"
+          onClick={() => handleAutoOptimize(opportunity.id)}
+        />
+        {health && health.metrics.conflictCount > 0 && (
+          <MenuItem
+            icon={IconNames.RESOLVE}
+            text={`Resolve ${health.metrics.conflictCount} Conflicts`}
+            intent={Intent.WARNING}
+            onClick={() => handleResolveConflicts(opportunity.id)}
+          />
+        )}
+        <MenuDivider />
+        <MenuItem
+          icon={IconNames.DUPLICATE}
+          text="Duplicate"
+          onClick={() => handleDuplicate(opportunity.id)}
+        />
+        {hasChanges && (
+          <MenuItem
+            icon={IconNames.UNDO}
+            text="Revert Changes"
+            onClick={() => dispatch({ type: 'UNDO_CHANGE', payload: opportunity.id })}
+          />
+        )}
+        <MenuItem
+          icon={IconNames.HISTORY}
+          text="View History"
+          onClick={() => handleViewHistory(opportunity.id)}
+        />
+        <MenuDivider />
+        <MenuItem
+          icon={IconNames.TRASH}
+          text="Remove from Deck"
+          intent={Intent.DANGER}
+          onClick={() => handleRemove(opportunity.id)}
+        />
+      </Menu>
+    );
+
+    return (
+      <Cell className="actions-cell-enhanced">
+        <ButtonGroup minimal>
+          <Tooltip content="Edit Assignment">
+            <Button
+              small
+              icon={IconNames.EDIT}
+              onClick={() => onEdit ? onEdit(opportunity.id) : handleQuickEdit(opportunity.id)}
+              aria-label={`Edit assignment for ${opportunity.name}`}
+            />
+          </Tooltip>
+          <InlineOverrideButtonEnhanced
+            opportunity={opportunity}
+            availableSites={availableSites}
+            allOpportunities={filteredAndSortedOpportunities}
+            onOverride={handleInlineOverrideEnhanced}
+            minimal
+            small
+          />
+          {showWorkspaceOption && (
+            <Tooltip content="Reallocate">
+              <Button
+                small
+                icon={IconNames.FLOWS}
+                onClick={() => handleOpenWorkspace(opportunity.id)}
+                aria-label={`Reallocate ${opportunity.name}`}
+              />
+            </Tooltip>
+          )}
+          {!featureFlags.LEGACY_HIDE_MORE_ACTIONS && (
+            <Popover content={actionMenu} position={Position.LEFT_TOP}>
+              <Button
+                small
+                icon={IconNames.MORE}
+                aria-label={`More actions for ${opportunity.name}`}
+              />
+            </Popover>
+          )}
+        </ButtonGroup>
+      </Cell>
+    );
+  }, [processedData, state.healthScores, state.pendingChanges, showWorkspaceOption, onOpenWorkspace, dispatch, featureFlags.LEGACY_HIDE_MORE_ACTIONS, onEdit, availableSites]);
+
+  // Checkbox cell renderer removed - individual actions only
+
+  // Check for missing references
+  const filteredAndSortedOpportunities = processedData;
+
+  // Other cell renderers remain similar but with enhanced styling
+  const nameCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+
+    // Check if this opportunity has a manual override justification
+    const hasOverride = opportunity?.overrideJustification != null;
+    const exportIndicator = hasOverride && opportunity.overrideJustification
+      ? createExportIndicator(opportunity.overrideJustification)
+      : null;
+
+    return (
+      <Cell>
+        <Button
+          minimal
+          fill
+          alignText="left"
+          className="name-cell clickable"
+          onClick={() => handleOpenOverrideModal(opportunity.id)}
+          data-testid="opportunity-row"
+          data-match-status={opportunity.matchStatus}
+          aria-label={`View details for ${opportunity.name}`}
+          role="button"
+          tabIndex={0}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <strong>{opportunity?.name}</strong>
+            {exportIndicator && (
+              <OverrideExportBadge
+                indicator={exportIndicator}
+                variant="inline"
+                showDetails={false}
+              />
+            )}
+            {opportunity?.notes && (
+              <Tooltip content={opportunity.notes}>
+                <Tag
+                  minimal
+                  icon={IconNames.COMMENT}
+                />
+              </Tooltip>
+            )}
+          </div>
+        </Button>
+      </Cell>
+    );
+  }, [processedData, dispatch]);
+
+  const satelliteCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    if (!opportunity) return <Cell />;
+    
+    return (
+      <Cell>
+        <div className="satellite-info">
+          <div className="satellite-name">
+            {opportunity.satellite.name}
+            {opportunity.dataIntegrityIssues && opportunity.dataIntegrityIssues.length > 0 && (
+              <DataIntegrityIndicator
+                issues={opportunity.dataIntegrityIssues}
+                satelliteId={opportunity.satellite.id}
+                onEscalate={(satId, issue) => {
+                  console.log('Escalate to ops:', satId, issue);
+                  // In real app, would open escalation dialog or API call
+                }}
+                onRetry={(satId) => {
+                  console.log('Retry TLE update:', satId);
+                  // In real app, would trigger TLE update request
+                }}
+                compact
+              />
+            )}
+          </div>
+          <div className={`satellite-meta ${Classes.TEXT_MUTED}`}>
+            {opportunity.satellite.function} • {opportunity.satellite.orbit}
+          </div>
+        </div>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const priorityCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+
+    // Convert priority to numeric value (1-4)
+    const priorityMap: Record<Priority, number> = {
+      low: 1,
+      medium: 2,
+      high: 3,
+      critical: 4,
+    };
+
+    const priorityValue = opportunity?.priorityValue || priorityMap[opportunity?.priority || 'low'];
+
+    return (
+      <Cell>
+        <span style={{
+          fontSize: '16px',
+          fontWeight: 600,
+          color: '#1C2127'
+        }}>
+          {priorityValue}
+        </span>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const sitesCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const siteCount = opportunity?.sites.length || 0;
+
+    return (
+      <Cell>
+        <div className="sites-summary">
+          <div className="site-count">{siteCount} sites</div>
+          <div className="site-names">
+            {opportunity?.sites.slice(0, 3).map(s => s.name).join(', ')}
+            {siteCount > 3 && ` +${siteCount - 3} more`}
+          </div>
+        </div>
+      </Cell>
+    );
+  }, [processedData]);
+
+  // Legacy compliance cell renderers (P0-P1 implementation)
+  const sccCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const sccValue = opportunity?.sccNumber ? formatSccNumber(opportunity.sccNumber) : (opportunity?.satellite?.name || '-');
+    return (
+      <Cell>
+        <Tag minimal className="scc-number">
+          {sccValue}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const functionCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const functionValue = opportunity?.satellite?.function || '-';
+    return (
+      <Cell>
+        <Tag minimal intent={Intent.PRIMARY} className="satellite-function">
+          {functionValue}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const orbitCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const orbitValue = opportunity?.satellite?.orbit || '-';
+    const orbitIntent =
+      orbitValue === 'LEO' ? Intent.SUCCESS :
+      orbitValue === 'MEO' ? Intent.PRIMARY :
+      orbitValue === 'GEO' ? Intent.WARNING :
+      Intent.NONE;
+    return (
+      <Cell>
+        <Tag minimal intent={orbitIntent} className="orbit-type">
+          {orbitValue}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const periodicityCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    // Display aggregated operational days from allocated sites (immutable site property)
+    const allocatedSites = opportunity?.allocatedSites || [];
+
+    if (allocatedSites.length === 0) {
+      return (
+        <Cell>
+          <Tag minimal className="periodicity">-</Tag>
+        </Cell>
+      );
+    }
+
+    const aggregatedDays = aggregateOperationalDays(allocatedSites);
+
+    return (
+      <Cell>
+        <OperationalDaysCompact operationalDays={aggregatedDays} />
+      </Cell>
+    );
+  }, [processedData]);
+
+  const collectionTypeCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const collectionType = opportunity?.collectionType || '-';
+    const typeIntent =
+      collectionType === 'optical' ? Intent.PRIMARY :
+      collectionType === 'wideband' ? Intent.SUCCESS :
+      collectionType === 'narrowband' ? Intent.WARNING :
+      Intent.NONE;
+    return (
+      <Cell>
+        <Tag minimal intent={typeIntent} className="collection-type">
+          {collectionType.charAt(0).toUpperCase() + collectionType.slice(1)}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const classificationCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const classification = opportunity?.classificationLevel || 'UNCLASSIFIED';
+    const classIntent =
+      classification === 'TOP_SECRET' ? Intent.DANGER :
+      classification === 'SECRET' ? Intent.WARNING :
+      classification === 'CONFIDENTIAL' ? Intent.PRIMARY :
+      Intent.SUCCESS;
+    return (
+      <Cell>
+        <Tag intent={classIntent} minimal className="classification-tag">
+          {classification.replace(/_/g, ' ')}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const matchStatusCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const matchIntent =
+      opportunity?.matchStatus === 'baseline' ? Intent.SUCCESS :
+      opportunity?.matchStatus === 'suboptimal' ? Intent.WARNING :
+      Intent.DANGER;
+    return (
+      <Cell>
+        <Tag intent={matchIntent} minimal className="match-status-tag">
+          {opportunity?.matchStatus ? opportunity.matchStatus.toUpperCase() : 'UNMATCHED'}
+        </Tag>
+      </Cell>
+    );
+  }, [processedData]);
+
+  const matchNotesCellRenderer = useCallback((rowIndex: number) => {
+    const opportunity = processedData[rowIndex];
+    const notes = opportunity?.matchNotes || '-';
+    return (
+      <Cell>
+        {notes !== '-' ? (
+          <Tooltip content={notes} position={Position.BOTTOM}>
+            <Tag minimal className="match-notes" style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {notes}
+            </Tag>
+          </Tooltip>
+        ) : (
+          <Tag minimal className="match-notes">-</Tag>
+        )}
+      </Cell>
+    );
+  }, [processedData]);
+
+  // Create site allocation cell renderer with Blueprint-aligned component
+  const siteAllocationCellRenderer = useMemo(
+    () => createSiteAllocationCellRenderer(processedData, 3),
+    [processedData]
+  );
+
+  // Handler functions
+  const handleQuickEdit = (opportunityId: string) => {
+    dispatch({ type: 'SET_QUICK_EDIT', payload: opportunityId });
+    setShowQuickEdit(true);
+  };
+
+  const handleOpenWorkspace = (opportunityId: string) => {
+    if (onOpenWorkspace) {
+      onOpenWorkspace(opportunityId);
+    }
+  };
+
+  const handleOpenOverrideModal = (opportunityId: string) => {
+    const opportunity = processedData.find(o => o.id === opportunityId);
+    if (opportunity) {
+      dispatch({
+        type: 'OPEN_OVERRIDE_MODAL',
+        payload: {
+          opportunityIds: [opportunityId],
+          deckId: opportunity.collectionDeckId
+        }
+      });
+    }
+  };
+
+  const handleCloseOverrideModal = () => {
+    dispatch({ type: 'CLOSE_OVERRIDE_MODAL' });
+  };
+
+  const handleSaveOverride = async (changes: Map<string, CollectionOpportunity>) => {
+    // Convert map to array and call onBatchUpdate
+    const changeArray = Array.from(changes.values()).map(opp => ({
+      opportunityId: opp.id,
+      changes: opp
+    }));
+    await onBatchUpdate(changeArray as any);
+    handleCloseOverrideModal();
+  };
+
+  // UnifiedEditor handlers
+  const handleOpenUnifiedEditor = useCallback((opportunityId: string) => {
+    dispatch({
+      type: 'OPEN_UNIFIED_EDITOR',
+      payload: opportunityId
+    });
+  }, []);
+
+  const handleCloseUnifiedEditor = useCallback(() => {
+    dispatch({ type: 'CLOSE_UNIFIED_EDITOR' });
+  }, []);
+
+  const handleSaveUnified = useCallback(async (
+    opportunityId: string,
+    changes: Partial<CollectionOpportunity>
+  ) => {
+    // Adapter: Convert UnifiedEditor format to batch format
+    const batchChanges = [{
+      opportunityId,
+      changes
+    }];
+    await onBatchUpdate(batchChanges as any);
+    handleCloseUnifiedEditor();
+  }, [onBatchUpdate]);
+
+  const handleAutoOptimize = async (opportunityId: string) => {
+    // Implementation for auto-optimization
+    console.log('Auto-optimize:', opportunityId);
+  };
+
+  const handleResolveConflicts = (opportunityId: string) => {
+    // Implementation for conflict resolution
+    console.log('Resolve conflicts:', opportunityId);
+  };
+
+  const handleDuplicate = (opportunityId: string) => {
+    // Implementation for duplication
+    console.log('Duplicate:', opportunityId);
+  };
+
+  const handleViewHistory = (opportunityId: string) => {
+    // Implementation for history view
+    console.log('View history:', opportunityId);
+  };
+
+  const handleRemove = (opportunityId: string) => {
+    if (confirm('Remove this opportunity from the collection deck?')) {
+      // Implementation for removal
+      console.log('Remove:', opportunityId);
+    }
+  };
+
+  const handleInlineOverrideEnhanced = (opportunityId: string, newSite: Site, justification: string, impact: OverrideImpact) => {
+    dispatch({ 
+      type: 'EDIT_OPPORTUNITY', 
+      payload: { 
+        id: opportunityId, 
+        changes: { 
+          allocatedSites: [newSite],
+          changeJustification: justification,
+          notes: `Override: ${justification} (Risk Score: ${impact.riskScore})`,
+          lastModified: new Date().toISOString(),
+          modifiedBy: 'current-user', // In real app, get from auth context
+          status: impact.riskScore > 70 ? 'warning' : 'optimal'
+        } 
+      } 
+    });
+    // In a real implementation, would also trigger the actual override workflow
+    console.log('Override applied:', {
+      opportunityId,
+      newSite: newSite.name,
+      justification,
+      riskScore: impact.riskScore,
+      requiresApproval: impact.requiresApproval
+    });
+  };
+
+  const handleSaveQuickEdit = async (opportunityId: string, changes: Partial<CollectionOpportunity>) => {
+    dispatch({ type: 'EDIT_OPPORTUNITY', payload: { id: opportunityId, changes } });
+    setShowQuickEdit(false);
+  };
+
+  const handleCommitChanges = async () => {
+    if (state.pendingChanges.size === 0) return;
+
+    dispatch({ type: 'COMMIT_START' });
+    try {
+      const changes = Array.from(state.pendingChanges.values());
+      await onBatchUpdate(changes);
+      dispatch({ type: 'COMMIT_SUCCESS', payload: changes.map(c => c.opportunityId) });
+    } catch (error) {
+      dispatch({ type: 'COMMIT_FAILURE', payload: error as Error });
+    }
+  };
+
+  const handleSort = (column: string) => {
+    const newDirection = 
+      state.sortColumn === column && state.sortDirection === 'asc' 
+        ? 'desc' 
+        : 'asc';
+    
+    dispatch({ 
+      type: 'SET_SORT', 
+      payload: { column: column as keyof CollectionOpportunity, direction: newDirection } 
+    });
+  };
+
+  const handleUndo = (operationId: string) => {
+    dispatch({ type: 'UNDO_OPERATION', payload: operationId });
+  };
+
+  const quickEditOpportunity = state.workingData.find(o => o.id === state.quickEditOpportunityId);
+
+  // Calculate summary statistics
+  const stats = useMemo(() => {
+    const total = processedData.length;
+    const critical = processedData.filter(o =>
+      state.healthScores.get(o.id)?.level === 'critical'
+    ).length;
+    const warning = processedData.filter(o =>
+      state.healthScores.get(o.id)?.level === 'warning'
+    ).length;
+    const optimal = processedData.filter(o =>
+      state.healthScores.get(o.id)?.level === 'optimal'
+    ).length;
+
+    // Legacy tab counts (based on all data, not filtered)
+    const needsReview = state.workingData.filter(o => o.matchStatus === 'suboptimal').length;
+    const unmatched = state.workingData.filter(o => o.matchStatus === 'unmatched').length;
+
+    return { total, critical, warning, optimal, needsReview, unmatched };
+  }, [processedData, state.healthScores, state.workingData]);
+
+  return (
+    <div className="collection-opportunities-enhanced">
+      {/* Enhanced Header */}
+      <Navbar className="opportunities-navbar">
+        <NavbarGroup>
+          <NavbarHeading>Review Assignments</NavbarHeading>
+        </NavbarGroup>
+
+        <NavbarGroup align="right">
+          {state.pendingChanges.size > 0 && (
+            <>
+              <Button
+                minimal
+                onClick={() => dispatch({ type: 'CLEAR_CHANGES' })}
+                disabled={state.isCommitting}
+              >
+                Cancel Changes
+              </Button>
+              <Button
+                intent={Intent.PRIMARY}
+                onClick={handleCommitChanges}
+                loading={state.isCommitting}
+                icon={IconNames.CLOUD_UPLOAD}
+              >
+                Update Collection Deck ({state.pendingChanges.size})
+              </Button>
+              <NavbarDivider />
+            </>
+          )}
+
+          <InputGroup
+            leftIcon={IconNames.SEARCH}
+            placeholder="Search assignments..."
+            value={state.searchQuery}
+            onChange={(e) => dispatch({ type: 'SET_SEARCH', payload: e.target.value })}
+          />
+
+          {/* Column Visibility Control - Enterprise Pattern */}
+          <Popover
+            content={
+              <Menu>
+                <MenuItem
+                  text="Default View (7 columns)"
+                  labelElement={<Tag minimal>Recommended</Tag>}
+                  onClick={() => {/* TODO: Set to default columns */}}
+                />
+                <MenuItem
+                  text="Technical View (11 columns)"
+                  onClick={() => {/* TODO: Set to technical columns */}}
+                />
+                <MenuItem
+                  text="Complete View (13 columns)"
+                  onClick={() => {/* TODO: Set to all columns */}}
+                />
+                <MenuDivider />
+                <MenuItem
+                  icon={IconNames.COG}
+                  text="Customize columns..."
+                  disabled
+                  labelElement={<Tag minimal>Future</Tag>}
+                />
+              </Menu>
+            }
+            position={Position.BOTTOM_RIGHT}
+          >
+            <Button
+              minimal
+              icon={IconNames.COLUMN_LAYOUT}
+              text="Columns"
+              rightIcon={IconNames.CARET_DOWN}
+            />
+          </Popover>
+        </NavbarGroup>
+      </Navbar>
+
+      {/* Legacy View Tabs */}
+      <Tabs
+        id="legacy-view-tabs"
+        selectedTabId={state.activeTab}
+        onChange={(newTabId) => dispatch({ type: 'SET_ACTIVE_TAB', payload: newTabId as 'all' | 'needs-review' | 'unmatched' })}
+        large
+        className="legacy-view-tabs"
+      >
+        <Tab id="all" title="ALL" />
+        <Tab id="needs-review" title={`NEEDS REVIEW (${stats.needsReview})`} />
+        <Tab id="unmatched" title={`UNMATCHED (${stats.unmatched})`} />
+      </Tabs>
+
+      {/* Changes summary */}
+      {state.pendingChanges.size > 0 && (
+        <Callout 
+          intent={Intent.PRIMARY} 
+          icon={IconNames.INFO_SIGN}
+          className="changes-summary"
+        >
+          <strong>{state.pendingChanges.size} changes pending.</strong> Review your changes 
+          in the table below. Changes are validated in real-time and will be applied when you 
+          click "Update Collection Deck".
+        </Callout>
+      )}
+
+      {/* Bulk Operations Toolbar - Removed (individual actions only) */}
+
+      {/* Undo/Redo controls */}
+      {(state.undoStack.length > 0 || state.redoStack.length > 0) && (
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ marginRight: 16 }}>History:</span>
+            <ButtonGroup>
+              <Tooltip content="Undo last operation">
+                <Button
+                  icon={IconNames.UNDO}
+                  disabled={state.undoStack.length === 0}
+                  onClick={() => {
+                    const lastOperation = state.undoStack[state.undoStack.length - 1];
+                    if (lastOperation) handleUndo(lastOperation.id);
+                  }}
+                  data-testid="undo-bulk-operation"
+                />
+              </Tooltip>
+              <Tooltip content="Redo last undone operation">
+                <Button
+                  icon={IconNames.REDO}
+                  disabled={state.redoStack.length === 0}
+                  onClick={() => {
+                    const lastRedo = state.redoStack[state.redoStack.length - 1];
+                    if (lastRedo) dispatch({ type: 'REDO_OPERATION', payload: lastRedo.id });
+                  }}
+                />
+              </Tooltip>
+            </ButtonGroup>
+            {state.undoStack.length > 0 && (
+              <span style={{ fontSize: '0.9em', color: '#666' }}>
+                Last: {state.undoStack[state.undoStack.length - 1].description}
+              </span>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Data display */}
+      {(() => {
+        console.log('[CollectionOpportunitiesEnhanced] Rendering decision - processedData.length:', processedData.length, 'viewMode:', state.viewMode);
+        return processedData.length === 0 ? (
+          <NonIdealState
+            icon={IconNames.SEARCH}
+            title="No assignments found"
+            description="Try adjusting your search or filters."
+          />
+        ) : state.viewMode === 'table' ? (
+          <Table2
+            numRows={processedData.length}
+            enableRowHeader={false}
+            enableColumnHeader={true}
+            enableRowReordering={false}
+            enableColumnReordering={false}
+            className="opportunities-table-enhanced"
+            data-testid="opportunities-table"
+            enableRowResizing={false}
+            enableColumnResizing={true}
+            enableFocusedCell={true}
+            selectionModes={SelectionModes.ROWS_ONLY}
+            renderMode={RenderMode.BATCH}
+            rowHeights={processedData.map(() => 60)}
+            defaultColumnWidth={150}
+            minColumnWidth={100}
+          >
+          {/* Checkbox column removed - individual actions only */}
+          {/* Primary Column Order: Priority → Match Context → Technical Details → Site Allocation */}
+          <Column name="Priority" cellRenderer={priorityCellRenderer} />
+          <Column
+            name="Match"
+            cellRenderer={(rowIndex) => {
+              const opportunity = processedData[rowIndex];
+              const matchIntent =
+                opportunity?.matchStatus === 'baseline' ? Intent.SUCCESS :
+                opportunity?.matchStatus === 'suboptimal' ? Intent.WARNING :
+                Intent.DANGER;
+
+              return (
+                <Cell>
+                  <div
+                    className="match-status-cell clickable"
+                    onClick={() => handleOpenUnifiedEditor(opportunity.id)}
+                    data-testid="opportunity-row"
+                    style={{ cursor: 'pointer' }}
+                    title="Click to open allocation workflow"
+                  >
+                    <Tag intent={matchIntent} minimal className="match-status-tag">
+                      {opportunity?.matchStatus ? opportunity.matchStatus.toUpperCase() : 'UNMATCHED'}
+                    </Tag>
+                  </div>
+                </Cell>
+              );
+            }}
+          />
+          <Column name="Match Notes" cellRenderer={matchNotesCellRenderer} />
+          <Column name="SCC" cellRenderer={sccCellRenderer} />
+          <Column name="Function" cellRenderer={functionCellRenderer} />
+          <Column name="Orbit" cellRenderer={orbitCellRenderer} />
+          <Column name="Site Allocation" cellRenderer={siteAllocationCellRenderer} />
+          <Column name="Collection Type" cellRenderer={collectionTypeCellRenderer} />
+          <Column name="Classification" cellRenderer={classificationCellRenderer} />
+          </Table2>
+        ) : (
+        // Card view implementation
+        <div className="opportunities-cards">
+          {processedData.map(opportunity => (
+            <Card key={opportunity.id} className="opportunity-card" interactive>
+              {/* Card content */}
+            </Card>
+          ))}
+        </div>
+        );
+      })()}
+
+      {/* Quick Edit Modal */}
+      {showQuickEdit && quickEditOpportunity && (
+        <QuickEditModal
+          isOpen={showQuickEdit}
+          opportunity={quickEditOpportunity}
+          availableSites={availableSites}
+          onClose={() => setShowQuickEdit(false)}
+          onSave={handleSaveQuickEdit}
+          capacityThresholds={capacityThresholds}
+          enableRealTimeValidation={enableRealTimeValidation}
+          showHealthAnalysis={enableHealthAnalysis}
+          allowBatchOperations={false}
+          relatedOpportunities={[]}
+        />
+      )}
+
+      {/* Opportunity Details Modal */}
+      {state.showDetailsModal && state.selectedOpportunityId && (
+        <OpportunityDetailsModal
+          isOpen={state.showDetailsModal}
+          opportunity={processedData.find(o => o.id === state.selectedOpportunityId) || null}
+          passes={[]} // TODO: Get actual passes from context or props
+          onClose={() => dispatch({ type: 'HIDE_DETAILS' })}
+          onValidate={onValidate}
+          onEdit={(id) => {
+            dispatch({ type: 'SET_QUICK_EDIT', payload: id });
+            dispatch({ type: 'HIDE_DETAILS' });
+            setShowQuickEdit(true);
+          }}
+          onOpenWorkspace={(id) => {
+            onOpenWorkspace?.(id);
+            dispatch({ type: 'HIDE_DETAILS' });
+          }}
+          capacityThresholds={capacityThresholds}
+          showValidationOption={showValidationOption}
+          showWorkspaceOption={showWorkspaceOption}
+        />
+      )}
+
+      {/* Manual Override Modal - Primary Action for Pass-to-Site Allocation */}
+      <ManualOverrideModalRefactored
+        isOpen={state.showOverrideModal}
+        onClose={handleCloseOverrideModal}
+        selectedOpportunityIds={[]}
+        collectionDeckId={state.overrideModalDeckId}
+        onSave={handleSaveOverride}
+      />
+
+      {/* Unified Opportunity Editor - Override Mode for Pass-to-Site Allocation */}
+      {state.showUnifiedEditor && state.selectedOpportunityId && (() => {
+        const currentOpportunity = processedData.find(
+          o => o.id === state.selectedOpportunityId
+        );
+
+        if (!currentOpportunity) return null;
+
+        return (
+          <UnifiedOpportunityEditor
+            opportunity={currentOpportunity}
+            availableSites={availableSites}
+            availablePasses={mockPasses}
+            mode="override"
+            isOpen={state.showUnifiedEditor}
+            onClose={handleCloseUnifiedEditor}
+            onSave={handleSaveUnified}
+            capacityThresholds={capacityThresholds}
+            enableRealTimeValidation={true}
+            enableUndoRedo={true}
+          />
+        );
+      })()}
+    </div>
+  );
+});
+
+CollectionOpportunitiesEnhanced.displayName = 'CollectionOpportunitiesEnhanced';
+
+export default CollectionOpportunitiesEnhanced;

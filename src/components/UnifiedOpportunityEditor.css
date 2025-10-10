@@ -1,0 +1,374 @@
+/**
+ * Unified Opportunity Editor Styles
+ *
+ * Consolidated styles for all editor modes (quick, standard, override).
+ * Replaces individual modal and panel CSS files.
+ */
+
+/* ==================== BASE EDITOR STYLES ==================== */
+
+.unified-editor-drawer,
+.unified-editor-dialog,
+.unified-editor-override {
+  /* Smooth transitions */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Drawer-specific styles (Quick Edit) */
+.unified-editor-drawer {
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.unified-editor-drawer .bp5-drawer-body,
+.unified-editor-drawer .bp6-drawer-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.unified-editor-drawer .bp5-drawer-footer,
+.unified-editor-drawer .bp6-drawer-footer {
+  border-top: 1px solid #E1E8ED;
+  padding: 16px 20px;
+  background-color: #F5F8FA;
+}
+
+/* Dialog-specific styles (Standard Edit) */
+.unified-editor-dialog .bp5-dialog-body,
+.unified-editor-dialog .bp6-dialog-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Override dialog styles (Complex Workflow) */
+.unified-editor-override .bp5-dialog-body,
+.unified-editor-override .bp6-dialog-body {
+  padding: 0; /* Tabs have their own padding */
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ==================== FORM LAYOUT ==================== */
+
+.editor-form-group {
+  margin-bottom: 20px;
+}
+
+.editor-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.editor-form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.editor-form-row > * {
+  flex: 1;
+}
+
+/* ==================== PROGRESSIVE DISCLOSURE ==================== */
+
+.editor-advanced-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #E1E8ED;
+}
+
+.editor-advanced-toggle {
+  margin-top: 16px;
+  width: 100%;
+  text-align: left;
+  color: #5C7080;
+  font-size: 13px;
+}
+
+.editor-advanced-toggle:hover {
+  color: #137CBD;
+}
+
+/* ==================== VALIDATION FEEDBACK ==================== */
+
+.editor-validation-summary {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: #FEF5E7;
+  border: 1px solid #F9E79F;
+}
+
+.editor-validation-summary.has-errors {
+  background-color: #FADBD8;
+  border-color: #F1948A;
+}
+
+.editor-validation-summary.is-valid {
+  background-color: #D5F4E6;
+  border-color: #7DCEA0;
+}
+
+.editor-validation-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.editor-validation-list li {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* ==================== SITE SELECTION ==================== */
+
+.editor-site-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.editor-site-card {
+  padding: 12px;
+  border: 1px solid #E1E8ED;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editor-site-card:hover {
+  border-color: #137CBD;
+  background-color: #F5F8FA;
+}
+
+.editor-site-card.selected {
+  border-color: #137CBD;
+  background-color: #D8E1E8;
+  box-shadow: 0 0 0 1px #137CBD;
+}
+
+.editor-site-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.editor-site-card-info {
+  font-size: 12px;
+  color: #5C7080;
+}
+
+/* ==================== CAPACITY INDICATORS ==================== */
+
+.editor-capacity-meter {
+  margin-top: 16px;
+}
+
+.editor-capacity-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #5C7080;
+}
+
+.editor-capacity-value {
+  font-weight: 600;
+}
+
+.editor-capacity-value.critical {
+  color: #DB3737;
+}
+
+.editor-capacity-value.warning {
+  color: #D9822B;
+}
+
+.editor-capacity-value.optimal {
+  color: #0F9960;
+}
+
+/* ==================== ALTERNATIVE SUGGESTIONS ==================== */
+
+.editor-alternatives {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #F5F8FA;
+  border-radius: 4px;
+}
+
+.editor-alternatives-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #5C7080;
+}
+
+.editor-alternative-item {
+  padding: 8px;
+  margin-bottom: 6px;
+  border-left: 3px solid #137CBD;
+  background-color: white;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editor-alternative-item:hover {
+  background-color: #EBF1F5;
+  border-left-color: #106BA3;
+}
+
+.editor-alternative-item:last-child {
+  margin-bottom: 0;
+}
+
+/* ==================== TABS (Override Mode) ==================== */
+
+.editor-tabs {
+  height: 100%;
+}
+
+.editor-tab-content {
+  padding: 20px;
+}
+
+/* ==================== JUSTIFICATION SECTION ==================== */
+
+.editor-justification {
+  margin-top: 20px;
+}
+
+.editor-justification-required {
+  color: #DB3737;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* ==================== CHANGES SUMMARY ==================== */
+
+.editor-changes-summary {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #F5F8FA;
+  border-radius: 4px;
+  border-left: 4px solid #137CBD;
+}
+
+.editor-changes-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.editor-changes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.editor-changes-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #E1E8ED;
+  font-size: 13px;
+}
+
+.editor-changes-list li:last-child {
+  border-bottom: none;
+}
+
+.editor-change-field {
+  font-weight: 600;
+  color: #5C7080;
+}
+
+.editor-change-arrow {
+  margin: 0 8px;
+  color: #A7B6C2;
+}
+
+.editor-change-old {
+  text-decoration: line-through;
+  color: #A7B6C2;
+}
+
+.editor-change-new {
+  color: #137CBD;
+  font-weight: 500;
+}
+
+/* ==================== SAVE ERROR ==================== */
+
+.save-error-message {
+  padding: 12px;
+  background-color: #FADBD8;
+  border: 1px solid #F1948A;
+  border-radius: 4px;
+}
+
+/* ==================== LOADING STATE ==================== */
+
+.editor-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  min-height: 200px;
+}
+
+.editor-loading-text {
+  margin-top: 16px;
+  color: #5C7080;
+  font-size: 14px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .unified-editor-dialog,
+  .unified-editor-override {
+    width: 95% !important;
+    margin: 2.5%;
+  }
+
+  .editor-form-row {
+    flex-direction: column;
+  }
+
+  .editor-site-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.editor-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus indicators */
+.editor-site-card:focus,
+.editor-alternative-item:focus {
+  outline: 2px solid #137CBD;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .editor-site-card.selected {
+    border-width: 3px;
+  }
+
+  .editor-alternative-item {
+    border-left-width: 5px;
+  }
+}

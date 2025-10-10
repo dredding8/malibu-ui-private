@@ -1,0 +1,81 @@
+/* Collection Opportunities Table Styles */
+
+.opportunities-table-container {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-navbar {
+    padding: calc(var(--bp5-grid-size) * 1.25) calc(var(--bp5-grid-size) * 1.875);
+    background-color: var(--bp5-background-color);
+    border-bottom: 1px solid var(--bp5-divider-black);
+}
+
+/* Health Cell Styles */
+.health-cell {
+    padding: calc(var(--bp5-grid-size) * 0.5) calc(var(--bp5-grid-size) * 1);
+}
+
+.health-cell .status-indicator-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.health-cell .bp5-tag {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Capacity Cell Styles */
+.capacity-cell {
+    position: relative;
+    padding: calc(var(--bp5-grid-size) * 1);
+}
+
+.capacity-bar {
+    position: absolute;
+    left: calc(var(--bp5-grid-size) * 1);
+    top: 50%;
+    height: calc(var(--bp5-grid-size) * 0.75);
+    background-color: var(--bp5-intent-primary);
+    transform: translateY(-50%);
+    border-radius: calc(var(--bp5-grid-size) * 0.375);
+    transition: width 0.3s ease;
+}
+
+.capacity-text {
+    position: relative;
+    z-index: 1;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Dark Theme Support */
+.bp5-dark .table-navbar {
+    background-color: var(--bp5-dark-background-color);
+    border-bottom-color: var(--bp5-dark-divider-white);
+}
+
+.bp5-dark .health-cell .bp5-tag {
+    background-color: transparent;
+}
+
+.bp5-dark .capacity-bar {
+    background-color: var(--bp5-intent-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .table-navbar {
+        padding: calc(var(--bp5-grid-size) * 1) calc(var(--bp5-grid-size) * 1.25);
+    }
+
+    .health-cell .bp5-tag {
+        font-size: 11px;
+    }
+}

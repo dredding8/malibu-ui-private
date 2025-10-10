@@ -1,0 +1,289 @@
+/**
+ * CollectionHubHeader Styles
+ *
+ * Design Principles:
+ * 1. Clear Visual Hierarchy - F-pattern layout
+ * 2. Reduced Cognitive Load - Grouped, spaced actions
+ * 3. Accessibility - High contrast, focus indicators
+ * 4. Progressive Disclosure - Context-sensitive elements
+ */
+
+.collection-hub-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--background-color, #ffffff);
+  border-bottom: 1px solid var(--divider-color, rgba(16, 22, 26, 0.15));
+}
+
+/**
+ * Primary Header - Collection Identity
+ * Most important information: What collection am I viewing?
+ */
+
+.collection-hub-header .header-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.collection-hub-header .collection-info {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.collection-hub-header .collection-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color, #182026);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-hub-header .collection-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.collection-hub-header .opportunity-count {
+  font-size: 14px;
+  color: var(--text-color-muted, #5C7080);
+}
+
+.collection-hub-header .pending-changes-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--intent-warning-light, rgba(255, 186, 0, 0.15));
+  color: var(--intent-warning, #D9822B);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid var(--intent-warning, #D9822B);
+}
+
+.collection-hub-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/**
+ * Secondary Header - Search & Actions
+ * Second priority: How do I interact with the collection?
+ */
+
+.collection-hub-header .header-secondary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.collection-hub-header .search-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.collection-hub-header .opportunity-search {
+  width: 100%;
+}
+
+/* Override FormGroup margins for inline layout */
+.collection-hub-header .opportunity-search .bp5-form-group {
+  margin-bottom: 0;
+}
+
+.collection-hub-header .opportunity-search .bp5-label {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/**
+ * Pending Changes Bar
+ * Context-sensitive: Only shows when changes exist
+ */
+
+.collection-hub-header .pending-changes-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--intent-warning-light, rgba(255, 186, 0, 0.1));
+  border: 1px solid var(--intent-warning, #D9822B);
+  border-radius: 4px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.collection-hub-header .pending-changes-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-color, #182026);
+  font-weight: 500;
+}
+
+.collection-hub-header .pending-changes-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/**
+ * Responsive Design
+ */
+
+@media (max-width: 1024px) {
+  .collection-hub-header .header-secondary {
+    flex-wrap: wrap;
+  }
+
+  .collection-hub-header .search-container {
+    flex: 1 1 100%;
+    max-width: none;
+    order: -1; /* Search moves to top */
+  }
+}
+
+@media (max-width: 768px) {
+  .collection-hub-header {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .collection-hub-header .header-primary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .collection-hub-header .collection-title {
+    font-size: 20px;
+  }
+
+  .collection-hub-header .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .collection-hub-header .pending-changes-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .collection-hub-header .pending-changes-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+/**
+ * Accessibility Enhancements
+ */
+
+/* Focus indicators */
+.collection-hub-header button:focus {
+  outline: 2px solid var(--focus-color, #137CBD);
+  outline-offset: 2px;
+}
+
+/* Skip to main content link */
+.collection-hub-header .skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--intent-primary, #137CBD);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 100;
+}
+
+.collection-hub-header .skip-link:focus {
+  top: 8px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .collection-hub-header {
+    border-bottom-width: 2px;
+  }
+
+  .collection-hub-header .pending-changes-badge,
+  .collection-hub-header .pending-changes-bar {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .collection-hub-header .pending-changes-bar {
+    animation: none;
+  }
+}
+
+/**
+ * Dark Theme Support
+ */
+
+.bp5-dark .collection-hub-header {
+  background: var(--background-color, #30404D);
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.bp5-dark .collection-hub-header .collection-title {
+  color: var(--text-color, #F5F8FA);
+}
+
+.bp5-dark .collection-hub-header .opportunity-count {
+  color: var(--text-color-muted, #A7B6C2);
+}
+
+.bp5-dark .collection-hub-header .pending-changes-badge {
+  background: rgba(255, 186, 0, 0.2);
+  border-color: #FFB366;
+}
+
+.bp5-dark .collection-hub-header .pending-changes-bar {
+  background: rgba(255, 186, 0, 0.15);
+  border-color: #FFB366;
+}
+
+/**
+ * Print Styles
+ */
+
+@media print {
+  .collection-hub-header .header-actions,
+  .collection-hub-header .action-button-group,
+  .collection-hub-header .pending-changes-actions {
+    display: none;
+  }
+
+  .collection-hub-header .pending-changes-bar {
+    background: transparent;
+    border: 1px solid black;
+  }
+}

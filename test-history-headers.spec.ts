@@ -24,8 +24,8 @@ test('Test history table header duplication', async ({ page }) => {
     // Count header instances for each expected column
     const headersToCheck = [
       'Deck Name',
-      'Deck Status', 
-      'Processing Status',
+      'Collection Deck Status', 
+      'Matching status',
       'Progress',
       'Created',
       'Completed',

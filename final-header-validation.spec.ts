@@ -1,81 +1,99 @@
+/**
+ * Final Header Validation - Navigate to Collections and validate header
+ */
+
 import { test, expect } from '@playwright/test';
 
-test('Final header duplication validation on actual table', async ({ page }) => {
-  console.log('🎯 FINAL HEADER DUPLICATION TEST');
-  console.log('Testing the actual table structure visible on the page...');
-  
-  await page.goto('http://localhost:3000/history');
+test('Validate OpportunityInfoHeaderEnhanced implementation', async ({ page }) => {
+  // Navigate to app
+  await page.goto('http://localhost:3000');
   await page.waitForLoadState('networkidle');
+
+  // Screenshot: Initial page
+  await page.screenshot({ path: '/Users/damon/malibu/validation-01-initial.png', fullPage: true });
+  console.log('✅ Step 1: App loaded');
+
+  // Click "Collections" in top navigation
+  await page.click('a:has-text("Collections")');
   await page.waitForTimeout(3000);
-  
-  // Take screenshot for visual confirmation
-  await page.screenshot({ 
-    path: 'test-results/final-validation.png', 
-    fullPage: true 
-  });
-  
-  // The page shows a custom table layout with rows for each collection deck
-  // Let's check for header text duplications in the visible table
-  
-  // Look for the actual table section "Your Collection Decks"
-  const tableSection = await page.locator('text="Your Collection Decks"');
-  const tableSectionExists = await tableSection.count();
-  console.log(`📊 "Your Collection Decks" section found: ${tableSectionExists > 0 ? 'YES' : 'NO'}`);
-  
-  // Check for any visible table headers in the current structure
-  const possibleHeaders = [
-    'Name', 'Collection Status', 'Processing Status', 'Algorithm Status', 
-    'Progress', 'Created', 'Completed', 'Actions', 'UX Test Collection Deck',
-    'Sample Analytics Deck', 'Failed Processing Test'
-  ];
-  
-  let totalHeaderInstances = 0;
-  let duplicatedHeaders = [];
-  
-  for (const headerText of possibleHeaders) {
-    const occurrences = await page.locator(`text="${headerText}"`).count();
-    totalHeaderInstances += occurrences;
-    
-    if (occurrences > 1) {
-      duplicatedHeaders.push({ text: headerText, count: occurrences });
-      console.log(`⚠️  "${headerText}" appears ${occurrences} times`);
-    } else if (occurrences === 1) {
-      console.log(`✅ "${headerText}" appears once`);
+
+  // Screenshot: Collections page
+  await page.screenshot({ path: '/Users/damon/malibu/validation-02-collections.png', fullPage: true });
+  console.log('✅ Step 2: Navigated to Collections');
+
+  // Look for any table rows or opportunity cards
+  const anyRow = await page.locator('tr, .opportunity-card, .bp5-card').count();
+  console.log(`Found ${anyRow} potential clickable elements`);
+
+  if (anyRow > 0) {
+    // Click first row/card
+    await page.locator('tr, .opportunity-card, .bp5-card').first().click();
+    await page.waitForTimeout(2000);
+
+    // Screenshot: Modal/Drawer
+    await page.screenshot({ path: '/Users/damon/malibu/validation-03-modal.png', fullPage: true });
+    console.log('✅ Step 3: Opened modal/drawer');
+
+    // Find the header
+    const header = page.locator('.opportunity-info-header-enhanced');
+    const headerExists = await header.count() > 0;
+
+    if (headerExists) {
+      // Screenshot: Header closeup
+      await header.screenshot({ path: '/Users/damon/malibu/validation-04-HEADER.png' });
+      console.log('✅ SUCCESS: Header found!');
+
+      // Find priority
+      const priorityValue = header.locator('.priority-value');
+      const priorityExists = await priorityValue.count() > 0;
+
+      if (priorityExists) {
+        const priorityText = await priorityValue.textContent();
+        console.log('✅ Priority value:', priorityText);
+
+        // Check styling
+        const styles = await priorityValue.evaluate((el) => {
+          const computed = window.getComputedStyle(el);
+          return {
+            fontSize: computed.fontSize,
+            fontWeight: computed.fontWeight,
+            tagName: el.tagName,
+            parentTagName: el.parentElement?.tagName,
+            hasTagClass: el.closest('.bp5-tag') !== null
+          };
+        });
+
+        console.log('Priority styling:', styles);
+
+        if (styles.hasTagClass) {
+          console.log('❌ FAIL: Priority is inside a Tag component');
+        } else {
+          console.log('✅ PASS: Priority is plain number (not in Tag)');
+        }
+
+        if (styles.fontSize === '16px' && styles.fontWeight === '600') {
+          console.log('✅ PASS: Priority styling matches table (16px, 600)');
+        } else {
+          console.log(`❌ FAIL: Priority styling incorrect (${styles.fontSize}, ${styles.fontWeight})`);
+        }
+      } else {
+        console.log('❌ Priority value (.priority-value) not found');
+      }
+
+      // Check other elements
+      const satelliteName = await header.locator('.satellite-name').count();
+      const sccTag = await header.locator('.property-item:has-text("SCC") .bp5-tag').count();
+      const orbitTag = await header.locator('.property-item:has-text("Orbit") .bp5-tag').count();
+
+      console.log(`Satellite name: ${satelliteName > 0 ? '✅' : '❌'}`);
+      console.log(`SCC uses Tag: ${sccTag > 0 ? '✅' : '❌'}`);
+      console.log(`Orbit uses Tag: ${orbitTag > 0 ? '✅' : '❌'}`);
+
+    } else {
+      console.log('❌ Header (.opportunity-info-header-enhanced) not found');
+      console.log('Page might still be using old header component');
     }
-  }
-  
-  // Check the table rows for structure
-  const tableRows = await page.locator('[data-testid="history-table-container"] tr, .table-row, [role="row"]').count();
-  console.log(`📋 Table rows found: ${tableRows}`);
-  
-  // Look for any Blueprint table elements that might have headers
-  const blueprintHeaders = await page.locator('.bp5-table-column-header-cell, .bp4-table-column-header-cell').count();
-  console.log(`🏗️  Blueprint table headers: ${blueprintHeaders}`);
-  
-  // Check if we can see the data rows (the actual collection decks)
-  const deckRows = await page.locator('text="UX Test Collection Deck", text="Sample Analytics Deck", text="Failed Processing Test"').count();
-  console.log(`📦 Collection deck rows visible: ${deckRows}`);
-  
-  console.log('\n=== FINAL ASSESSMENT ===');
-  console.log(`Total header text instances: ${totalHeaderInstances}`);
-  console.log(`Headers with duplicates: ${duplicatedHeaders.length}`);
-  console.log(`Blueprint table headers: ${blueprintHeaders}`);
-  console.log(`Visible data rows: ${deckRows}`);
-  
-  if (duplicatedHeaders.length === 0 && blueprintHeaders === 0) {
-    console.log('✅ EXCELLENT: No header duplications detected!');
-    console.log('🎉 The enableColumnHeader=false fix has successfully eliminated duplicate headers.');
-    console.log('🚀 The table is now using custom headers without Blueprint auto-generation.');
-  } else if (blueprintHeaders === 0 && duplicatedHeaders.length > 0) {
-    console.log('⚠️  Some text duplicates found, but no Blueprint header duplicates');
-    console.log('ℹ️  This may be normal for data content vs header content');
   } else {
-    console.log('🔍 Blueprint headers still present - may need further investigation');
-  }
-  
-  if (deckRows > 0) {
-    console.log('✅ Table is functional and displaying data correctly');
-  } else {
-    console.log('ℹ️  No data rows detected (table may be empty)');
+    console.log('⚠️ No rows/cards found on Collections page');
   }
 });

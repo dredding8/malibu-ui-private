@@ -1,0 +1,344 @@
+/**
+ * Collection Toolbar Styles
+ * 
+ * Toolbar component styling with sorting, density, and action controls.
+ * Follows Blueprint.js design system and 10px grid spacing.
+ * 
+ * @version 1.0.0
+ * @date 2025-09-30
+ */
+
+/* =============================================================================
+   Toolbar Container
+   ============================================================================= */
+
+.collection-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 20px;
+  background: var(--bp5-background-color-secondary);
+  border-bottom: 1px solid var(--bp5-border-color);
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+.collection-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.collection-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   Sort Controls
+   ============================================================================= */
+
+.collection-toolbar-sort {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.collection-toolbar-sort .bp5-button {
+  font-size: 13px;
+  min-height: 28px;
+}
+
+.collection-toolbar-sort .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color);
+}
+
+/* =============================================================================
+   Density Controls
+   ============================================================================= */
+
+.collection-toolbar-density {
+  display: flex;
+  align-items: center;
+}
+
+.collection-toolbar-density .bp5-button {
+  min-width: 32px;
+  min-height: 28px;
+}
+
+.collection-toolbar-density .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color);
+}
+
+/* =============================================================================
+   Selection Controls
+   ============================================================================= */
+
+.collection-toolbar-selection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selection-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: var(--bp5-intent-primary-light);
+  border: 1px solid var(--bp5-intent-primary);
+  border-radius: 3px;
+}
+
+.selection-info .bp5-tag {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.selection-info .bp5-button {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+}
+
+.collection-toolbar-selection .bp5-button {
+  font-size: 13px;
+  min-height: 28px;
+}
+
+.collection-toolbar-selection .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color);
+}
+
+/* =============================================================================
+   Actions Controls
+   ============================================================================= */
+
+.collection-toolbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.collection-toolbar-actions .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.collection-toolbar-actions .bp5-button {
+  border-radius: 0;
+  border: none;
+  margin: 0;
+  min-width: 32px;
+  min-height: 28px;
+}
+
+.collection-toolbar-actions .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-background-color);
+}
+
+.collection-toolbar-actions .bp5-button:focus {
+  z-index: 1;
+  position: relative;
+}
+
+/* =============================================================================
+   Divider Styles
+   ============================================================================= */
+
+.collection-toolbar .bp5-divider {
+  height: 20px;
+  margin: 0 4px;
+  border-left-color: var(--bp5-border-color);
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .collection-toolbar {
+    padding: 10px 24px;
+    gap: 20px;
+  }
+  
+  .collection-toolbar-left {
+    gap: 16px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .collection-toolbar {
+    gap: 12px;
+  }
+  
+  .collection-toolbar-left {
+    gap: 8px;
+  }
+  
+  .collection-toolbar-sort .bp5-button .bp5-button-text {
+    display: none;
+  }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .collection-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+  
+  .collection-toolbar-left {
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .collection-toolbar-right {
+    justify-content: center;
+  }
+  
+  .collection-toolbar-sort,
+  .collection-toolbar-density,
+  .collection-toolbar-selection {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .collection-toolbar-sort .bp5-button .bp5-button-text {
+    display: none;
+  }
+  
+  .selection-info {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 479px) {
+  .collection-toolbar {
+    padding: 6px 12px;
+  }
+  
+  .collection-toolbar-left {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .collection-toolbar-actions .bp5-button-group {
+    width: 100%;
+  }
+  
+  .collection-toolbar-actions .bp5-button {
+    flex: 1;
+  }
+  
+  .collection-toolbar .bp5-divider {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   Focus and Accessibility
+   ============================================================================= */
+
+.collection-toolbar:focus-within {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: -2px;
+}
+
+.collection-toolbar .bp5-button:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 1px;
+  z-index: 1;
+  position: relative;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .collection-toolbar {
+    border-bottom: 2px solid var(--bp5-text-color);
+  }
+  
+  .selection-info {
+    border: 2px solid var(--bp5-intent-primary);
+  }
+  
+  .collection-toolbar-actions .bp5-button-group {
+    box-shadow: 0 0 0 2px var(--bp5-text-color);
+  }
+  
+  .collection-toolbar .bp5-divider {
+    border-left-color: var(--bp5-text-color);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .collection-toolbar * {
+    transition: none !important;
+  }
+}
+
+/* =============================================================================
+   Dark Theme Support
+   ============================================================================= */
+
+.bp5-dark .collection-toolbar {
+  background: var(--bp5-dark-background-color-secondary);
+  border-bottom-color: var(--bp5-dark-border-color);
+}
+
+.bp5-dark .collection-toolbar-sort .bp5-button:hover:not(:disabled),
+.bp5-dark .collection-toolbar-density .bp5-button:hover:not(:disabled),
+.bp5-dark .collection-toolbar-selection .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-toolbar-actions .bp5-button:hover:not(:disabled) {
+  background-color: var(--bp5-dark-background-color);
+}
+
+.bp5-dark .collection-toolbar-actions .bp5-button-group {
+  box-shadow: 0 0 0 1px var(--bp5-dark-border-color);
+}
+
+.bp5-dark .selection-info {
+  background-color: var(--bp5-dark-intent-primary-light);
+  border-color: var(--bp5-dark-intent-primary);
+}
+
+.bp5-dark .collection-toolbar .bp5-divider {
+  border-left-color: var(--bp5-dark-border-color);
+}
+
+/* =============================================================================
+   Loading States
+   ============================================================================= */
+
+.collection-toolbar.loading .collection-toolbar-actions .bp5-button {
+  opacity: 0.6;
+}
+
+.collection-toolbar.loading .collection-toolbar-selection .bp5-button {
+  opacity: 0.8;
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .collection-toolbar {
+    display: none;
+  }
+}

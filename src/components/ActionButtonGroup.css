@@ -1,0 +1,174 @@
+/**
+ * ActionButtonGroup Styles
+ *
+ * Design Goals:
+ * 1. Visual Hierarchy - Primary actions stand out
+ * 2. Cognitive Load Reduction - Clear grouping and spacing
+ * 3. Accessibility - High contrast, focus indicators
+ */
+
+.action-button-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-button-group .primary-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Visual separation between primary and overflow */
+.action-button-group .primary-actions::after {
+  content: '';
+  width: 1px;
+  height: 24px;
+  background: var(--divider-color, rgba(16, 22, 26, 0.15));
+  margin: 0 4px;
+}
+
+/* Overflow menu styling */
+.menu-group-header {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-color-muted, #5C7080);
+  padding: 8px 12px 4px;
+  cursor: default !important;
+}
+
+.menu-group-header:hover {
+  background: transparent !important;
+}
+
+.hotkey-hint {
+  font-size: 11px;
+  color: var(--text-color-muted, #5C7080);
+  font-family: monospace;
+  padding: 2px 6px;
+  background: var(--background-color-secondary, rgba(16, 22, 26, 0.1));
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
+/**
+ * Bulk Action Bar Styles
+ *
+ * Context-sensitive toolbar that appears when items are selected
+ */
+
+.bulk-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--intent-primary-light, rgba(19, 124, 189, 0.1));
+  border: 1px solid var(--intent-primary, #137CBD);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bulk-action-bar .selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bulk-action-bar .selection-count {
+  font-weight: 500;
+  color: var(--intent-primary, #137CBD);
+  font-size: 14px;
+}
+
+.bulk-action-bar .bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .action-button-group {
+    flex-wrap: wrap;
+  }
+
+  .bulk-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .bulk-action-bar .bulk-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/**
+ * Accessibility Enhancements
+ */
+
+/* Focus indicators */
+.action-button-group button:focus,
+.bulk-action-bar button:focus {
+  outline: 2px solid var(--focus-color, #137CBD);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .action-button-group .primary-actions::after {
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .bulk-action-bar {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .bulk-action-bar {
+    animation: none;
+  }
+}
+
+/**
+ * Dark theme support
+ */
+.bp5-dark .action-button-group .primary-actions::after {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.bp5-dark .menu-group-header {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.bp5-dark .hotkey-hint {
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bp5-dark .bulk-action-bar {
+  background: rgba(19, 124, 189, 0.2);
+  border-color: #137CBD;
+}
+
+.bp5-dark .bulk-action-bar .selection-count {
+  color: #48AFF0;
+}

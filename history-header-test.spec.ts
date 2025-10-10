@@ -18,8 +18,8 @@ test('History table headers test', async ({ page }) => {
   // Expected headers
   const expectedHeaders = [
     'Deck Name',
-    'Deck Status', 
-    'Processing Status',
+    'Collection Deck Status', 
+    'Matching status',
     'Progress',
     'Created',
     'Completed',

@@ -1,0 +1,154 @@
+.actionable-stats-card {
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.actionable-stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.stats-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5c7080;
+}
+
+.stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stats-card-trend.trend-success {
+  background-color: #d4f5e2;
+  color: #0d8050;
+}
+
+.stats-card-trend.trend-warning {
+  background-color: #fef3dd;
+  color: #bf7326;
+}
+
+.stats-card-trend.trend-danger {
+  background-color: #fddfe0;
+  color: #c23030;
+}
+
+.trend-percentage {
+  font-weight: 600;
+}
+
+.stats-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats-card-value-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-card-value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  color: #182026;
+}
+
+.stats-card-value[data-intent="danger"] {
+  color: #db3737;
+}
+
+.stats-card-value[data-intent="warning"] {
+  color: #d9822b;
+}
+
+.stats-card-value[data-intent="success"] {
+  color: #0f9960;
+}
+
+.stats-card-total {
+  font-size: 20px;
+  font-weight: 400;
+  color: #738694;
+  margin-left: 4px;
+}
+
+.stats-card-sparkline {
+  height: 40px;
+  margin: 8px -8px;
+}
+
+.stats-card-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e1e8ed;
+}
+
+.stats-card-insight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #5c7080;
+  line-height: 1.4;
+}
+
+.stats-card-insight .bp5-icon {
+  flex-shrink: 0;
+  color: #ad9a5b;
+}
+
+/* Loading state */
+.actionable-stats-card.bp5-loading .stats-card-value {
+  background: linear-gradient(90deg, #f5f8fa 0%, #e1e8ed 50%, #f5f8fa 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  color: transparent;
+  border-radius: 4px;
+  display: inline-block;
+  min-width: 60px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stats-card-value {
+    font-size: 24px;
+  }
+  
+  .stats-card-total {
+    font-size: 16px;
+  }
+}

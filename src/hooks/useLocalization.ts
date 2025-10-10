@@ -8,8 +8,8 @@ const translations = {
     noResults: "No collection decks found for the selected date range.",
     columns: {
       name: "Deck Name",
-      collectionStatus: "Deck Status",
-      algorithmStatus: "Processing Status", 
+      collectionStatus: "Collection Deck Status",
+      algorithmStatus: "Matching status", 
       progress: "Progress",
       created: "Created",
       completed: "Completed"

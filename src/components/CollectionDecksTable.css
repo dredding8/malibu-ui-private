@@ -1,0 +1,197 @@
+/**
+ * CollectionDecksTable Styles
+ * Mobile-responsive styles for collection deck tables with match notes
+ */
+
+/* Base table styles */
+.collection-decks-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Match Notes column specific styles */
+.match-notes-cell {
+  min-width: 180px;
+}
+
+.match-notes-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Match status tag styles */
+.match-status-tag {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Match notes text */
+.match-notes-text {
+  display: flex;
+  align-items: center;
+  cursor: help;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.match-notes-text-warning {
+  color: #d69e2e;
+}
+
+.match-notes-text-danger {
+  color: #db3737;
+}
+
+.match-notes-icon {
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.match-notes-message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Full coverage text */
+.match-full-coverage {
+  font-size: 12px;
+  color: #0f9960;
+  white-space: nowrap;
+}
+
+/* Tooltip styles */
+.match-notes-tooltip {
+  max-width: 300px;
+  padding: 8px;
+}
+
+.match-notes-tooltip strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.match-notes-tooltip-details {
+  margin-top: 8px;
+}
+
+.match-notes-tooltip-item {
+  margin-top: 4px;
+}
+
+.match-notes-tooltip-subitem {
+  margin-left: 12px;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.3;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  /* Stack match status and notes vertically on small screens */
+  .match-notes-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .match-notes-text {
+    font-size: 11px;
+  }
+  
+  .match-notes-message {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: 150px;
+  }
+  
+  /* Reduce column padding on mobile */
+  .bp5-table-cell {
+    padding: 8px 6px;
+  }
+  
+  /* Make table scrollable with fixed first column */
+  .bp5-table-quadrant-main {
+    overflow-x: auto;
+  }
+  
+  /* Reduce font sizes for better mobile fit */
+  .bp5-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  /* Adjust tooltip position for mobile */
+  .bp5-tooltip {
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Ultra-small screens */
+  .match-notes-cell {
+    min-width: 120px;
+  }
+  
+  .match-notes-message {
+    max-width: 100px;
+  }
+  
+  /* Hide less important columns on very small screens */
+  .bp5-table-column-name[data-column-id="lastModified"],
+  .bp5-table-column-name[data-column-id="createdDate"] {
+    display: none;
+  }
+}
+
+/* High contrast mode support for accessibility */
+@media (prefers-contrast: high) {
+  .match-notes-text-warning {
+    color: #ff8c00;
+    font-weight: 600;
+  }
+  
+  .match-notes-text-danger {
+    color: #ff0000;
+    font-weight: 600;
+  }
+  
+  .match-full-coverage {
+    color: #008000;
+    font-weight: 600;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .match-notes-tooltip {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .match-notes-content {
+    flex-wrap: nowrap;
+  }
+  
+  .match-notes-message {
+    white-space: normal;
+    overflow: visible;
+  }
+  
+  /* Show full content when printing */
+  .match-notes-tooltip {
+    display: block !important;
+    position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-top: 4px;
+    padding: 4px;
+    border: 1px solid #ccc;
+  }
+}

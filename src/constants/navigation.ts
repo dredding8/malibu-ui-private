@@ -48,7 +48,7 @@ export const NAVIGATION_ROUTES = {
   
   // History sub-routes
   FIELD_MAPPING_REVIEW: (collectionId: string) => `/history/${collectionId}/field-mapping-review`,
-  COLLECTION_OPPORTUNITIES_VIEW: (collectionId: string) => `/history/${collectionId}/collection-opportunities`,
+  COLLECTION_OPPORTUNITIES_VIEW: (collectionId: string) => `/collection/${collectionId}/manage`,
 } as const;
 
 export const NAVIGATION_DESCRIPTIONS = {

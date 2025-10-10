@@ -1,0 +1,170 @@
+/* Conflict Resolver Styles */
+.conflict-resolver-dialog .bp5-dialog-body {
+  padding: 0;
+}
+
+/* Conflict Summary */
+.conflict-summary {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+}
+
+.conflict-summary li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+/* Resolution Section */
+.resolution-section {
+  padding: 20px;
+}
+
+.resolution-section h5 {
+  margin: 0 0 16px 0;
+}
+
+/* Recommended Option */
+.recommended-option {
+  background: linear-gradient(135deg, #F5FFF9 0%, #E8FFF0 100%);
+  border: 1px solid #0F9960;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.recommended-label {
+  font-weight: 600;
+  color: #0F9960;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.option-description {
+  font-size: 15px;
+  margin-bottom: 16px;
+  color: #182026;
+}
+
+/* Option Metrics */
+.option-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric > span:first-child {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #5C7080;
+  letter-spacing: 0.5px;
+}
+
+.metric .bp5-progress-bar {
+  height: 6px;
+}
+
+.metric-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #182026;
+}
+
+/* Alternative Options */
+.alternative-options {
+  margin-top: 24px;
+}
+
+.alternative-options h6 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #5C7080;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.option-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 24px;
+  padding: 8px 0;
+}
+
+.option-text {
+  font-size: 14px;
+  color: #182026;
+}
+
+.option-tags {
+  display: flex;
+  gap: 6px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  padding: 20px;
+  background: #F5F8FA;
+  border-top: 1px solid #E1E8ED;
+}
+
+.quick-actions .bp5-button-group {
+  margin-bottom: 0;
+}
+
+.quick-actions .bp5-button {
+  flex: 1;
+  justify-content: center;
+}
+
+.quick-actions .bp5-icon {
+  margin-right: 6px;
+}
+
+/* Dialog Footer */
+.conflict-resolver-dialog .bp5-dialog-footer {
+  background: white;
+  border-top: 1px solid #E1E8ED;
+}
+
+/* Radio Button Styling */
+.bp5-control.bp5-radio {
+  margin-bottom: 12px;
+}
+
+.bp5-control.bp5-radio:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .option-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions .bp5-button-group {
+    flex-direction: column;
+  }
+  
+  .quick-actions .bp5-button {
+    width: 100%;
+  }
+}

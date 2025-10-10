@@ -1,0 +1,473 @@
+/**
+ * Analytics Dashboard Responsive Styles
+ * Optimized for mobile managers and desktop users
+ */
+
+.analytics {
+  min-height: 100vh;
+  background-color: #f5f8fa;
+}
+
+.analytics-content {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Performance Summary Cards - Responsive Grid */
+.performance-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.performance-summary-card {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.performance-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.performance-metric-value {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  line-height: 1;
+}
+
+.performance-metric-label {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Charts Layout - Responsive */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.charts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Trend Charts */
+.performance-trend-chart {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px 16px 0 16px;
+}
+
+.chart-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.chart-metadata {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-current-value {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Site Performance Cards */
+.site-performance-list {
+  display: grid;
+  gap: 12px;
+}
+
+.site-performance-card {
+  padding: 12px 16px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e1e8ed;
+}
+
+.site-performance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-performance-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.site-performance-meta {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.site-performance-metrics {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.site-metric {
+  text-align: center;
+  min-width: 60px;
+}
+
+.site-metric-value {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.site-metric-label {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Insights Cards */
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.insight-card {
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid transparent;
+}
+
+.insight-card.severity-critical {
+  border-left-color: #db3737;
+}
+
+.insight-card.severity-high {
+  border-left-color: #f29d49;
+}
+
+.insight-card.severity-medium {
+  border-left-color: #2b95d6;
+}
+
+.insight-card.severity-low {
+  border-left-color: #0f9960;
+}
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.insight-title-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insight-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.insight-confidence {
+  font-size: 12px;
+  color: #666;
+}
+
+.insight-description {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.insight-recommendations {
+  margin-top: 12px;
+}
+
+.insight-section-title {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.insight-section-content {
+  margin: 4px 0 8px 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.3;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .analytics-content {
+    padding: 16px;
+  }
+
+  /* Stack performance cards vertically on mobile */
+  .performance-summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .performance-summary-card {
+    padding: 16px 12px;
+  }
+
+  .performance-metric-value {
+    font-size: 1.5rem;
+  }
+
+  .performance-metric-label {
+    font-size: 12px;
+  }
+
+  /* Stack charts vertically on mobile */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Optimize site performance cards for mobile */
+  .site-performance-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .site-performance-metrics {
+    gap: 12px;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .site-metric {
+    min-width: auto;
+    flex: 1;
+  }
+
+  /* Optimize insight cards for mobile */
+  .insight-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .insight-title-section {
+    width: 100%;
+  }
+
+  .insight-confidence {
+    align-self: flex-end;
+  }
+
+  /* Tab navigation optimization */
+  .bp4-tabs .bp4-tab-list {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .bp4-tab {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small mobile devices */
+  .performance-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid {
+    gap: 12px;
+  }
+
+  .site-performance-metrics {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .site-metric {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+
+  .site-metric-value {
+    order: 2;
+  }
+
+  .site-metric-label {
+    order: 1;
+    text-transform: none;
+    font-size: 12px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .performance-summary-card {
+    border: 0.5px solid rgba(16, 22, 26, 0.15);
+  }
+}
+
+/* Dark mode support (if implemented) */
+@media (prefers-color-scheme: dark) {
+  .analytics {
+    background-color: #293742;
+  }
+
+  .performance-summary-card,
+  .site-performance-card,
+  .insight-card {
+    background-color: #30404d;
+    border-color: #394b59;
+    color: #f5f8fa;
+  }
+
+  .performance-metric-label,
+  .site-performance-meta,
+  .site-metric-label,
+  .insight-confidence,
+  .insight-section-title {
+    color: #a7b6c2;
+  }
+
+  .chart-title,
+  .site-performance-name,
+  .insight-title {
+    color: #f5f8fa;
+  }
+
+  .insight-description,
+  .insight-section-content {
+    color: #ced9e0;
+  }
+}
+
+/* Print styles */
+@media print {
+  .analytics {
+    background: white;
+  }
+
+  .bp4-button,
+  .bp4-switch {
+    display: none;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .performance-summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .insight-card {
+    break-inside: avoid;
+    margin-bottom: 12px;
+  }
+}
+
+/* Loading and error states */
+.analytics-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.analytics-error {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Accessibility improvements */
+.performance-summary-card:focus-within {
+  outline: 2px solid #137cbd;
+  outline-offset: 2px;
+}
+
+.site-performance-card:focus-within,
+.insight-card:focus-within {
+  outline: 2px solid #137cbd;
+  outline-offset: 2px;
+}
+
+/* Animation for real-time updates */
+@keyframes pulse-update {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.real-time-update {
+  animation: pulse-update 2s ease-in-out infinite;
+}
+
+/* Export menu styles */
+.export-popover .bp4-menu {
+  min-width: 180px;
+}
+
+.export-popover .bp4-menu-item {
+  padding: 8px 12px;
+}
+
+/* Responsive table for audit log */
+.audit-table-container {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .audit-table-container .bp4-table {
+    font-size: 12px;
+  }
+  
+  .audit-table-container .bp4-table-cell {
+    padding: 8px 6px;
+  }
+}

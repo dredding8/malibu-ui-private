@@ -347,7 +347,7 @@ test.describe('🌊 Wave 2: Blueprint Design System Compliance', () => {
       const cardCount = await cards.count();
       
       if (cardCount > 0) {
-        const cardWidth = await cards.first().evaluate(el => el.offsetWidth);
+        const cardWidth = await cards.first().evaluate(el => (el as HTMLElement).offsetWidth);
         expect(cardWidth).toBeGreaterThan(100);
         expect(cardWidth).toBeLessThanOrEqual(breakpoint.width);
       }
