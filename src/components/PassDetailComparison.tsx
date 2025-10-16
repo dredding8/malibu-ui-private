@@ -45,7 +45,6 @@ export interface PassDetail {
   readonly duration: number; // minutes
   readonly elevation: number; // degrees
   readonly azimuth: number; // degrees
-  readonly qualityScore: number; // 0-100
   readonly weatherRisk: 'low' | 'medium' | 'high';
   readonly capacity: number;
   readonly allocated: number;
@@ -105,7 +104,7 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
   const [showJustificationForm, setShowJustificationForm] = useState(false);
-  const [sortColumn, setSortColumn] = useState<string>('qualityScore');
+  const [sortColumn, setSortColumn] = useState<string>('impactScore');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterConflicts, setFilterConflicts] = useState<boolean>(false);
   const [showClassificationAlert, setShowClassificationAlert] = useState(false);
@@ -130,14 +129,10 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
   const impactMetrics = useMemo(() => {
     const selectedPasses = combinedPasses.filter(pass => selectedOverrides.has(pass.id));
     const totalImpact = selectedPasses.reduce((sum, pass) => sum + pass.impactScore, 0);
-    const averageQuality = selectedPasses.length > 0 
-      ? selectedPasses.reduce((sum, pass) => sum + pass.qualityScore, 0) / selectedPasses.length 
-      : 0;
     const conflictCount = selectedPasses.filter(pass => pass.conflictLevel !== 'none').length;
 
     return {
       totalImpact,
-      averageQuality,
       conflictCount,
       selectedCount: selectedPasses.length,
     };
@@ -227,28 +222,6 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
     );
   };
 
-  const renderQualityCell = (rowIndex: number) => {
-    const pass = combinedPasses[rowIndex];
-    return (
-      <Cell>
-        <div className="quality-cell">
-          <Tag
-            intent={
-              pass.qualityScore >= 80 ? Intent.SUCCESS :
-              pass.qualityScore >= 60 ? Intent.WARNING :
-              Intent.DANGER
-            }
-          >
-            {pass.qualityScore}%
-          </Tag>
-          <div className="metrics">
-            <span>El: {pass.elevation}°</span>
-            <span>Az: {pass.azimuth}°</span>
-          </div>
-        </div>
-      </Cell>
-    );
-  };
 
   const renderCapacityCell = (rowIndex: number) => {
     const pass = combinedPasses[rowIndex];
@@ -343,10 +316,6 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
                   <div className="metric">
                     <Icon icon={IconNames.STOPWATCH} />
                     <span>{pass.duration}m</span>
-                  </div>
-                  <div className="metric">
-                    <Icon icon={IconNames.TRENDING_UP} />
-                    <span>Quality: {pass.qualityScore}%</span>
                   </div>
                   <div className="metric">
                     <Icon icon={IconNames.DATABASE} />
@@ -553,11 +522,6 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
               {impactMetrics.conflictCount} conflicts
             </Tag>
           )}
-          {impactMetrics.averageQuality > 0 && (
-            <Tag intent={Intent.SUCCESS}>
-              Avg Quality: {impactMetrics.averageQuality.toFixed(0)}%
-            </Tag>
-          )}
         </div>
       </div>
 
@@ -590,11 +554,6 @@ export const PassDetailComparison: React.FC<PassDetailComparisonProps> = ({
             name="Time"
             cellRenderer={renderTimeCell}
             columnHeaderCellRenderer={() => <ColumnHeaderCell name="Time" />}
-          />
-          <Column
-            name="Quality"
-            cellRenderer={renderQualityCell}
-            columnHeaderCellRenderer={() => <ColumnHeaderCell name="Quality" />}
           />
           <Column
             name="Capacity"

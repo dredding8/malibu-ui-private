@@ -45,7 +45,6 @@ const createMockPassDetail = (
   duration: 10 + Math.floor(Math.random() * 20),
   elevation: 30 + Math.floor(Math.random() * 60),
   azimuth: Math.floor(Math.random() * 360),
-  qualityScore: 60 + Math.floor(Math.random() * 40),
   weatherRisk: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as any,
   capacity: 100,
   allocated: 30 + Math.floor(Math.random() * 50),

@@ -7,6 +7,21 @@
   background: var(--bp5-background-color);
 }
 
+/* UX Analysis Fix: Increase badge legibility to match History page */
+.match-status-tag {
+  font-size: 13px !important; /* Increased from 11-12px for better readability */
+  padding: 6px 12px !important; /* Increased from 4px 8px for better touch target */
+  min-height: 28px !important; /* Match History page badge height */
+  font-weight: 600 !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* UX Analysis Fix: Add vertical spacing between search and tabs */
+.legacy-view-tabs {
+  margin-top: 32px; /* Add breathing room - currently too tight */
+}
+
 /* Enhanced Navbar */
 .opportunities-navbar {
   background: var(--bp5-card-background-color);
@@ -45,9 +60,12 @@
 }
 
 /* Enhanced Table - Enterprise Pattern */
+/* Team 1 Fix: Fluid table width with max constraint */
 .opportunities-table-enhanced {
   flex: 1;
-  margin: calc(var(--bp5-grid-size) * 2);
+  width: 100%; /* Fluid width instead of fixed */
+  max-width: 1800px; /* Cap expansion on ultra-wide screens */
+  margin: calc(var(--bp5-grid-size) * 2) auto; /* Center on ultra-wide */
 }
 
 /* Hover Actions - Reduced Visual Noise (Enterprise Pattern) */
@@ -100,7 +118,8 @@
 .opportunities-table-enhanced .bp5-table-column-header-cell {
   background: var(--bp5-background-color);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px; /* Increased from 13px to match cell text size */
+  line-height: 1.5; /* WCAG compliance */
   color: var(--bp5-text-color);
   border-right: 1px solid var(--bp5-divider-black);
   border-bottom: 2px solid var(--bp5-divider-black);
@@ -122,12 +141,15 @@
   transition: transform 0.2s ease;
 }
 
-/* Cell styling */
+/* Cell styling - Team 3: Text Size & Spacing for WCAG Compliance */
 .opportunities-table-enhanced .bp5-table-cell {
   vertical-align: middle;
-  padding: calc(var(--bp5-grid-size) * 1.5) calc(var(--bp5-grid-size) * 2);
+  padding: calc(var(--bp5-grid-size) * 1.8) calc(var(--bp5-grid-size) * 2); /* Increased from 1.5 (12px → 14.4px vertical) */
   border-right: 1px solid var(--bp5-divider-black);
   border-bottom: 1px solid var(--bp5-divider-black);
+  font-size: 14px; /* Increased from default 11-12px for WCAG AA compliance */
+  line-height: 1.5; /* WCAG recommended minimum for readability */
+  min-height: 52px; /* Ensures adequate touch target: (14.4px * 2) + (14px * 1.5) = 49.8px, rounded to 52px */
 }
 
 .status-cell-enhanced {
@@ -152,7 +174,8 @@
 }
 
 .name-cell strong {
-  font-size: 14px;
+  font-size: 14px; /* Already meets WCAG requirements */
+  line-height: 1.5; /* WCAG compliance */
   color: var(--bp5-text-color);
 }
 
@@ -184,12 +207,14 @@
 
 .satellite-name {
   font-weight: 500;
-  font-size: 13px;
+  font-size: 14px; /* Increased from 13px for consistency and readability */
+  line-height: 1.5; /* WCAG compliance */
   color: var(--bp5-text-color);
 }
 
 .satellite-meta {
-  font-size: 11px;
+  font-size: 12px; /* Increased from 11px to meet WCAG AA minimum */
+  line-height: 1.5; /* WCAG compliance */
 }
 
 .sites-summary {
@@ -200,12 +225,14 @@
 
 .site-count {
   font-weight: 500;
-  font-size: 13px;
+  font-size: 14px; /* Increased from 13px for consistency */
+  line-height: 1.5; /* WCAG compliance */
   color: var(--bp5-text-color);
 }
 
 .site-names {
-  font-size: 11px;
+  font-size: 12px; /* Increased from 11px to meet WCAG AA minimum */
+  line-height: 1.5; /* WCAG compliance */
   color: var(--bp5-text-color-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -264,7 +291,102 @@
   justify-content: center;
 }
 
+/* Team 4: Column Visibility Toggle Controls */
+
+/* Hide columns toggle button by default (wide viewports) */
+.responsive-columns-toggle {
+  display: none !important;
+}
+
+/* Show columns toggle button at <1280px where columns are hidden */
+@media (max-width: 1279px) {
+  .responsive-columns-toggle {
+    display: inline-flex !important;
+  }
+
+  /* Hide responsive columns by default at <1280px */
+  .responsive-column {
+    display: none !important;
+  }
+
+  /* Show responsive columns when user toggles them visible */
+  .responsive-column.user-visible {
+    display: table-cell !important;
+  }
+}
+
 /* Responsive design */
+
+/* Ultra-wide displays (1920px+) - Team 1 & 3: Fluid width + Enhanced text scaling */
+@media (min-width: 1920px) {
+  /* Team 1: Fluid table width - 95% utilization */
+  .opportunities-table-enhanced {
+    width: 95%; /* 95% utilization, leave margins for comfort */
+    margin: calc(var(--bp5-grid-size) * 2) auto;
+  }
+
+  /* Team 3: Enhanced text scaling */
+  .opportunities-table-enhanced .bp5-table-cell {
+    font-size: 15px; /* Enhanced readability on large displays */
+    padding: calc(var(--bp5-grid-size) * 2) calc(var(--bp5-grid-size) * 2.4); /* 16px vertical, 19.2px horizontal */
+    min-height: 56px; /* Increased row height: (16px * 2) + (15px * 1.5) = 54.5px, rounded to 56px */
+  }
+
+  .opportunities-table-enhanced .bp5-table-column-header-cell {
+    font-size: 15px;
+  }
+
+  .satellite-name,
+  .site-count,
+  .name-cell strong {
+    font-size: 15px;
+  }
+
+  .satellite-meta,
+  .site-names {
+    font-size: 13px; /* Secondary text remains readable */
+  }
+}
+
+/* Standard desktop (1440-1919px) - Team 1: Fluid width */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .opportunities-table-enhanced {
+    width: 97%; /* 97% utilization */
+    margin: calc(var(--bp5-grid-size) * 2) auto;
+  }
+}
+
+/* Standard laptop (1280-1439px) - Team 1: Fluid width */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .opportunities-table-enhanced {
+    width: 98%; /* 98% utilization */
+    margin: calc(var(--bp5-grid-size) * 2) auto;
+  }
+}
+
+/* Small laptop/tablet landscape (1024-1279px) - Team 1 & 3: Fluid width + Optimized spacing */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  /* Team 1: Fluid table width - 100% utilization, no overflow */
+  .opportunities-table-enhanced {
+    width: 100%;
+    margin: calc(var(--bp5-grid-size) * 1.5) auto;
+  }
+
+  /* Team 3: Optimized spacing */
+  .opportunities-table-enhanced .bp5-table-cell {
+    font-size: 13px; /* Balanced for medium screens */
+    padding: calc(var(--bp5-grid-size) * 1.6) calc(var(--bp5-grid-size) * 1.8); /* 12.8px vertical */
+    min-height: 48px; /* (12.8px * 2) + (13px * 1.5) = 45.1px, rounded to 48px */
+  }
+
+  /* Team 1: Compress action buttons slightly */
+  .actions-cell-enhanced .bp5-button {
+    min-width: 60px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 1200px) {
   .opportunities-navbar .bp5-navbar-group {
     flex-wrap: wrap;
@@ -289,7 +411,9 @@
   }
 
   .opportunities-table-enhanced .bp5-table-cell {
-    padding: calc(var(--bp5-grid-size) * 1) calc(var(--bp5-grid-size) * 1.5);
+    padding: calc(var(--bp5-grid-size) * 1.4) calc(var(--bp5-grid-size) * 1.5); /* Increased from 1 (8px → 11.2px vertical) */
+    font-size: 13px; /* Compressed but still meets WCAG AA minimum of 12px */
+    min-height: 48px; /* Minimum touch target for mobile */
   }
 
   .site-names {
@@ -298,6 +422,97 @@
 
   .actions-cell-enhanced .bp5-button-group {
     flex-direction: column;
+  }
+}
+
+/* ==========================================
+   TEAM 2: Column Width Optimizations
+   ========================================== */
+
+/* Priority column: Reduce from 150px to 80px (displays single digits 1-4) */
+.opportunities-table-enhanced .bp5-table-column-name-Priority,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(1) {
+  width: 80px !important;
+  min-width: 60px !important;
+  max-width: 100px !important;
+}
+
+.opportunities-table-enhanced .bp5-table-cell:nth-child(1) {
+  width: 80px !important;
+  text-align: center;
+}
+
+/* Match column: Reduce from 150px to 120px (displays badge) */
+.opportunities-table-enhanced .bp5-table-column-name-Match,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(2):not(:has(*[class*="Notes"])) {
+  width: 120px !important;
+  min-width: 100px !important;
+  max-width: 140px !important;
+}
+
+.opportunities-table-enhanced .bp5-table-cell:nth-child(2) {
+  width: 120px !important;
+}
+
+/* Match Notes: Optimize width for tooltip content */
+.opportunities-table-enhanced .bp5-table-column-name-MatchNotes,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(3) {
+  width: 180px !important;
+  min-width: 150px !important;
+  max-width: 220px !important;
+}
+
+/* Site Allocation: Allow flexible expansion */
+.opportunities-table-enhanced .bp5-table-column-name-SiteAllocation,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(7) {
+  min-width: 180px !important;
+  width: auto !important;
+  flex: 1 1 auto;
+}
+
+/* SCC, Function, Orbit: Keep compact */
+.opportunities-table-enhanced .bp5-table-column-name-SCC,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(4),
+.opportunities-table-enhanced .bp5-table-column-name-Function,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(5),
+.opportunities-table-enhanced .bp5-table-column-name-Orbit,
+.opportunities-table-enhanced .bp5-table-header-cell:nth-child(6) {
+  width: 120px !important;
+  min-width: 100px !important;
+}
+
+/* ==========================================
+   TEAM 2: Responsive Column Hiding
+   Note: Works with Team 4's user toggle controls
+   ========================================== */
+
+/* Hide low-priority columns at tablet breakpoint (1280px) */
+@media (max-width: 1279px) {
+  /* Visual indicator for hidden columns */
+  .opportunities-table-enhanced::after {
+    content: "2 columns hidden at this screen size (Collection Type, Classification)";
+    display: block;
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(245, 166, 35, 0.08);
+    border-top: 1px solid rgba(245, 166, 35, 0.25);
+    color: #8A6D3B;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+}
+
+/* Extreme space constraints: Also hide Match Notes at 1024px */
+@media (max-width: 1023px) {
+  .opportunities-table-enhanced .bp5-table-column-name-MatchNotes,
+  .opportunities-table-enhanced .bp5-table-header-cell:nth-child(3),
+  .opportunities-table-enhanced .bp5-table-cell:nth-child(3) {
+    display: none !important;
+  }
+
+  .opportunities-table-enhanced::after {
+    content: "3 columns hidden at this screen size (Match Notes, Collection Type, Classification)";
   }
 }
 
@@ -321,6 +536,11 @@
   .opportunities-table-enhanced {
     box-shadow: none;
     margin: 0;
+  }
+
+  /* Team 2: Remove hidden column notice for print */
+  .opportunities-table-enhanced::after {
+    display: none !important;
   }
 }
 /* Satellite info with data integrity */

@@ -27,7 +27,6 @@ export type Percentage = Branded<number, 'Percentage'>; // 0-100
 export type Latitude = Branded<number, 'Latitude'>; // -90 to 90
 export type Longitude = Branded<number, 'Longitude'>; // -180 to 180
 export type Degrees = Branded<number, 'Degrees'>; // 0-360
-export type QualityScore = Branded<number, 'QualityScore'>; // 0-100
 export type RiskScore = Branded<number, 'RiskScore'>; // 0-100
 
 // Status types for collection opportunities
@@ -100,7 +99,6 @@ export interface AlternativeMatch {
   readonly siteId: SiteId;
   readonly siteName: string;
   readonly reason: AlternativeReason;
-  readonly qualityScore: QualityScore;
   readonly tradeoffs: ReadonlyArray<string>;
 }
 
@@ -138,7 +136,6 @@ export interface CollectionOpportunity {
   // Match status system fields
   readonly matchStatus: MatchStatus;
   readonly matchNotes?: MatchNote;
-  readonly matchQuality?: QualityScore;
   readonly alternativeOptions?: ReadonlyArray<AlternativeMatch>;
   readonly sccNumber?: SccNumber;
   readonly collectionType?: CollectionType;
@@ -399,7 +396,7 @@ export type AllocationType = 'allocate' | 'deallocate' | 'modify';
 
 // Health Analysis with strict scoring
 export interface HealthAnalysis {
-  readonly score: QualityScore;
+  readonly score: Percentage;
   readonly overallHealth: HealthStatus;
   readonly coverage: string;
   readonly efficiency: string;
@@ -471,13 +468,6 @@ export function createDegrees(value: number): Degrees {
     throw new RangeError(`Degrees must be between 0 and 360, got ${value}`);
   }
   return value as Degrees;
-}
-
-export function createQualityScore(value: number): QualityScore {
-  if (value < 0 || value > 100) {
-    throw new RangeError(`QualityScore must be between 0 and 100, got ${value}`);
-  }
-  return value as QualityScore;
 }
 
 export function createRiskScore(value: number): RiskScore {

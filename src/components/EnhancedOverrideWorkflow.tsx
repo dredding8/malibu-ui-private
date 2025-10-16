@@ -171,14 +171,6 @@ export const EnhancedOverrideWorkflow: React.FC<EnhancedOverrideWorkflowProps> =
 
     const totalImpactScore = selectedPasses.reduce((sum, pass) => sum + pass.impactScore, 0);
     const affectedSites = [...new Set(selectedPasses.map(pass => pass.siteId))];
-    
-    const baselineQuality = workflowData.baselinePasses
-      .filter(pass => selectedOverrides.has(pass.id))
-      .reduce((sum, pass) => sum + pass.qualityScore, 0) / workflowData.baselinePasses.length || 0;
-    
-    const projectedQuality = workflowData.alternativePasses
-      .filter(pass => selectedOverrides.has(pass.id))
-      .reduce((sum, pass) => sum + pass.qualityScore, 0) / workflowData.alternativePasses.length || 0;
 
     return {
       totalImpactScore,

@@ -1,13 +1,13 @@
 /**
  * AllocationTab.css
- * Workshop-compliant styling for Override Mode allocation workflow
+ * Table-based styling for Override Mode allocation workflow
  *
  * Blueprint Version: 6.1.0
  * Namespace: bp6-
  * Spacing System: 4px base ($pt-spacing)
  *
- * Evidence: MCP-validated against Blueprint v6 source
- * See: ALLOCATIONTAB_MCP_VALIDATION_FINDINGS.md
+ * REDESIGNED: 2025-10-14
+ * Changed from Card-based to Table2-based layout
  */
 
 /* ============================================
@@ -16,24 +16,36 @@
 
 .allocation-tab {
   display: flex;
-  gap: 16px; /* $pt-spacing * 4 */
+  gap: 24px; /* $pt-spacing * 6 - increased for better table separation */
   height: 100%;
+  padding: 0;
 }
 
 /* ============================================
-   LEFT PANEL - AVAILABLE PASSES
+   LEFT PANEL - AVAILABLE PASSES TABLE
    ============================================ */
 
 .allocation-tab__left-panel {
-  flex: 1 1 65%;
+  flex: 1 1 50%;
   min-width: 0;
-  max-width: 70%;
+  display: flex;
+  flex-direction: column;
 }
 
 .allocation-tab__description {
   color: #5c7080; /* Blueprint muted text color */
-  margin-bottom: 16px; /* $pt-spacing * 4 */
+  margin-bottom: 12px; /* $pt-spacing * 3 */
   font-size: 12px; /* $pt-font-size-small */
+}
+
+/* Blueprint Table2 styling */
+.available-passes-table {
+  flex: 1;
+  overflow: auto;
+}
+
+.available-passes-table .bp5-table-container {
+  height: 100%;
 }
 
 /* ============================================
@@ -235,125 +247,286 @@
 }
 
 /* ============================================
-   RIGHT PANEL - ALLOCATED SITES
+   RIGHT PANEL - ALLOCATED SITES TABLE
    ============================================ */
 
 .allocation-tab__right-panel {
-  flex: 1 1 35%;
-  min-width: 280px;
-  border-left: 1px solid #e1e8ed; /* Blueprint divider */
-  padding-left: 16px; /* $pt-spacing * 4 */
-}
-
-.allocation-tab__config-list {
+  flex: 1 1 50%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* $pt-spacing * 3 */
+  border-left: 1px solid #e1e8ed; /* Blueprint divider */
+  padding-left: 24px; /* $pt-spacing * 6 */
+}
+
+.bp6-dark .allocation-tab__right-panel {
+  border-left-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Blueprint Table2 styling */
+.allocated-sites-table {
+  flex: 1;
+  overflow: auto;
+}
+
+.allocated-sites-table .bp5-table-container {
+  height: 100%;
 }
 
 /* ============================================
-   ALLOCATED SITE CARDS
+   TABLE ROW HEIGHT OPTIMIZATION
+   Increased from Blueprint default for better readability
    ============================================ */
 
-.allocated-site-card__header {
+/* Data rows - increased from default 30px to 48px for comfortable reading */
+.allocated-sites-table .bp5-table-cell {
+  height: 48px !important;
+  min-height: 48px;
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+/* Column headers - balanced height */
+.allocated-sites-table .bp5-table-column-header-cell {
+  height: 40px !important;
+  min-height: 40px;
+  padding: 10px 8px;
+  vertical-align: middle;
+}
+
+/* Button sizing within cells - proper tap targets */
+.allocated-sites-table .bp5-button-group {
+  gap: 6px; /* Space between operational day buttons */
+}
+
+.allocated-sites-table .bp5-button-group .bp5-button {
+  min-height: 32px;
+  height: 32px;
+}
+
+/* Apply consistent heights to Available Passes table */
+.available-passes-table .bp5-table-cell {
+  height: 44px !important;
+  min-height: 44px;
+  padding: 10px 8px;
+  vertical-align: middle;
+}
+
+.available-passes-table .bp5-table-column-header-cell {
+  height: 40px !important;
+  min-height: 40px;
+  padding: 10px 8px;
+  vertical-align: middle;
+}
+
+/* ============================================
+   TABLE CELL COMPONENTS
+   ============================================ */
+
+/* Site name cell with expansion toggle */
+.site-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* $pt-spacing * 2 */
+}
+
+.site-name-cell__text {
+  font-weight: 600;
+  color: #182026; /* Blueprint text-color */
+}
+
+.bp6-dark .site-name-cell__text {
+  color: #f6f7f9; /* Blueprint dark text */
+}
+
+/* Duration cell layout */
+.duration-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* $pt-spacing */
+}
+
+.duration-cell__total {
+  font-size: 13px;
+  color: #182026;
+}
+
+.bp6-dark .duration-cell__total {
+  color: #f6f7f9;
+}
+
+.duration-cell__min {
+  font-size: 11px;
+}
+
+/* Operations cell button group */
+.operations-cell {
+  padding: 4px 8px !important; /* Tighter padding for buttons */
+}
+
+.operations-cell .bp5-button-group {
+  display: flex;
+  gap: 8px; /* $pt-spacing * 2 */
+}
+
+/* Editable collects cell */
+.collects-edit-cell {
+  text-align: right; /* Numeric alignment */
+}
+
+.collects-edit-cell .bp5-editable-text-content {
+  text-align: right;
+}
+
+.collects-edit-cell.bp5-intent-danger .bp5-editable-text-content {
+  border: 2px solid #c23030; /* Blueprint intent-danger */
+  background-color: rgba(219, 55, 55, 0.15); /* Red tint */
+}
+
+.bp6-dark .collects-edit-cell.bp5-intent-danger .bp5-editable-text-content {
+  border-color: #ff7373;
+  background-color: rgba(255, 115, 115, 0.15);
+}
+
+/* ============================================
+   SIDE PANEL - SITE DETAILS DRAWER
+   ============================================ */
+
+/* Selected row highlight */
+.site-name-cell__text--selected {
+  color: #137cbd; /* Blueprint intent-primary */
+  font-weight: 700;
+}
+
+.bp6-dark .site-name-cell__text--selected {
+  color: #8abbff; /* Blueprint dark intent-primary */
+}
+
+/* Operational days compact display */
+.operational-days-cell {
+  font-size: 12px;
+}
+
+/* Drawer sections */
+.site-detail-section {
+  margin-bottom: 24px; /* $pt-spacing * 6 */
+}
+
+.site-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Site detail field layout */
+.site-detail-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0; /* $pt-spacing * 2 */
+  border-bottom: 1px solid #e1e8ed; /* Blueprint divider */
+}
+
+.bp6-dark .site-detail-field {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.site-detail-field:last-child {
+  border-bottom: none;
+}
+
+.site-detail-label {
+  font-weight: 600;
+  color: #5c7080; /* Blueprint muted text */
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-right: 16px; /* $pt-spacing * 4 */
+}
+
+.bp6-dark .site-detail-label {
+  color: #a7b6c2; /* Blueprint dark muted text */
+}
+
+.site-detail-value {
+  text-align: right;
+  color: #182026; /* Blueprint text-color */
+  font-size: 13px;
+}
+
+.bp6-dark .site-detail-value {
+  color: #f6f7f9; /* Blueprint dark text */
+}
+
+/* Pass timestamps list */
+.pass-timestamps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* $pt-spacing * 3 */
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Pass timestamp card */
+.pass-timestamp-card {
+  padding: 12px; /* $pt-spacing * 3 */
+  margin: 0;
+}
+
+.pass-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px; /* $pt-spacing * 3 */
 }
 
-.allocated-site-card__pass-count {
-  font-size: 12px; /* $pt-font-size-small */
-  color: #5c7080; /* Blueprint muted text */
+.pass-card-header strong {
+  font-size: 14px;
+  color: #182026; /* Blueprint text-color */
 }
 
-.allocated-site-card__stepper-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px; /* $pt-spacing * 3 */
-  margin-bottom: 12px; /* $pt-spacing * 3 */
+.bp6-dark .pass-card-header strong {
+  color: #f6f7f9; /* Blueprint dark text */
 }
 
-.allocated-site-card__form-group {
-  margin-bottom: 0;
+.pass-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* $pt-spacing * 2 */
 }
 
-.allocated-site-card__readonly-field {
-  padding: 10px 12px; /* $pt-spacing * 2.5, $pt-spacing * 3 */
-  background: #f5f8fa; /* Blueprint light-gray5 */
-  border-radius: 2px; /* $pt-border-radius */
-  border: 1px solid #e1e8ed; /* Blueprint divider */
-}
-
-/* Dark theme support */
-.bp6-dark .allocated-site-card__readonly-field {
-  background: #252a31; /* Blueprint dark-gray5 (from bp6-card.bp6-dark) */
-  border-color: rgba(255, 255, 255, 0.2); /* Blueprint dark divider */
-}
-
-.allocated-site-card__operational-details {
-  font-size: 12px; /* $pt-font-size-small */
-  color: #5c7080; /* Blueprint muted text */
-  margin-top: 8px; /* $pt-spacing * 2 */
-}
-
-.bp6-dark .allocated-site-card__operational-details {
-  color: #a7b6c2; /* Blueprint dark mode muted text */
-}
-
-.allocated-site-card__immutable-note {
-  font-size: 11px;
-  color: #5c7080; /* Blueprint muted text */
-  font-style: italic;
-  margin-top: 8px; /* $pt-spacing * 2 */
-}
-
-.bp6-dark .allocated-site-card__immutable-note {
-  color: #a7b6c2; /* Blueprint dark mode muted text */
-}
-
-.allocated-site-card__summary {
-  font-size: 12px; /* $pt-font-size-small */
-  color: #5c7080; /* Blueprint muted text */
+.pass-timestamp {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
 }
 
-.bp6-dark .allocated-site-card__summary {
-  color: #a7b6c2; /* Blueprint dark mode muted text */
-}
-
-/* ============================================
-   EXPANDABLE SECTIONS
-   ============================================ */
-
-.allocated-site-card__expandable-section {
-  margin-top: 12px; /* $pt-spacing * 3 */
-  padding-top: 12px; /* $pt-spacing * 3 */
-  border-top: 1px solid #e1e8ed; /* Blueprint divider */
-}
-
-.bp6-dark .allocated-site-card__expandable-section {
-  border-top-color: rgba(255, 255, 255, 0.15); /* Blueprint dark divider */
-}
-
-.allocated-site-card__timestamps-header {
-  font-size: 12px; /* $pt-font-size-small */
+.pass-timestamp-label {
   font-weight: 600;
-  margin-bottom: 8px; /* $pt-spacing * 2 */
-}
-
-.allocated-site-card__timestamps-list {
-  font-size: 11px;
   color: #5c7080; /* Blueprint muted text */
 }
 
-.bp6-dark .allocated-site-card__timestamps-list {
-  color: #a7b6c2; /* Blueprint dark mode muted text */
+.bp6-dark .pass-timestamp-label {
+  color: #a7b6c2; /* Blueprint dark muted text */
 }
 
-.allocated-site-card__timestamp-item {
-  margin-bottom: 4px; /* $pt-spacing */
+.pass-timestamp-value {
+  font-family: monospace;
+  color: #182026; /* Blueprint text-color */
+}
+
+.bp6-dark .pass-timestamp-value {
+  color: #f6f7f9; /* Blueprint dark text */
+}
+
+/* Operational hours display */
+.operational-hours-display {
+  font-size: 13px;
+  color: #182026; /* Blueprint text-color */
+  display: flex;
+  align-items: center;
+}
+
+.bp6-dark .operational-hours-display {
+  color: #f6f7f9; /* Blueprint dark text */
 }
 
 /* ============================================
@@ -363,6 +536,13 @@
 @media (max-width: 1200px) {
   .allocation-tab {
     flex-direction: column;
+    gap: 16px; /* $pt-spacing * 4 */
+  }
+
+  .allocation-tab__left-panel,
+  .allocation-tab__right-panel {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .allocation-tab__right-panel {
@@ -375,4 +555,18 @@
   .bp6-dark .allocation-tab__right-panel {
     border-top-color: rgba(255, 255, 255, 0.15);
   }
+}
+
+/* ============================================
+   LEGACY STYLES (TO BE REMOVED)
+   Note: Keeping temporarily for graceful degradation
+   ============================================ */
+
+/* Remove these once Table2 implementation is validated */
+.allocation-tab__sites-table {
+  /* Deprecated - replaced by .available-passes-table */
+}
+
+.allocation-tab__config-list {
+  /* Deprecated - replaced by .allocated-sites-table */
 }

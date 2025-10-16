@@ -162,7 +162,7 @@ export const StandardEditForm: React.FC<StandardEditFormProps> = ({
             >
               <strong>{alt.siteName}</strong>
               <div style={{ fontSize: '12px', color: '#5C7080' }}>
-                Quality: {alt.qualityScore}% • Reason: {alt.reason}
+                Reason: {alt.reason}
               </div>
             </div>
           ))}
@@ -234,19 +234,6 @@ export const StandardEditForm: React.FC<StandardEditFormProps> = ({
                   { label: opportunity.collectionDeckId, value: opportunity.collectionDeckId },
                 ]}
               />
-            </FormGroup>
-
-            <FormGroup
-              label="Match Quality"
-              helperText="Current match quality score"
-            >
-              <div style={{
-                padding: '12px',
-                backgroundColor: '#F5F8FA',
-                borderRadius: '4px',
-              }}>
-                <strong>{opportunity.matchQuality || 0}%</strong>
-              </div>
             </FormGroup>
           </div>
         </Collapse>

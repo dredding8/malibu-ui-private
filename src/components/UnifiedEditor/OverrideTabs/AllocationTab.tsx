@@ -1,38 +1,44 @@
 /**
  * Allocation Tab (Override Mode)
  *
- * Handles complex site allocation with multi-select and batch operations
+ * Handles complex site allocation with table-based interface
+ * REDESIGNED: Card-based allocatedSites panel → Blueprint Table2
  *
  * Workshop Compliance: Blueprint v6
- * MCP Validated: 2025-10-07
+ * Redesign Date: 2025-10-14
  */
 
 import React, { useMemo, useState } from 'react';
 import './AllocationTab.css';
 import {
-  FormGroup,
   Checkbox,
   Tag,
   Intent,
-  Card,
   H6,
+  H5,
   Callout,
-  HTMLSelect,
-  NumericInput,
   Button,
-  Collapse,
-  HTMLTable,
   Tooltip,
+  ButtonGroup,
+  Popover,
+  Menu,
+  MenuItem,
+  Position,
+  Drawer,
+  Classes,
+  Divider,
+  FormGroup,
+  Card as BpCard,
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
+import { Table2, Column, Cell, EditableCell } from '@blueprintjs/table';
 import { CollectionOpportunity, Site, Pass } from '../../../types/collectionOpportunities';
 import {
   formatDurationThreshold,
   getDurationIntent,
   getPassDuration
 } from '../../../utils/durationFormatting';
-import { getSiteOperationalDescription } from '../../../utils/siteOperationalHelpers';
-import { OperationalDaysCompact, OperationalDaysDetailed } from '../../OperationalDaysDisplay';
+import { OperationalDaysDetailed, OperationalDaysCompact } from '../../OperationalDaysDisplay';
 
 interface AllocationTabProps {
   editor: any;
@@ -49,26 +55,25 @@ interface AllocationTabProps {
 
 export const AllocationTab: React.FC<AllocationTabProps> = ({
   editor,
-  opportunity,
   availableSites,
   availablePasses,
   capacityThresholds,
-  enableBatchOperations,
 }) => {
   const { state, setSites } = editor;
 
-  // State for allocated sites configuration (Legacy Step 2.3 - Allocated Sites Panel)
-  const [siteConfigs, setSiteConfigs] = useState<Map<string, {
-    collects: number;
-    expanded: boolean;
-  }>>(new Map());
+  // State for table-based interface
+  const [siteCollects, setSiteCollects] = useState<Map<string, number>>(new Map());
+  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(new Map());
 
-  // Calculate pass properties per site (Legacy Step 2.2 - Available Passes Panel)
+  // State for side panel (replaces row expansion)
+  const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
+  const [selectedSiteForDetails, setSelectedSiteForDetails] = useState<Site | null>(null);
+
+  // Calculate pass properties per site
   const sitePassProperties = useMemo(() => {
     const propertiesMap = new Map<string, {
       passCount: number;
       totalDuration: number;
-      maxQuality: number;
       maxElevation: number;
       minDuration: number;
     }>();
@@ -78,17 +83,15 @@ export const AllocationTab: React.FC<AllocationTabProps> = ({
         const existing = propertiesMap.get(site.id) || {
           passCount: 0,
           totalDuration: 0,
-          maxQuality: 0,
           maxElevation: 0,
           minDuration: Infinity,
         };
 
-        const duration = getPassDuration(pass.startTime, pass.endTime);
+        const duration = getPassDuration(pass);
 
         propertiesMap.set(site.id, {
           passCount: existing.passCount + 1,
           totalDuration: existing.totalDuration + duration,
-          maxQuality: Math.max(existing.maxQuality, pass.quality),
           maxElevation: Math.max(existing.maxElevation, pass.elevation || 0),
           minDuration: Math.min(existing.minDuration, duration),
         });
@@ -98,6 +101,24 @@ export const AllocationTab: React.FC<AllocationTabProps> = ({
     return propertiesMap;
   }, [availablePasses]);
 
+  // Get selected sites for allocated sites table
+  const selectedSites = availableSites.filter(site =>
+    state.selectedSiteIds.includes(site.id)
+  );
+
+  // Initialize collects for newly selected sites
+  React.useEffect(() => {
+    const newCollects = new Map(siteCollects);
+    selectedSites.forEach(site => {
+      if (!newCollects.has(site.id)) {
+        const passProps = sitePassProperties.get(site.id);
+        newCollects.set(site.id, passProps?.passCount || 0);
+      }
+    });
+    setSiteCollects(newCollects);
+  }, [state.selectedSiteIds, sitePassProperties]);
+
+  // Handlers
   const handleSiteToggle = (siteId: string) => {
     const newSelection = state.selectedSiteIds.includes(siteId)
       ? state.selectedSiteIds.filter((id: string) => id !== siteId)
@@ -105,131 +126,313 @@ export const AllocationTab: React.FC<AllocationTabProps> = ({
     setSites(newSelection);
   };
 
-  //Get selected sites for allocated sites panel
-  const selectedSites = availableSites.filter(site =>
-    state.selectedSiteIds.includes(site.id)
-  );
+  const handleCollectsChange = (siteId: string, value: number) => {
+    const site = availableSites.find(s => s.id === siteId);
+    if (!site) return;
 
-  // Initialize config for newly selected sites
-  React.useEffect(() => {
-    const newConfigs = new Map(siteConfigs);
-    selectedSites.forEach(site => {
-      if (!newConfigs.has(site.id)) {
-        const passProps = sitePassProperties.get(site.id);
-        newConfigs.set(site.id, {
-          collects: passProps?.passCount || 0,
-          expanded: false,
-        });
-      }
+    const maxCollects = site.capacity - site.allocated;
+
+    if (value < 0) {
+      setValidationErrors(prev => new Map(prev).set(siteId, 'Value cannot be negative'));
+      return;
+    }
+
+    if (value > maxCollects) {
+      setValidationErrors(prev =>
+        new Map(prev).set(siteId, `Exceeds site capacity (max: ${maxCollects})`)
+      );
+      return;
+    }
+
+    // Valid value
+    setSiteCollects(prev => new Map(prev).set(siteId, value));
+    setValidationErrors(prev => {
+      const next = new Map(prev);
+      next.delete(siteId);
+      return next;
     });
-    setSiteConfigs(newConfigs);
-  }, [state.selectedSiteIds]);
+  };
+
+  const openDetailsPanel = (site: Site) => {
+    setSelectedSiteForDetails(site);
+    setDetailsPanelOpen(true);
+  };
+
+  const closeDetailsPanel = () => {
+    setDetailsPanelOpen(false);
+    // Delay clearing selected site for smooth close animation
+    setTimeout(() => setSelectedSiteForDetails(null), 300);
+  };
+
+  const handleRemoveSite = (siteId: string) => {
+    const collects = siteCollects.get(siteId) || 0;
+
+    // If site has configured collects, show confirmation
+    if (collects > 0) {
+      const confirmed = window.confirm(
+        `This site has ${collects} collect(s) configured. Remove anyway?`
+      );
+      if (!confirmed) return;
+    }
+
+    // Remove from selection
+    const newSelection = state.selectedSiteIds.filter((id: string) => id !== siteId);
+    setSites(newSelection);
+
+    // Clean up state
+    setSiteCollects(prev => {
+      const next = new Map(prev);
+      next.delete(siteId);
+      return next;
+    });
+    setValidationErrors(prev => {
+      const next = new Map(prev);
+      next.delete(siteId);
+      return next;
+    });
+
+    // Close details panel if this site was being viewed
+    if (selectedSiteForDetails?.id === siteId) {
+      closeDetailsPanel();
+    }
+  };
+
+  const resetCollects = (siteId: string) => {
+    setSiteCollects(prev => new Map(prev).set(siteId, 0));
+    setValidationErrors(prev => {
+      const next = new Map(prev);
+      next.delete(siteId);
+      return next;
+    });
+  };
+
+  // Cell renderers for Available Passes Table
+  const renderSelectionCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    const isSelected = state.selectedSiteIds.includes(site.id);
+
+    return (
+      <Cell>
+        <Checkbox
+          checked={isSelected}
+          onChange={() => handleSiteToggle(site.id)}
+        />
+      </Cell>
+    );
+  };
+
+  const renderSiteNameCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    return (
+      <Cell>
+        <div className="site-name-cell">
+          <span className="site-name-cell__text">{site.name}</span>
+        </div>
+      </Cell>
+    );
+  };
+
+  const renderLocationCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    return (
+      <Cell>
+        {site.location.lat.toFixed(2)}, {site.location.lon.toFixed(2)}
+      </Cell>
+    );
+  };
+
+  const renderPassesCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    const passProps = sitePassProperties.get(site.id);
+
+    return <Cell>{passProps?.passCount || 0}</Cell>;
+  };
+
+  const renderDurationCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    const passProps = sitePassProperties.get(site.id);
+
+    return (
+      <Cell>
+        {passProps && (
+          <div className="duration-cell">
+            <div className="duration-cell__total">{passProps.totalDuration}m</div>
+            <Tag
+              minimal
+              intent={getDurationIntent(passProps.minDuration)}
+              className="duration-cell__min"
+            >
+              {formatDurationThreshold(passProps.minDuration)}
+            </Tag>
+          </div>
+        )}
+      </Cell>
+    );
+  };
+
+  const renderElevationCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    const passProps = sitePassProperties.get(site.id);
+
+    return <Cell>{passProps && `${passProps.maxElevation}°`}</Cell>;
+  };
+
+  const renderCapacityCell = (rowIndex: number): JSX.Element => {
+    const site = availableSites[rowIndex];
+    const remaining = site.capacity - site.allocated;
+    const utilizationPercent = (site.allocated / site.capacity) * 100;
+
+    const statusIntent =
+      remaining === 0 ? Intent.DANGER :
+      utilizationPercent >= capacityThresholds.critical ? Intent.DANGER :
+      utilizationPercent >= capacityThresholds.warning ? Intent.WARNING :
+      Intent.SUCCESS;
+
+    return (
+      <Cell>
+        <div className="capacity-display">
+          <div className="capacity-display__available">
+            {remaining === 0 ? 'Full' : `${remaining} available`}
+          </div>
+          <div className="capacity-display__allocated">
+            {site.allocated}/{site.capacity}
+            <Tag minimal intent={statusIntent} className="capacity-status" />
+          </div>
+        </div>
+      </Cell>
+    );
+  };
+
+  // Cell renderers for Allocated Sites Table
+  const renderAllocatedSiteNameCell = (rowIndex: number): JSX.Element => {
+    const site = selectedSites[rowIndex];
+    const isSelected = selectedSiteForDetails?.id === site.id;
+
+    return (
+      <Cell>
+        <div className="site-name-cell">
+          <span className={`site-name-cell__text ${isSelected ? 'site-name-cell__text--selected' : ''}`}>
+            {site.name}
+          </span>
+        </div>
+      </Cell>
+    );
+  };
+
+  const renderCollectsEditableCell = (rowIndex: number): JSX.Element => {
+    const site = selectedSites[rowIndex];
+    const collects = siteCollects.get(site.id) || 0;
+    const error = validationErrors.get(site.id);
+
+    return (
+      <EditableCell
+        value={collects.toString()}
+        onConfirm={(value) => handleCollectsChange(site.id, parseInt(value, 10) || 0)}
+        onCancel={() => {}}
+        intent={error ? Intent.DANGER : Intent.NONE}
+      />
+    );
+  };
+
+  const renderOperationalDaysCell = (rowIndex: number): JSX.Element => {
+    const site = selectedSites[rowIndex];
+
+    return (
+      <Cell>
+        <Tooltip
+          content={
+            <div>
+              <OperationalDaysDetailed operationalDays={site.operationalDays} />
+              {site.operationalHours && (
+                <div style={{ marginTop: '4px', fontSize: '11px' }}>
+                  Hours: {site.operationalHours.start}-{site.operationalHours.end} {site.operationalHours.timezone}
+                </div>
+              )}
+            </div>
+          }
+          position={Position.TOP}
+        >
+          <div className="operational-days-cell">
+            <OperationalDaysCompact operationalDays={site.operationalDays} />
+          </div>
+        </Tooltip>
+      </Cell>
+    );
+  };
+
+  const renderOperationsCell = (rowIndex: number): JSX.Element => {
+    const site = selectedSites[rowIndex];
+    const isViewing = selectedSiteForDetails?.id === site.id;
+
+    return (
+      <Cell className="operations-cell">
+        <ButtonGroup>
+          <Tooltip content="View Details">
+            <Button
+              icon={IconNames.PANEL_STATS}
+              onClick={() => openDetailsPanel(site)}
+              intent={isViewing ? Intent.PRIMARY : Intent.NONE}
+              aria-label="View site details in side panel"
+            />
+          </Tooltip>
+          <Tooltip content="Remove Site">
+            <Button
+              icon={IconNames.TRASH}
+              onClick={() => handleRemoveSite(site.id)}
+              intent={Intent.DANGER}
+              aria-label="Remove site"
+            />
+          </Tooltip>
+          <Popover
+            content={
+              <Menu>
+                <MenuItem
+                  icon={IconNames.RESET}
+                  text="Reset Collects"
+                  onClick={() => resetCollects(site.id)}
+                />
+              </Menu>
+            }
+            position={Position.BOTTOM_LEFT}
+          >
+            <Button icon={IconNames.MORE} aria-label="More options" />
+          </Popover>
+        </ButtonGroup>
+      </Cell>
+    );
+  };
+
+  // Get passes for selected site (used in details panel)
+  const getPassesForSite = (siteId: string) => {
+    const collects = siteCollects.get(siteId) || 0;
+    return availablePasses
+      .filter(pass => pass.siteCapabilities?.some(s => s.id === siteId))
+      .slice(0, collects);
+  };
 
   return (
     <div className="allocation-tab">
-      {/* LEFT PANEL: Available Passes (Legacy Step 2.2) */}
+      {/* LEFT PANEL: Available Passes Table */}
       <div className="allocation-tab__left-panel">
         <H6>Available Passes</H6>
         <p className="allocation-tab__description">
           Select sites to add to allocation. Pass properties help inform your decision.
         </p>
 
-        <HTMLTable
-          interactive
-          striped
-          bordered
-          className="allocation-tab__sites-table"
+        <Table2
+          numRows={availableSites.length}
+          enableRowHeader={false}
+          enableColumnReordering={false}
+          className="available-passes-table"
         >
-          <thead>
-            <tr>
-              <th className="sites-table__col-select">Select</th>
-              <th className="sites-table__col-site">Site Name</th>
-              <th className="sites-table__col-location">Location</th>
-              <th className="sites-table__col-quality">Quality</th>
-              <th className="sites-table__col-passes">Passes</th>
-              <th className="sites-table__col-duration">Duration</th>
-              <th className="sites-table__col-elevation">Elevation</th>
-              <th className="sites-table__col-capacity">Capacity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {availableSites.map((site) => {
-              const isSelected = state.selectedSiteIds.includes(site.id);
-              const remaining = site.capacity - site.allocated;
-              const utilizationPercent = (site.allocated / site.capacity) * 100;
-
-              const statusIntent =
-                remaining === 0 ? 'critical' :
-                utilizationPercent >= capacityThresholds.critical ? 'danger' :
-                utilizationPercent >= capacityThresholds.warning ? 'warning' :
-                'success';
-
-              const passProps = sitePassProperties.get(site.id);
-
-              return (
-                <tr
-                  key={site.id}
-                  className={isSelected ? 'sites-table__row--selected' : ''}
-                  onClick={() => handleSiteToggle(site.id)}
-                >
-                  <td className="sites-table__cell-select">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={() => handleSiteToggle(site.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </td>
-                  <td className="sites-table__cell-site">
-                    <div className="sites-table__site-name">{site.name}</div>
-                  </td>
-                  <td className="sites-table__cell-location">
-                    {site.location.lat.toFixed(2)}, {site.location.lon.toFixed(2)}
-                  </td>
-                  <td className="sites-table__cell-quality">
-                    {passProps && (
-                      <Tag minimal intent={passProps.maxQuality >= 4 ? Intent.SUCCESS : Intent.WARNING}>
-                        {passProps.maxQuality}/5
-                      </Tag>
-                    )}
-                  </td>
-                  <td className="sites-table__cell-passes">
-                    {passProps?.passCount || 0}
-                  </td>
-                  <td className="sites-table__cell-duration">
-                    {passProps && (
-                      <div className="sites-table__duration-group">
-                        <div className="sites-table__total-duration">
-                          {passProps.totalDuration}m
-                        </div>
-                        <Tag
-                          minimal
-                          intent={getDurationIntent(passProps.minDuration)}
-                          className="sites-table__min-duration"
-                        >
-                          {formatDurationThreshold(passProps.minDuration)}
-                        </Tag>
-                      </div>
-                    )}
-                  </td>
-                  <td className="sites-table__cell-elevation">
-                    {passProps && `${passProps.maxElevation}°`}
-                  </td>
-                  <td className="sites-table__cell-capacity">
-                    <div className="capacity-display">
-                      <div className="capacity-display__available">
-                        {remaining === 0 ? 'Full' : `${remaining} available`}
-                      </div>
-                      <div className="capacity-display__allocated">
-                        {site.allocated}/{site.capacity}
-                        <span className={`capacity-status capacity-status--${statusIntent}`} />
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </HTMLTable>
+          <Column name="Select" cellRenderer={renderSelectionCell} />
+          <Column name="Site Name" cellRenderer={renderSiteNameCell} />
+          <Column name="Location" cellRenderer={renderLocationCell} />
+          <Column name="Passes" cellRenderer={renderPassesCell} />
+          <Column name="Duration" cellRenderer={renderDurationCell} />
+          <Column name="Elevation" cellRenderer={renderElevationCell} />
+          <Column name="Capacity" cellRenderer={renderCapacityCell} />
+        </Table2>
 
         {/* Validation Errors */}
         {state.validationErrors.has('sites') && (
@@ -239,7 +442,7 @@ export const AllocationTab: React.FC<AllocationTabProps> = ({
         )}
       </div>
 
-      {/* RIGHT PANEL: Allocated Sites (Legacy Step 2.3) */}
+      {/* RIGHT PANEL: Allocated Sites Table */}
       <div className="allocation-tab__right-panel">
         <H6>Allocated Sites</H6>
         <p className="allocation-tab__description">
@@ -248,137 +451,161 @@ export const AllocationTab: React.FC<AllocationTabProps> = ({
 
         {selectedSites.length === 0 ? (
           <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN}>
-            Select sites from the left panel to configure allocation.
+            No sites selected. Check sites from Available Passes table above.
           </Callout>
         ) : (
-          <div className="allocation-tab__config-list">
-            {selectedSites.map(site => {
-              const config = siteConfigs.get(site.id);
-              const passProps = sitePassProperties.get(site.id);
-
-              if (!config || !passProps) return null;
-
-              return (
-                <Card key={site.id} elevation={1}>
-                  <div className="allocated-site-card__header">
-                    <div>
-                      <strong>{site.name}</strong>
-                      <div className="allocated-site-card__pass-count">
-                        {passProps.passCount} passes available
-                      </div>
-                    </div>
-                    <Button
-                      minimal
-                      small
-                      icon={config.expanded ? IconNames.CHEVRON_DOWN : IconNames.CHEVRON_RIGHT}
-                      onClick={() => {
-                        const newConfigs = new Map(siteConfigs);
-                        newConfigs.set(site.id, { ...config, expanded: !config.expanded });
-                        setSiteConfigs(newConfigs);
-                      }}
-                    />
-                  </div>
-
-                  {/* Stepper Controls (Legacy Step 2.3) */}
-                  {(() => {
-                    // Calculate remaining capacity: site.capacity - site.allocated
-                    const remainingCapacity = site.capacity - site.allocated;
-                    // Stepper max allows up to total site capacity
-                    const maxCollects = site.capacity;
-                    // Determine if site is at/over capacity
-                    const isOverCapacity = remainingCapacity <= 0;
-                    const isNearCapacity = remainingCapacity > 0 && remainingCapacity < passProps.passCount;
-
-                    return (
-                      <>
-                        {isOverCapacity && (
-                          <Callout intent={Intent.DANGER} icon={IconNames.ERROR} style={{ marginBottom: '12px' }}>
-                            Site at capacity ({site.allocated}/{site.capacity}). Cannot allocate more passes.
-                          </Callout>
-                        )}
-                        {isNearCapacity && (
-                          <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} style={{ marginBottom: '12px' }}>
-                            Limited capacity: Only {remainingCapacity} passes available ({site.allocated}/{site.capacity} allocated)
-                          </Callout>
-                        )}
-                        <div className="allocated-site-card__stepper-grid">
-                          <FormGroup
-                            label="Collects"
-                            labelInfo={`(max: ${maxCollects})`}
-                            helperText={`Capacity: ${site.allocated}/${site.capacity} allocated`}
-                            className="allocated-site-card__form-group"
-                          >
-                            <NumericInput
-                              value={config.collects}
-                              min={0}
-                              max={maxCollects}
-                              disabled={isOverCapacity}
-                              onValueChange={(value) => {
-                                const newConfigs = new Map(siteConfigs);
-                                newConfigs.set(site.id, { ...config, collects: value });
-                                setSiteConfigs(newConfigs);
-                              }}
-                              buttonPosition="right"
-                              fill
-                            />
-                          </FormGroup>
-
-                          {/* Site Operational Constraints (Read-Only) */}
-                          <FormGroup
-                            label="Site Operations"
-                            helperText="Ground station operational days/hours (immutable)"
-                            className="allocated-site-card__form-group"
-                          >
-                            <div className="allocated-site-card__readonly-field">
-                              <OperationalDaysDetailed operationalDays={site.operationalDays} />
-                              {site.operationalHours && (
-                                <div className="allocated-site-card__operational-details">
-                                  <strong>Hours:</strong> {site.operationalHours.start}-{site.operationalHours.end} {site.operationalHours.timezone}
-                                </div>
-                              )}
-                              <div className="allocated-site-card__immutable-note">
-                                Site infrastructure constraint • Cannot be modified
-                              </div>
-                            </div>
-                          </FormGroup>
-                        </div>
-
-                        <div className="allocated-site-card__summary">
-                          <div>
-                            <strong>Allocating:</strong> {config.collects} of {maxCollects} available passes
-                          </div>
-                          <div>
-                            <strong>Total Assigned:</strong> {site.allocated + config.collects} / {site.capacity}
-                          </div>
-                        </div>
-                      </>
-                    );
-                  })()}
-
-                  {/* Expandable Pass Timestamps (Legacy Step 2.3) */}
-                  <Collapse isOpen={config.expanded}>
-                    <div className="allocated-site-card__expandable-section">
-                      <div className="allocated-site-card__timestamps-header">
-                        Pass Timestamps:
-                      </div>
-                      <div className="allocated-site-card__timestamps-list">
-                        {availablePasses
-                          .filter(pass => pass.siteCapabilities?.some(s => s.id === site.id))
-                          .slice(0, config.collects)
-                          .map((pass, idx) => (
-                            <div key={pass.id} className="allocated-site-card__timestamp-item">
-                              [{idx + 1}] {new Date(pass.startTime).toLocaleTimeString()} - {new Date(pass.endTime).toLocaleTimeString()}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  </Collapse>
-                </Card>
-              );
-            })}
-          </div>
+          <>
+            <Table2
+              numRows={selectedSites.length}
+              enableRowHeader={false}
+              enableColumnReordering={false}
+              className="allocated-sites-table"
+            >
+              <Column name="Site Name" cellRenderer={renderAllocatedSiteNameCell} />
+              <Column name="Location" cellRenderer={renderLocationCell} />
+              <Column name="Collects" cellRenderer={renderCollectsEditableCell} />
+              <Column name="Capacity" cellRenderer={renderCapacityCell} />
+              <Column name="Operational Days" cellRenderer={renderOperationalDaysCell} />
+              <Column name="Operations" cellRenderer={renderOperationsCell} />
+            </Table2>
+          </>
         )}
       </div>
+
+      {/* SIDE PANEL: Site Details Drawer */}
+      <Drawer
+        isOpen={detailsPanelOpen}
+        onClose={closeDetailsPanel}
+        size="450px"
+        position={Position.RIGHT}
+        title={selectedSiteForDetails?.name || "Site Details"}
+        icon={IconNames.INFO_SIGN}
+        className="site-details-drawer"
+      >
+        {selectedSiteForDetails && (
+          <>
+            <div className={Classes.DRAWER_BODY}>
+              {/* Site Metadata */}
+              <div className="site-detail-section">
+                <H5>Site Information</H5>
+                <Divider />
+
+                <div className="site-detail-field">
+                  <span className="site-detail-label">Location:</span>
+                  <span className="site-detail-value">
+                    {selectedSiteForDetails.location.lat.toFixed(2)}, {selectedSiteForDetails.location.lon.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="site-detail-field">
+                  <span className="site-detail-label">Capacity:</span>
+                  <span className="site-detail-value">
+                    {selectedSiteForDetails.allocated}/{selectedSiteForDetails.capacity} allocated
+                    {' '}({((selectedSiteForDetails.allocated / selectedSiteForDetails.capacity) * 100).toFixed(1)}%)
+                  </span>
+                </div>
+
+                <div className="site-detail-field">
+                  <span className="site-detail-label">Configured Collects:</span>
+                  <span className="site-detail-value">
+                    {siteCollects.get(selectedSiteForDetails.id) || 0}
+                  </span>
+                </div>
+              </div>
+
+              {/* Pass Timestamps */}
+              <div className="site-detail-section">
+                <H5>Pass Timestamps</H5>
+                <Divider />
+                <div className="pass-timestamps-list">
+                  {getPassesForSite(selectedSiteForDetails.id).length === 0 ? (
+                    <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN}>
+                      No passes allocated. Configure collects above to allocate passes.
+                    </Callout>
+                  ) : (
+                    getPassesForSite(selectedSiteForDetails.id).map((pass, idx) => (
+                      <BpCard key={pass.id} className="pass-timestamp-card" elevation={1}>
+                        <div className="pass-card-header">
+                          <strong>Pass {idx + 1}</strong>
+                        </div>
+                        <div className="pass-card-body">
+                          <div className="pass-timestamp">
+                            <span className="pass-timestamp-label">Start:</span>
+                            <span className="pass-timestamp-value">{pass.startTime.toLocaleString()}</span>
+                          </div>
+                          <div className="pass-timestamp">
+                            <span className="pass-timestamp-label">End:</span>
+                            <span className="pass-timestamp-value">{pass.endTime.toLocaleString()}</span>
+                          </div>
+                          <div className="pass-timestamp">
+                            <span className="pass-timestamp-label">Duration:</span>
+                            <span className="pass-timestamp-value">
+                              {getPassDuration(pass)}m
+                              <Tag
+                                minimal
+                                intent={getDurationIntent(getPassDuration(pass))}
+                                style={{ marginLeft: '8px' }}
+                              >
+                                {formatDurationThreshold(getPassDuration(pass))}
+                              </Tag>
+                            </span>
+                          </div>
+                          {pass.elevation && (
+                            <div className="pass-timestamp">
+                              <span className="pass-timestamp-label">Elevation:</span>
+                              <span className="pass-timestamp-value">{pass.elevation}°</span>
+                            </div>
+                          )}
+                        </div>
+                      </BpCard>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Operational Constraints */}
+              <div className="site-detail-section">
+                <H5>Operational Constraints</H5>
+                <Divider />
+
+                <FormGroup label="Operational Days">
+                  <OperationalDaysDetailed operationalDays={selectedSiteForDetails.operationalDays} />
+                </FormGroup>
+
+                {selectedSiteForDetails.operationalHours && (
+                  <FormGroup label="Operational Hours">
+                    <div className="operational-hours-display">
+                      {selectedSiteForDetails.operationalHours.start} - {selectedSiteForDetails.operationalHours.end}
+                      <Tag minimal style={{ marginLeft: '8px' }}>
+                        {selectedSiteForDetails.operationalHours.timezone}
+                      </Tag>
+                    </div>
+                  </FormGroup>
+                )}
+              </div>
+            </div>
+
+            <div className={Classes.DRAWER_FOOTER}>
+              <ButtonGroup fill>
+                <Button
+                  icon={IconNames.RESET}
+                  onClick={() => resetCollects(selectedSiteForDetails.id)}
+                  intent={Intent.NONE}
+                >
+                  Reset Collects
+                </Button>
+                <Button
+                  icon={IconNames.TRASH}
+                  onClick={() => handleRemoveSite(selectedSiteForDetails.id)}
+                  intent={Intent.DANGER}
+                >
+                  Remove Site
+                </Button>
+              </ButtonGroup>
+            </div>
+          </>
+        )}
+      </Drawer>
     </div>
   );
 };

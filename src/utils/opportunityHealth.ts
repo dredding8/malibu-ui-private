@@ -56,9 +56,6 @@ const calculateHealthMetrics = (opportunity: CollectionOpportunity): HealthMetri
   // Capacity Score (0-100)
   const capacityScore = opportunity.capacityPercentage || 0;
 
-  // Match Quality Score (0-100)
-  const matchQuality = calculateMatchQuality(opportunity);
-
   // Conflict Count (lower is better)
   const conflictCount = opportunity.conflicts?.length || 0;
 
@@ -73,40 +70,12 @@ const calculateHealthMetrics = (opportunity: CollectionOpportunity): HealthMetri
 
   return {
     capacityScore,
-    matchQuality,
+    matchQuality: 0, // Deprecated: Quality concept removed
     conflictCount,
     priorityAlignment,
     utilizationEfficiency,
     riskScore
   };
-};
-
-/**
- * Calculate match quality based on various factors
- */
-const calculateMatchQuality = (opportunity: CollectionOpportunity): number => {
-  let score = 100;
-
-  // Deduct points for sub-optimal satellite characteristics
-  if (opportunity.satellite.orbit !== 'LEO' && opportunity.priority === 'critical') {
-    score -= 20; // Non-LEO satellites less ideal for critical ops
-  }
-
-  // Site allocation efficiency
-  const siteCount = opportunity.sites?.length || 0;
-  if (siteCount === 0) {
-    score -= 50;
-  } else if (siteCount < 3) {
-    score -= 25; // Less redundancy
-  } else if (siteCount > 7) {
-    score -= 15; // Over-allocation, complexity
-  }
-
-  // Site geographic distribution
-  const geographicDiversity = calculateGeographicDiversity([...opportunity.sites]);
-  score = score * geographicDiversity;
-
-  return Math.max(0, Math.min(100, score));
 };
 
 /**

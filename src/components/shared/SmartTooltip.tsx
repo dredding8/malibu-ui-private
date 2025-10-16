@@ -17,7 +17,6 @@ const glossary: Record<string, Record<string, string>> = {
         'Confirmed': 'Allocation has been verified and meets all requirements',
         'Needs Review': 'Allocation requires manual review due to suboptimal conditions',
         'Not Allocated': 'No satellite has been assigned to this opportunity yet',
-        'Quality Score': 'Percentage indicating how well the allocation matches requirements (0-100%)',
         'Alternative Options': 'Other possible satellite allocations that could work for this opportunity',
     },
     'field-mapping': {

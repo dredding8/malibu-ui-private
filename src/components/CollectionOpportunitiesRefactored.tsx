@@ -492,8 +492,7 @@ const CollectionOpportunitiesRefactoredBase: React.FC = () => {
             const details = opp.matchNotes || 'No additional details available';
             const alternatives = opp.alternativeOptions?.map(alt => ({
                 id: alt.siteId,
-                name: alt.siteName,
-                score: alt.qualityScore
+                name: alt.siteName
             }));
             
             return {

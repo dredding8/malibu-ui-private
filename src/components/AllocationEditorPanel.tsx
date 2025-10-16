@@ -330,7 +330,7 @@ export const AllocationEditorPanel: React.FC<AllocationEditorPanelProps> = ({
                                                 intent={Intent.PRIMARY}
                                                 minimal
                                             >
-                                                {alt.siteName} - Quality: {alt.qualityScore}%
+                                                {alt.siteName}
                                             </Button>
                                         </div>
                                     ))}

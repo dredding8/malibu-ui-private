@@ -13,6 +13,10 @@
     "test:playwright": "playwright test",
     "test:playwright:ui": "playwright test --ui",
     "test:playwright:debug": "playwright test --debug",
+    "test:validate-ux": "playwright test tests/unified-modal-*.spec.ts && ts-node tests/generate-validation-report.ts",
+    "test:validate-ux:ui": "playwright test tests/unified-modal-*.spec.ts --ui",
+    "test:validate-ux:debug": "playwright test tests/unified-modal-*.spec.ts --debug",
+    "test:validate-ux:report": "ts-node tests/generate-validation-report.ts",
     "test:accessibility": "playwright test create-collection-deck-enhanced-ux.spec.ts --grep 'Advanced Accessibility Testing'",
     "test:performance": "jest src/tests/performance/collection-performance.test.tsx --maxWorkers=1",
     "test:visual": "jest src/tests/visual/collection-visual.test.tsx",
@@ -142,6 +146,7 @@
     "fs-extra": "^11.3.2",
     "jest-axe": "^10.0.0",
     "pixelmatch": "^6.0.0",
-    "pngjs": "^7.0.0"
+    "pngjs": "^7.0.0",
+    "ts-node": "^10.9.2"
   }
 }

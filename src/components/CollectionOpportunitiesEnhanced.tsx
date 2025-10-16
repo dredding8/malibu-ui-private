@@ -397,6 +397,24 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
   const [state, dispatch] = useReducer(enhancedOpportunityReducer, initialState);
   const [showQuickEdit, setShowQuickEdit] = useState(false);
 
+  // Column visibility state for responsive viewports (<1280px)
+  // Controls user's choice to show/hide columns that are hidden by responsive CSS
+  const [userToggledColumns, setUserToggledColumns] = useState<Set<string>>(
+    new Set() // Empty = user hasn't toggled anything, columns follow CSS rules
+  );
+
+  const toggleColumnVisibility = useCallback((columnName: string) => {
+    setUserToggledColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnName)) {
+        newSet.delete(columnName); // Remove from toggled = hide it
+      } else {
+        newSet.add(columnName); // Add to toggled = show it
+      }
+      return newSet;
+    });
+  }, []);
+
   // Mock passes for UnifiedEditor - must have siteCapabilities array
   const mockPasses: Pass[] = useMemo(() => {
     if (!availableSites || availableSites.length === 0) return [];
@@ -1161,29 +1179,40 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
             onChange={(e) => dispatch({ type: 'SET_SEARCH', payload: e.target.value })}
           />
 
-          {/* Column Visibility Control - Enterprise Pattern */}
+          {/* Column Visibility Control - Responsive Toggle */}
           <Popover
             content={
               <Menu>
                 <MenuItem
-                  text="Default View (7 columns)"
-                  labelElement={<Tag minimal>Recommended</Tag>}
-                  onClick={() => {/* TODO: Set to default columns */}}
+                  icon={userToggledColumns.has('collection-type') ? IconNames.EYE_OPEN : IconNames.EYE_OFF}
+                  text="Collection Type"
+                  onClick={() => toggleColumnVisibility('collection-type')}
+                  labelElement={
+                    userToggledColumns.has('collection-type') ? (
+                      <Tag minimal intent={Intent.SUCCESS}>Visible</Tag>
+                    ) : (
+                      <Tag minimal>Hidden</Tag>
+                    )
+                  }
                 />
                 <MenuItem
-                  text="Technical View (11 columns)"
-                  onClick={() => {/* TODO: Set to technical columns */}}
-                />
-                <MenuItem
-                  text="Complete View (13 columns)"
-                  onClick={() => {/* TODO: Set to all columns */}}
+                  icon={userToggledColumns.has('classification') ? IconNames.EYE_OPEN : IconNames.EYE_OFF}
+                  text="Classification"
+                  onClick={() => toggleColumnVisibility('classification')}
+                  labelElement={
+                    userToggledColumns.has('classification') ? (
+                      <Tag minimal intent={Intent.SUCCESS}>Visible</Tag>
+                    ) : (
+                      <Tag minimal>Hidden</Tag>
+                    )
+                  }
                 />
                 <MenuDivider />
                 <MenuItem
-                  icon={IconNames.COG}
-                  text="Customize columns..."
-                  disabled
-                  labelElement={<Tag minimal>Future</Tag>}
+                  icon={IconNames.REFRESH}
+                  text="Reset to defaults"
+                  onClick={() => setUserToggledColumns(new Set())}
+                  disabled={userToggledColumns.size === 0}
                 />
               </Menu>
             }
@@ -1194,6 +1223,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
               icon={IconNames.COLUMN_LAYOUT}
               text="Columns"
               rightIcon={IconNames.CARET_DOWN}
+              className="responsive-columns-toggle"
             />
           </Popover>
         </NavbarGroup>
@@ -1265,16 +1295,42 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
       )}
 
       {/* Data display */}
-      {(() => {
-        console.log('[CollectionOpportunitiesEnhanced] Rendering decision - processedData.length:', processedData.length, 'viewMode:', state.viewMode);
-        return processedData.length === 0 ? (
-          <NonIdealState
-            icon={IconNames.SEARCH}
-            title="No assignments found"
-            description="Try adjusting your search or filters."
-          />
-        ) : state.viewMode === 'table' ? (
-          <Table2
+      <Card
+        elevation={1}
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '8px',
+          border: '1px solid #E1E8ED'
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          padding: '0 4px'
+        }}>
+          <h5 className={Classes.HEADING} style={{
+            margin: 0,
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#182026'
+          }}>
+            Assignment Library
+          </h5>
+        </div>
+        <hr className={Classes.DIVIDER} style={{ margin: '0 0 16px 0' }} />
+
+        {(() => {
+          console.log('[CollectionOpportunitiesEnhanced] Rendering decision - processedData.length:', processedData.length, 'viewMode:', state.viewMode);
+          return processedData.length === 0 ? (
+            <NonIdealState
+              icon={IconNames.SEARCH}
+              title="No assignments found"
+              description="Try adjusting your search or filters."
+            />
+          ) : state.viewMode === 'table' ? (
+            <Table2
             numRows={processedData.length}
             enableRowHeader={false}
             enableColumnHeader={true}
@@ -1325,8 +1381,16 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
           <Column name="Function" cellRenderer={functionCellRenderer} />
           <Column name="Orbit" cellRenderer={orbitCellRenderer} />
           <Column name="Site Allocation" cellRenderer={siteAllocationCellRenderer} />
-          <Column name="Collection Type" cellRenderer={collectionTypeCellRenderer} />
-          <Column name="Classification" cellRenderer={classificationCellRenderer} />
+          <Column
+            name="Collection Type"
+            cellRenderer={collectionTypeCellRenderer}
+            className={`responsive-column ${userToggledColumns.has('collection-type') ? 'user-visible' : ''}`}
+          />
+          <Column
+            name="Classification"
+            cellRenderer={classificationCellRenderer}
+            className={`responsive-column ${userToggledColumns.has('classification') ? 'user-visible' : ''}`}
+          />
           </Table2>
         ) : (
         // Card view implementation
@@ -1339,6 +1403,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
         </div>
         );
       })()}
+      </Card>
 
       {/* Quick Edit Modal */}
       {showQuickEdit && quickEditOpportunity && (

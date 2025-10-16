@@ -28,6 +28,20 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* UX Analysis Fix: Make Actions button more visible (currently gray and minimal) */
+.bp5-toolbar button[aria-haspopup="true"],
+.bp5-toolbar button[aria-label*="More actions"] {
+  background-color: #f5f8fa !important;
+  border: 1px solid #d3dce6 !important;
+  min-width: 100px;
+}
+
+.bp5-toolbar button[aria-haspopup="true"]:hover,
+.bp5-toolbar button[aria-label*="More actions"]:hover {
+  background-color: #ebf1f5 !important;
+  border-color: #2d72d2 !important;
+}
+
 /* ========================================
    Workshop Pattern: Callout Styling
    ======================================== */
@@ -180,7 +194,7 @@
 /* Enhanced Hub Header - Standardized Spacing */
 .hub-header {
   background: white;
-  padding: 20px 30px;
+  padding: 32px 40px 24px; /* Increased to match History page: 32px top, 40px sides, 24px bottom */
   border-bottom: 1px solid #e1e8ed;
   display: flex;
   justify-content: space-between;
@@ -189,7 +203,7 @@
 }
 
 .hub-header.enhanced-header {
-  padding: 20px 30px; /* Blueprint.js grid multiples: 2x10px, 3x10px */
+  padding: 32px 40px 24px; /* Match History page spacing */
 }
 
 .hub-title {
@@ -198,18 +212,18 @@
 
 .hub-title h1 {
   margin: 0 0 10px 0; /* Blueprint.js: 1 grid unit */
-  font-size: 24px; /* Reduced from default 28px for better balance */
+  font-size: 32px; /* UX Analysis: Match History page (was 28px in CSS, but inline styles already correct at 32px) */
   font-weight: 600;
   color: #182026;
-  letter-spacing: -0.02em; /* Tighter spacing for professional look */
+  /* letter-spacing removed for consistency with History page */
 }
 
 .hub-subtitle {
   margin: 5px 0 10px 0; /* Blueprint.js: 0.5 and 1 grid units */
-  font-size: 13px; /* Reduced from 14px to be more subtle */
-  color: #738694; /* Lighter gray for secondary hierarchy */
+  font-size: 16px; /* Standardized with History page for subtitle consistency */
+  color: #738694; /* Standardized with History Gray1 */
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.5; /* Match History page line-height */
 }
 
 /* Context Stats - Removed (Visual Hierarchy Cleanup)
@@ -230,9 +244,9 @@
   padding: 5px 10px; /* Blueprint.js: 0.5 and 1 grid units */
   background: #f5f8fa;
   border-radius: 20px; /* Blueprint.js: 2 grid units */
-  font-size: 11px; /* Reduced for subtlety */
+  font-size: 12px; /* Standardized with History page for consistency */
   font-weight: 500;
-  opacity: 0.85; /* Reduce visual prominence */
+  /* Removed opacity reduction - maintain consistent prominence with History */
   transition: opacity 0.2s ease;
 }
 
@@ -241,7 +255,7 @@
 }
 
 .connection-indicator .bp5-icon {
-  font-size: 8px;
+  font-size: 12px; /* Increased for consistency with History page */
 }
 
 .connection-text {
@@ -855,13 +869,15 @@
 }
 
 /* Main Content - Tabs removed (redundant single tab) */
+/* Team 1 Fix: Responsive container padding using clamp() */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin: 0 32px;
+  margin: 0;
+  padding: 0 clamp(16px, 2vw, 32px); /* Fluid horizontal padding */
   background: white;
-  border-radius: 6px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -1183,7 +1199,74 @@ body.app-loaded .collection-opportunities-hub {
   justify-content: center;
 }
 
-/* Responsive Design */
+/* ========================================
+   Team 1: Responsive Breakpoint System
+   Target: 85-95% viewport utilization
+   ======================================== */
+
+/* Ultra-wide displays (1920px+) */
+@media (min-width: 1920px) {
+  .main-content {
+    padding: 0 clamp(32px, 3vw, 64px);
+  }
+
+  .hub-header,
+  .hub-stats-container,
+  .smart-views-container,
+  .panel-toolbar-enhanced {
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Standard desktop (1440-1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .main-content {
+    padding: 0 clamp(24px, 2.5vw, 40px);
+  }
+}
+
+/* Standard laptop (1280-1439px) */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .main-content {
+    padding: 0 clamp(20px, 2vw, 32px);
+  }
+
+  .hub-stats.enhanced-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Small laptop/tablet landscape (1024-1279px) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .main-content {
+    padding: 0 clamp(16px, 1.5vw, 24px);
+  }
+
+  .hub-header {
+    padding: 24px clamp(16px, 2vw, 32px) 20px;
+  }
+
+  .hub-stats.enhanced-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .hub-stats-container {
+    padding: 20px clamp(16px, 2vw, 32px);
+  }
+
+  .smart-views-container {
+    padding: 0 clamp(16px, 2vw, 32px) 20px;
+  }
+
+  .panel-toolbar-enhanced {
+    padding: 16px clamp(16px, 2vw, 32px);
+  }
+}
+
+/* Responsive Design - Legacy breakpoints preserved */
 @media (max-width: 1400px) {
   .hub-stats {
     grid-template-columns: repeat(3, 1fr);
@@ -1213,7 +1296,7 @@ body.app-loaded .collection-opportunities-hub {
   }
 
   .main-content {
-    margin: 0 16px;
+    margin: 0;
   }
 }
 
@@ -1311,7 +1394,7 @@ body.app-loaded .collection-opportunities-hub {
   }
 
   .main-content {
-    margin: 0;
+    margin: 0; /* Maintain full width on mobile */
     border-radius: 0;
   }
 

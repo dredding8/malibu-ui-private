@@ -393,25 +393,61 @@ const CollectionOpportunitiesHubContent: React.FC = memo(() => {
         />
       </div>
 
-      <div className="hub-header enhanced-header" role="banner">
-        <div className="hub-title">
-          <div className="title-with-status">
-            <h1 id="page-title">Collection Management - Deck {collectionId}</h1>
-            <div className="connection-indicator" role="status" aria-live="polite">
-              <Icon
-                icon={IconNames.DOT}
-                size={12}
-                intent={state.webSocketConnected ? Intent.SUCCESS : Intent.DANGER}
-                aria-hidden="true"
-              />
-              <span className="connection-text">
-                {state.webSocketConnected ? 'Live' : 'Offline'}
-              </span>
+      {/* Main Content Container - Matches History Page */}
+      <div style={{
+        padding: '24px',
+        backgroundColor: '#F5F8FA',
+        minHeight: 'calc(100vh - 50px)',
+        maxWidth: '1400px',
+        margin: '0 auto'
+      }}>
+        {/* Page Header with Primary Action - Matches History Pattern */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '32px',
+          gap: '24px',
+          flexWrap: 'wrap'
+        }}>
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+              <h3 style={{
+                margin: 0,
+                fontSize: '32px',
+                fontWeight: '600',
+                color: '#182026'
+              }}>
+                Collection Management - Deck {collectionId}
+              </h3>
+              <div className="connection-indicator" role="status" aria-live="polite">
+                <Icon
+                  icon={IconNames.DOT}
+                  size={12}
+                  intent={state.webSocketConnected ? Intent.SUCCESS : Intent.DANGER}
+                  aria-hidden="true"
+                />
+                <span className="connection-text">
+                  {state.webSocketConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
             </div>
+            <p style={{
+              margin: 0,
+              fontSize: '16px',
+              lineHeight: '1.5',
+              color: '#738694'
+            }}>
+              Review and allocate satellite pass assignments
+            </p>
           </div>
-          <p className="hub-subtitle" id="page-description">
-            Review and allocate satellite pass assignments
-          </p>
+
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            flexShrink: 0,
+            flexWrap: 'wrap'
+          }}>
 
           {/* Phase 2: Consolidated Actions Menu */}
           <div role="toolbar" aria-label="Primary actions" className="bp5-toolbar">
@@ -487,6 +523,7 @@ const CollectionOpportunitiesHubContent: React.FC = memo(() => {
               />
             </Popover>
           </div>
+          </div>
         </div>
 
         {/* Workshop Pattern: Callout for Pending Changes */}
@@ -523,7 +560,6 @@ const CollectionOpportunitiesHubContent: React.FC = memo(() => {
             </ButtonGroup>
           </Callout>
         )}
-      </div>
 
       {/* Workshop Pattern: Resource List for System Metrics */}
       {!LEGACY_HIDE_HEALTH_WIDGET && (
@@ -773,8 +809,9 @@ const CollectionOpportunitiesHubContent: React.FC = memo(() => {
         );
       })()}
 
-      {/* Enhanced Status Bar with Progress Indicator */}
-      <div className="hub-status-bar enhanced-status" role="contentinfo" aria-label="System status">
+    </div>
+    {/* Enhanced Status Bar with Progress Indicator */}
+    <div className="hub-status-bar enhanced-status" role="contentinfo" aria-label="System status">
         <div className="status-left">
           <div className="status-item sync-status" role="status" aria-live="polite">
             <Icon icon={IconNames.REFRESH} className={state.isSyncing ? 'spinning' : ''} />
