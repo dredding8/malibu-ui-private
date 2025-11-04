@@ -17,9 +17,128 @@
   flex-shrink: 0;
 }
 
-/* UX Analysis Fix: Add vertical spacing between search and tabs */
-.legacy-view-tabs {
-  margin-top: 32px; /* Add breathing room - currently too tight */
+/* IxD Analysis: Add hover feedback for clickable match status cells */
+.match-status-cell.clickable {
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, transform 100ms ease;
+}
+
+.match-status-cell.clickable:hover {
+  background-color: var(--bp5-intent-primary-transparent-10);
+  transform: translateY(-1px);
+}
+
+.match-status-cell.clickable:active {
+  transform: translateY(0);
+  background-color: var(--bp5-intent-primary-transparent-20);
+}
+
+.match-status-cell.clickable:focus {
+  outline: 2px solid var(--bp5-intent-primary);
+  outline-offset: 2px;
+}
+
+/* Filter Controls Container - Tag-Based Pattern */
+/* Context7: Use Blueprint spacing with calc(var(--bp5-grid-size) * N) for 8px grid */
+.filter-controls-container {
+  background: var(--bp5-light-gray5);
+  border-bottom: 1px solid var(--bp5-divider-black);
+  padding: calc(var(--bp5-grid-size) * 3) calc(var(--bp5-grid-size) * 3); /* 24px all sides - generous breathing room */
+  margin-bottom: calc(var(--bp5-grid-size) * 3); /* 24px space before table */
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--bp5-grid-size) * 2); /* 16px vertical gap between rows */
+}
+
+/* Filter header with label and clear button */
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--bp5-grid-size) * 2);
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 400; /* Reduced weight - not a heading */
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Filter tags container - horizontal layout */
+.filter-tags-container {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--bp5-grid-size) * 1); /* 8px gap between tags */
+  flex-wrap: wrap;
+}
+
+/* Tag styling - Context7: Interactive minimal tags for selection */
+.filter-tags-container .bp5-tag {
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+  font-size: 13px;
+  padding: calc(var(--bp5-grid-size) * 1) calc(var(--bp5-grid-size) * 1.5); /* 8px 12px */
+  border-radius: 16px; /* Pill shape */
+  font-weight: 500;
+}
+
+/* DESIGN ROUNDTABLE FIX P0: Inactive filter chips should appear interactive, not disabled */
+/* Context7: Law of Similarity - use color/border to signal availability vs. opacity for disabled state */
+.filter-tags-container .bp5-tag.bp5-minimal {
+  background: white; /* Changed from light-gray1 - pure white signals "available" */
+  border: 1.5px solid var(--bp5-gray4); /* Slightly thicker border for presence */
+  color: var(--bp5-text-color); /* Full color, not muted */
+  opacity: 1 !important; /* Never use opacity for inactive state - that signals "disabled" */
+}
+
+.filter-tags-container .bp5-tag.bp5-minimal:hover {
+  background: var(--bp5-light-gray2); /* Lighter hover than before */
+  border-color: var(--bp5-gray2); /* Darker border on hover for feedback */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); /* Increased shadow for clear hover feedback */
+}
+
+/* Active tags - intent colors but subdued */
+.filter-tags-container .bp5-tag:not(.bp5-minimal) {
+  font-weight: 600;
+  transform: scale(1.02);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.filter-tags-container .bp5-tag:not(.bp5-minimal):hover {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* Filter result summary */
+.filter-result-summary {
+  font-size: 13px;
+  padding-top: calc(var(--bp5-grid-size) * 0.5); /* 4px top padding */
+  border-top: 1px solid var(--bp5-divider-black);
+}
+
+.filter-result-summary strong {
+  font-weight: 600;
+  color: var(--bp5-text-color);
+}
+
+/* Enhanced priority badges with visual hierarchy */
+.priority-badge-critical {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+  border: 2px solid #FF3B30 !important;
+  animation: pulse-priority 2s ease-in-out infinite;
+}
+
+@keyframes pulse-priority {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 59, 48, 0);
+  }
 }
 
 /* Enhanced Navbar */
@@ -30,6 +149,17 @@
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+/* UX Analysis: Fitts's Law compliance - 44px minimum touch target for search */
+.search-input-large .bp5-input {
+  min-height: 44px !important;
+  font-size: 14px;
+  padding: 10px 10px 10px 35px; /* Account for icon */
+}
+
+.search-input-large .bp5-icon {
+  top: 12px; /* Center icon vertically in 44px input */
 }
 
 .stats-badges {
@@ -45,7 +175,7 @@
 /* Changes summary */
 .changes-summary {
   margin: calc(var(--bp5-grid-size) * 2);
-  animation: slideDown 0.3s ease;
+  animation: slideDown 0.2s ease;
 }
 
 @keyframes slideDown {
@@ -293,9 +423,19 @@
 
 /* Team 4: Column Visibility Toggle Controls */
 
-/* Hide columns toggle button by default (wide viewports) */
-.responsive-columns-toggle {
+/* UX Analysis: Hide optional columns by default to comply with Hick's Law (7±2 columns max) */
+.optional-column.user-hidden {
   display: none !important;
+}
+
+/* Show optional columns when user explicitly toggles them visible */
+.optional-column.user-visible {
+  display: table-cell !important;
+}
+
+/* Always show columns toggle button so users can access hidden columns */
+.responsive-columns-toggle {
+  display: inline-flex !important;
 }
 
 /* Show columns toggle button at <1280px where columns are hidden */

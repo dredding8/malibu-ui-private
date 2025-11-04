@@ -653,7 +653,7 @@ const CollectionOpportunitiesHubContent: React.FC = memo(() => {
 
       {/* Live region for announcements */}
       <LiveRegion>
-        {stats.critical > 0 && `${stats.critical} critical issues require attention`}
+        {stats.critical > 0 && `${stats.critical} items requiring review`}
       </LiveRegion>
 
       {/* Main Content - Tab wrapper removed (redundant single tab) */}

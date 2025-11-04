@@ -230,7 +230,24 @@
 }
 
 .editor-tab-content {
-  padding: 20px;
+  padding: 20px; /* Blueprint large spacing - applies to tab panel content */
+}
+
+/* Ensure tab content has proper horizontal padding in drawer */
+.unified-editor-override-drawer .editor-tab-content {
+  padding: 20px !important; /* Consistent padding for drawer tabs */
+}
+
+/* TARGET TABS CONTAINER - Add horizontal padding to align with warning banner */
+.unified-editor-override-drawer .bp5-tabs,
+.unified-editor-override-drawer .bp6-tabs {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Remove the .editor-tab-content horizontal padding since Tabs container now handles it */
+.unified-editor-override-drawer .editor-tab-content {
+  padding: 20px 0 !important; /* Vertical padding only - horizontal handled by Tabs container */
 }
 
 /* ==================== JUSTIFICATION SECTION ==================== */
@@ -371,4 +388,197 @@
   .editor-alternative-item {
     border-left-width: 5px;
   }
+}
+
+/* ==================== BOTTOM DRAWER (Blueprint-Compliant Pattern) ==================== */
+
+/**
+ * Large Bottom Drawer Implementation following Blueprint.js Design System
+ *
+ * Architecture:
+ * - Uses Blueprint Drawer component from bottom position
+ * - 90vh height for large content workflows
+ * - Respects Blueprint's design tokens and spacing
+ *
+ * Blueprint Compliance:
+ * - Uses Blueprint's Drawer component (not custom)
+ * - Respects Blueprint's spacing scale (10px, 15px, 20px, 30px)
+ * - Uses Blueprint's color tokens and CSS variables
+ * - Maintains Blueprint's animation system
+ */
+
+/* Bottom Drawer Styling */
+.unified-editor-override-drawer.bp5-drawer,
+.unified-editor-override-drawer.bp6-drawer {
+  /* Blueprint handles drawer positioning and animations */
+  /* We only add minor enhancements */
+}
+
+/* Drawer Header with Scroll Shadow */
+.unified-editor-override-drawer .bp5-drawer-header,
+.unified-editor-override-drawer .bp6-drawer-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 20px !important; /* Blueprint's large spacing */
+  flex-shrink: 0;
+  transition: box-shadow 200ms cubic-bezier(0.4, 1, 0.75, 0.9); /* Blueprint's easing */
+  /* Default subtle shadow for visual connection */
+  box-shadow: 0 1px 0 rgba(17, 20, 24, 0.05);
+}
+
+/* Enhanced shadow on scroll (applied via JavaScript) */
+.unified-editor-override-drawer .bp5-drawer-header.has-scroll-shadow,
+.unified-editor-override-drawer .bp6-drawer-header.has-scroll-shadow {
+  box-shadow: 0 1px 0 rgba(17, 20, 24, 0.15);
+}
+
+/* Scrollable Body */
+.unified-editor-override-drawer .bp5-drawer-body,
+.unified-editor-override-drawer .bp6-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 40px 0 !important; /* Add 40px bottom padding for scroll clearance */
+
+  /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Sticky Footer */
+.unified-editor-override-drawer .bp5-drawer-footer,
+.unified-editor-override-drawer .bp6-drawer-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding: 15px 20px !important; /* Consistent padding: reduced vertical, maintained horizontal */
+  box-shadow: 0 -1px 0 rgba(17, 20, 24, 0.15);
+  flex-shrink: 0;
+}
+
+/* Footer Actions Layout */
+.unified-editor-override-drawer .bp5-dialog-footer-actions,
+.unified-editor-override-drawer .bp6-dialog-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Changed from flex-end to ensure buttons visible */
+  gap: 10px; /* Blueprint's small spacing */
+  width: 100%;
+  flex-wrap: nowrap; /* Prevent wrapping that could hide buttons */
+}
+
+/* Undo/Redo controls on the left with visual grouping */
+.unified-editor-override-drawer .bp5-dialog-footer-actions > div:first-child,
+.unified-editor-override-drawer .bp6-dialog-footer-actions > div:first-child {
+  margin-right: 0; /* Removed auto - using space-between parent layout */
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0; /* Prevent shrinking on smaller viewports */
+  /* Visual grouping using Blueprint tokens */
+  padding: 4px 8px;
+  background-color: var(--bp5-background-color-secondary, rgba(17, 20, 24, 0.03));
+  border-radius: 3px;
+  border: 1px solid var(--bp5-divider-color, rgba(17, 20, 24, 0.15));
+}
+
+/* Action buttons group on the right */
+.unified-editor-override-drawer .bp5-dialog-footer-actions > button,
+.unified-editor-override-drawer .bp6-dialog-footer-actions > button {
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Dark Mode Support */
+.bp5-dark .unified-editor-override-drawer .bp5-drawer-header,
+.bp5-dark .unified-editor-override-drawer .bp5-drawer-footer,
+.bp6-dark .unified-editor-override-drawer .bp6-drawer-header,
+.bp6-dark .unified-editor-override-drawer .bp6-drawer-footer {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Adjustments (Mobile) */
+@media (max-width: 768px) {
+  /* Reduce header/footer padding on smaller screens */
+  .unified-editor-override-drawer .bp5-drawer-header,
+  .unified-editor-override-drawer .bp6-drawer-header,
+  .unified-editor-override-drawer .bp5-drawer-footer,
+  .unified-editor-override-drawer .bp6-drawer-footer {
+    padding: 15px !important; /* Blueprint's medium spacing */
+  }
+}
+
+/* Accessibility - Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .unified-editor-override-drawer .bp5-drawer-header,
+  .unified-editor-override-drawer .bp6-drawer-header {
+    transition: none;
+  }
+
+  .unified-editor-override-drawer .bp5-drawer-body,
+  .unified-editor-override-drawer .bp6-drawer-body {
+    scroll-behavior: auto;
+  }
+}
+
+/* ==================== UX LAW FIXES: GESTALT PRINCIPLES ==================== */
+
+/* Law of Proximity: Warning banner spacing */
+.unified-editor-override-dialog .bp5-callout,
+.unified-editor-override-dialog .bp6-callout {
+  margin-bottom: 20px !important; /* Blueprint's large spacing */
+  padding: 15px 20px !important; /* More balanced padding */
+}
+
+/* Law of Proximity: Tab navigation breathing room */
+.unified-editor-override-dialog .bp5-tabs,
+.unified-editor-override-dialog .bp6-tabs {
+  margin-top: 20px !important; /* Increased from 10px to 20px for better visual separation */
+}
+
+/* Also apply to drawer tabs */
+.unified-editor-override-drawer .bp5-tabs,
+.unified-editor-override-drawer .bp6-tabs {
+  margin-top: 20px !important;
+}
+
+/* Law of Common Region: Table internal padding */
+.unified-editor-override-dialog .bp5-html-table td,
+.unified-editor-override-dialog .bp6-html-table td,
+.unified-editor-override-dialog .bp5-html-table th,
+.unified-editor-override-dialog .bp6-html-table th {
+  padding: 11px 15px !important; /* Blueprint's standard table padding */
+}
+
+/* Law of Common Region: Checkbox alignment */
+.unified-editor-override-dialog .bp5-html-table input[type="checkbox"],
+.unified-editor-override-dialog .bp6-html-table input[type="checkbox"] {
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* Law of Common Region: Section grouping */
+.unified-editor-override-dialog .editor-tab-content {
+  padding: 20px !important; /* Blueprint's large spacing for consistent internal padding */
+}
+
+/* Law of Proximity: Table sections spacing */
+.unified-editor-override-dialog .bp5-html-table + .bp5-html-table,
+.unified-editor-override-dialog .bp6-html-table + .bp6-html-table {
+  margin-top: 30px !important; /* Blueprint's extra-large spacing for clear separation */
+}
+
+/* Visual hierarchy: Section headers */
+.unified-editor-override-dialog h3,
+.unified-editor-override-dialog h4 {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important; /* Blueprint's small spacing */
+  font-weight: 600 !important;
+}
+
+/* Law of Uniform Connectedness: Table borders */
+.unified-editor-override-dialog .bp5-html-table,
+.unified-editor-override-dialog .bp6-html-table {
+  border: 1px solid var(--bp5-divider-color, #E1E8ED) !important;
+  border-radius: 3px !important; /* Blueprint's standard border-radius */
+  overflow: hidden !important;
 }

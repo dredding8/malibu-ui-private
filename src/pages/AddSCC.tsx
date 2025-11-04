@@ -18,6 +18,10 @@ import { IconNames } from '@blueprintjs/icons';
 import AppNavbar from '../components/AppNavbar';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
+// UX Research: Single Ease Question (SEQ)
+import { SingleEaseQuestion, SEQResponse } from '../components/SEQ/SingleEaseQuestion';
+import { seqService } from '../services/seqService';
+
 const AddSCC: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -32,6 +36,9 @@ const AddSCC: React.FC = () => {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // UX Research: SEQ state
+  const [showSEQ, setShowSEQ] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -79,8 +86,34 @@ const AddSCC: React.FC = () => {
     // Simulate API call to save SCC
     setTimeout(() => {
       setIsSaving(false);
-      navigate('/sccs');
+
+      // UX Research: Show SEQ based on sampling (33% of form submissions)
+      if (seqService.shouldShowSEQ('task_2_manually_add_satellite')) {
+        setShowSEQ(true);
+      } else {
+        // Navigate immediately if no SEQ
+        navigate('/sccs');
+      }
     }, 1500);
+  };
+
+  // UX Research: Handle SEQ response
+  const handleSEQResponse = (response: SEQResponse) => {
+    seqService.recordResponse(response);
+    setShowSEQ(false);
+    // Navigate after SEQ submission
+    navigate('/sccs');
+  };
+
+  // UX Research: Handle SEQ dismissal
+  const handleSEQDismiss = () => {
+    seqService.recordDismissal(
+      'task_2_manually_add_satellite',
+      'TASK 2: Manually Add New Satellite'
+    );
+    setShowSEQ(false);
+    // Navigate after SEQ dismissal
+    navigate('/sccs');
   };
 
   const handleCancel = () => {
@@ -295,6 +328,18 @@ const AddSCC: React.FC = () => {
           </Callout>
         )}
       </div>
+
+      {/* UX Research: Single Ease Question (SEQ) - Post-form survey */}
+      {showSEQ && (
+        <SingleEaseQuestion
+          taskId="task_2_manually_add_satellite"
+          taskName="TASK 2: Manually Add New Satellite"
+          onResponse={handleSEQResponse}
+          onDismiss={handleSEQDismiss}
+          enableComment={false} // Simple form, no comment needed
+          sessionId={seqService.getSessionId()}
+        />
+      )}
     </div>
   );
 };

@@ -21,6 +21,10 @@ import Step4SpecialInstructions from './CreateCollectionDeck/Step4SpecialInstruc
 import { useBackgroundProcessing } from '../hooks/useBackgroundProcessing';
 import { NAVIGATION_LABELS, NAVIGATION_ROUTES } from '../constants/navigation';
 
+// UX Research: Single Ease Question (SEQ)
+import { SingleEaseQuestion, SEQResponse } from '../components/SEQ/SingleEaseQuestion';
+import { seqService } from '../services/seqService';
+
 const CreateCollectionDeck: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,6 +33,9 @@ const CreateCollectionDeck: React.FC = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [modalStack, setModalStack] = useState<string[]>([]);
   const { isProcessing } = useBackgroundProcessing();
+
+  // UX Research: SEQ state
+  const [showSEQ, setShowSEQ] = useState(false);
 
   // Modal management functions
   const showModal = useCallback((modalId: string) => {
@@ -198,11 +205,35 @@ const CreateCollectionDeck: React.FC = () => {
     console.log('Saving collection deck:', deckData);
     localStorage.removeItem('vue-deck-draft');
     setHasUnsavedChanges(false);
-    
-    // Always go to decks page after completion
-    // Background processing hook will redirect to history if needed
-    navigate('/decks', { replace: true });
+
+    // UX Research: Show SEQ based on sampling (33% of wizard completions)
+    // This measures the complete wizard flow (TASK 6 + TASK 8 + TASK 9 combined)
+    if (seqService.shouldShowSEQ('task_6_8_9_collection_deck_wizard')) {
+      setShowSEQ(true);
+    } else {
+      // Navigate immediately if no SEQ
+      navigate('/decks', { replace: true });
+    }
   }, [deckData, navigate]);
+
+  // UX Research: Handle SEQ response
+  const handleSEQResponse = useCallback((response: SEQResponse) => {
+    seqService.recordResponse(response);
+    setShowSEQ(false);
+    // Navigate after SEQ submission
+    navigate('/decks', { replace: true });
+  }, [navigate]);
+
+  // UX Research: Handle SEQ dismissal
+  const handleSEQDismiss = useCallback(() => {
+    seqService.recordDismissal(
+      'task_6_8_9_collection_deck_wizard',
+      'TASK 6+8+9: Initiate Deck, Edit Parameters, Run Matching (Complete Wizard)'
+    );
+    setShowSEQ(false);
+    // Navigate after SEQ dismissal
+    navigate('/decks', { replace: true });
+  }, [navigate]);
 
   // Handle browser back/forward navigation
   useEffect(() => {
@@ -499,6 +530,18 @@ const CreateCollectionDeck: React.FC = () => {
           <strong>Note:</strong> We can't restore this work once it's gone. All your entered information will be lost.
         </p>
       </Alert>
+
+      {/* UX Research: Single Ease Question (SEQ) - Post-wizard survey */}
+      {showSEQ && (
+        <SingleEaseQuestion
+          taskId="task_6_8_9_collection_deck_wizard"
+          taskName="TASK 6+8+9: Initiate Deck, Edit Parameters, Run Matching (Complete Wizard)"
+          onResponse={handleSEQResponse}
+          onDismiss={handleSEQDismiss}
+          enableComment={true} // Complex wizard gets optional comment
+          sessionId={seqService.getSessionId()}
+        />
+      )}
     </div>
   );
 };

@@ -1,0 +1,276 @@
+/**
+ * Single Ease Question (SEQ) Styles - Blueprint-Compliant Version
+ *
+ * Design Approach: Using Blueprint Dialog with minimal custom styling
+ * - Standard Blueprint Dialog component
+ * - Blueprint design tokens and Classes
+ * - Minimal custom overrides for SEQ-specific needs
+ * - Full Blueprint theme compatibility
+ */
+
+/* Dialog customization */
+.seq-dialog {
+  max-width: 600px;
+  padding-bottom: 0;
+}
+
+/* Custom header with icon */
+.seq-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Task name highlight */
+.seq-task-name {
+  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  background-color: rgba(45, 114, 210, 0.1);
+  border-left: 3px solid #2d72d2;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.bp5-dark .seq-task-name,
+.bp6-dark .seq-task-name {
+  background-color: rgba(72, 175, 240, 0.15);
+  border-left-color: #48aff0;
+}
+
+.seq-task-name strong {
+  color: #2d72d2;
+  font-weight: 600;
+}
+
+.bp5-dark .seq-task-name strong,
+.bp6-dark .seq-task-name strong {
+  color: #48aff0;
+}
+
+/* Instruction text */
+.seq-instruction {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #182026;
+}
+
+.bp5-dark .seq-instruction,
+.bp6-dark .seq-instruction {
+  color: #f5f8fa;
+}
+
+/* Radio scale - enhanced Blueprint radio styling */
+.seq-scale {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seq-radio-option {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: all 150ms cubic-bezier(0.4, 1, 0.75, 0.9);
+  background: #f5f8fa;
+}
+
+.bp5-dark .seq-radio-option,
+.bp6-dark .seq-radio-option {
+  background: #30404d;
+}
+
+.seq-radio-option:hover {
+  background-color: #ebf1f5;
+  border-color: #d8e1e8;
+  transform: translateX(2px);
+}
+
+.bp5-dark .seq-radio-option:hover,
+.bp6-dark .seq-radio-option:hover {
+  background-color: #394b59;
+  border-color: #5c7080;
+}
+
+.seq-radio-option:focus-within {
+  outline: none;
+  border-color: #2d72d2;
+  background-color: #ebf1f5;
+  box-shadow: 0 0 0 3px rgba(45, 114, 210, 0.15);
+}
+
+.bp5-dark .seq-radio-option:focus-within,
+.bp6-dark .seq-radio-option:focus-within {
+  border-color: #48aff0;
+  background-color: #394b59;
+  box-shadow: 0 0 0 3px rgba(72, 175, 240, 0.15);
+}
+
+.seq-radio-option label {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.seq-radio-option strong {
+  font-weight: 600;
+  font-size: 16px;
+  color: #2d72d2;
+  margin-right: 6px;
+  display: inline-block;
+  min-width: 18px;
+}
+
+.bp5-dark .seq-radio-option strong,
+.bp6-dark .seq-radio-option strong {
+  color: #48aff0;
+}
+
+/* Selected state */
+.seq-radio-option:has(input:checked) {
+  background-color: #2d72d2;
+  border-color: #2d72d2;
+  color: white;
+}
+
+.bp5-dark .seq-radio-option:has(input:checked),
+.bp6-dark .seq-radio-option:has(input:checked) {
+  background-color: #48aff0;
+  border-color: #48aff0;
+}
+
+.seq-radio-option:has(input:checked) strong {
+  color: #ffc940;
+}
+
+.seq-radio-option:has(input:checked) label {
+  color: white;
+}
+
+/* Comment section */
+.seq-comment-section {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f5f8fa;
+  border-radius: 3px;
+}
+
+.bp5-dark .seq-comment-section,
+.bp6-dark .seq-comment-section {
+  background: #30404d;
+}
+
+.seq-comment-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #182026;
+}
+
+.bp5-dark .seq-comment-label,
+.bp6-dark .seq-comment-label {
+  color: #f5f8fa;
+}
+
+.seq-comment-section textarea {
+  font-size: 13px;
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* Help text */
+.seq-help-text {
+  text-align: center;
+  color: #5c7080;
+  font-size: 12px;
+  padding: 10px;
+  background: #f5f8fa;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.bp5-dark .seq-help-text,
+.bp6-dark .seq-help-text {
+  background: #30404d;
+  color: #abb3bf;
+}
+
+.seq-help-text small {
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .seq-dialog {
+    max-width: 95%;
+    margin: 20px auto;
+  }
+
+  .seq-task-name {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .seq-instruction {
+    font-size: 13px;
+  }
+
+  .seq-radio-option {
+    padding: 10px;
+  }
+
+  .seq-radio-option label {
+    font-size: 13px;
+  }
+
+  .seq-radio-option strong {
+    font-size: 15px;
+  }
+}
+
+/* Accessibility: High contrast mode support */
+@media (prefers-contrast: high) {
+  .seq-task-name {
+    border-left-width: 4px;
+  }
+
+  .seq-radio-option {
+    border-width: 2px;
+  }
+
+  .seq-radio-option:has(input:checked) {
+    border-width: 3px;
+  }
+}
+
+/* Accessibility: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .seq-radio-option {
+    transition: none;
+  }
+
+  .seq-radio-option:hover {
+    transform: none;
+  }
+}
+
+/* Remove obsolete custom overlay styles (now using Blueprint Dialog) */
+/* The following classes are no longer used:
+   - .seq-overlay
+   - .seq-backdrop
+   - .seq-container
+   - .seq-callout
+   - .seq-header
+   - .seq-header-icon
+   - .seq-question
+   - .seq-content
+   - .seq-actions (now in DialogFooter)
+*/

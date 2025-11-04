@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { BlueprintProvider, HotkeysProvider } from '@blueprintjs/core';
+import { BlueprintProvider, HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/table/lib/css/table.css';
@@ -56,40 +56,42 @@ function App() {
   return (
     <ErrorBoundary>
       <BlueprintProvider>
-        <HotkeysProvider>
-          <BackgroundProcessingProvider>
-            <Router>
-              <EnhancedNavigationProvider>
-                <NavigationContextProvider>
-                  <WizardSyncProvider>
-                    <KeyboardNavigationProvider>
-                      <div className="app">
-                        <Routes>
-                          <Route path="/" element={<Dashboard />} />
-                          <Route path="/history" element={<History />} />
-                          <Route 
-                            path="/history/:collectionId/collection-opportunities" 
-                            element={<CollectionOpportunitiesRedirect />} 
-                          />
-                          <Route path="/collection/:collectionId/manage" element={<CollectionOpportunitiesHub />} />
-                          <Route path="/history/:collectionId/field-mapping-review" element={<FieldMappingReview />} />
-                          <Route path="/analytics" element={<Analytics />} />
-                          <Route path="/sccs" element={<SCCs />} />
-                          <Route path="/sccs/new" element={<AddSCC />} />
-                          <Route path="/decks" element={<CollectionDecks />} />
-                          <Route path="/create-collection-deck/*" element={<CreateCollectionDeck />} />
-                          <Route path="/test-opportunities" element={<TestOpportunities />} />
-                          <Route path="*" element={<Dashboard />} />
-                        </Routes>
-                        <NavigationFAB />
-                      </div>
-                    </KeyboardNavigationProvider>
-                  </WizardSyncProvider>
-                </NavigationContextProvider>
-              </EnhancedNavigationProvider>
-            </Router>
-          </BackgroundProcessingProvider>
-        </HotkeysProvider>
+        <OverlaysProvider>
+          <HotkeysProvider>
+            <BackgroundProcessingProvider>
+              <Router>
+                <EnhancedNavigationProvider>
+                  <NavigationContextProvider>
+                    <WizardSyncProvider>
+                      <KeyboardNavigationProvider>
+                        <div className="app">
+                          <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/history" element={<History />} />
+                            <Route
+                              path="/history/:collectionId/collection-opportunities"
+                              element={<CollectionOpportunitiesRedirect />}
+                            />
+                            <Route path="/collection/:collectionId/manage" element={<CollectionOpportunitiesHub />} />
+                            <Route path="/history/:collectionId/field-mapping-review" element={<FieldMappingReview />} />
+                            <Route path="/analytics" element={<Analytics />} />
+                            <Route path="/sccs" element={<SCCs />} />
+                            <Route path="/sccs/new" element={<AddSCC />} />
+                            <Route path="/decks" element={<CollectionDecks />} />
+                            <Route path="/create-collection-deck/*" element={<CreateCollectionDeck />} />
+                            <Route path="/test-opportunities" element={<TestOpportunities />} />
+                            <Route path="*" element={<Dashboard />} />
+                          </Routes>
+                          <NavigationFAB />
+                        </div>
+                      </KeyboardNavigationProvider>
+                    </WizardSyncProvider>
+                  </NavigationContextProvider>
+                </EnhancedNavigationProvider>
+              </Router>
+            </BackgroundProcessingProvider>
+          </HotkeysProvider>
+        </OverlaysProvider>
       </BlueprintProvider>
     </ErrorBoundary>
   );

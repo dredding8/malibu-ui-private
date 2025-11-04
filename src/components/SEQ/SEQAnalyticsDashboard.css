@@ -1,0 +1,179 @@
+/**
+ * SEQ Analytics Dashboard Styles
+ */
+
+.seq-analytics-dashboard {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.seq-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.seq-dashboard-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.seq-analytics-table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.seq-analytics-table thead th {
+  font-weight: 600;
+  color: #5c7080;
+}
+
+.seq-analytics-table tbody tr:hover {
+  background-color: #f5f8fa;
+}
+
+.seq-task-details {
+  margin-top: 20px;
+}
+
+.seq-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.seq-metric-card {
+  text-align: center;
+  padding: 20px;
+}
+
+.seq-metric-label {
+  font-size: 13px;
+  color: #5c7080;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.seq-metric-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #182026;
+  margin-bottom: 4px;
+}
+
+.seq-metric-sublabel {
+  font-size: 14px;
+  color: #738091;
+  margin-top: 8px;
+}
+
+.seq-distribution {
+  margin: 20px 0;
+}
+
+.seq-distribution-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 100px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.seq-distribution-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.seq-distribution-bar {
+  min-width: 200px;
+}
+
+.seq-distribution-count {
+  text-align: right;
+  font-size: 14px;
+  color: #5c7080;
+}
+
+.seq-comments-list {
+  margin: 20px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.seq-comment {
+  margin-bottom: 12px;
+}
+
+.seq-comment p {
+  margin: 0;
+  font-style: italic;
+}
+
+.seq-close-details {
+  margin-top: 20px;
+}
+
+.seq-research-notes {
+  margin-top: 20px;
+  background-color: #f5f8fa;
+}
+
+.seq-research-notes ul {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.seq-research-notes li {
+  margin-bottom: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .seq-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .seq-dashboard-actions {
+    flex-wrap: wrap;
+  }
+
+  .seq-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seq-distribution-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .seq-distribution-count {
+    text-align: left;
+  }
+}
+
+/* Dark mode support */
+.bp5-dark .seq-analytics-table tbody tr:hover,
+.bp6-dark .seq-analytics-table tbody tr:hover {
+  background-color: #394b59;
+}
+
+.bp5-dark .seq-metric-card,
+.bp6-dark .seq-metric-card {
+  background-color: #30404d;
+}
+
+.bp5-dark .seq-metric-value,
+.bp6-dark .seq-metric-value {
+  color: #f5f8fa;
+}
+
+.bp5-dark .seq-research-notes,
+.bp6-dark .seq-research-notes {
+  background-color: #30404d;
+}

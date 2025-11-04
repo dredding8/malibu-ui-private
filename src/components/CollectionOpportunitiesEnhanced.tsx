@@ -27,9 +27,7 @@ import {
   ButtonGroup,
   Classes,
   NonIdealState,
-  Spinner,
-  Tabs,
-  Tab
+  Spinner
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import {
@@ -55,7 +53,6 @@ import OpportunityStatusIndicatorEnhanced from './OpportunityStatusIndicatorEnha
 import QuickEditModal from './QuickEditModal';
 import InlineOverrideButtonEnhanced from './InlineOverrideButtonEnhanced';
 import { OverrideImpact } from './OverrideImpactCalculator';
-import DataIntegrityIndicator from './DataIntegrityIndicator';
 import OpportunityDetailsModal from './OpportunityDetailsModal';
 import { OverrideExportBadge } from './OverrideExportBadge';
 import { ManualOverrideModalRefactored } from './ManualOverrideModalRefactored';
@@ -96,7 +93,8 @@ interface EnhancedManagementState extends OpportunityManagementState {
   showUnifiedEditor: boolean; // NEW: UnifiedEditor control
   searchQuery: string;
   viewMode: 'table' | 'cards';
-  activeTab: 'all' | 'needs-review' | 'unmatched';
+  // NEW: Multi-dimensional filter state (replaces activeTab)
+  activeFilters: Set<'high-priority' | 'needs-review' | 'unmatched' | 'all'>;
   undoStack: UndoRedoOperation[];
   redoStack: UndoRedoOperation[];
   auditTrail: AuditTrailEntry[];
@@ -118,7 +116,7 @@ type ActionType =
   | { type: 'SET_FILTER'; payload: FilterConfig }
   | { type: 'SET_SEARCH'; payload: string }
   | { type: 'SET_VIEW_MODE'; payload: 'table' | 'cards' }
-  | { type: 'SET_ACTIVE_TAB'; payload: 'all' | 'needs-review' | 'unmatched' }
+  | { type: 'TOGGLE_FILTER'; payload: 'high-priority' | 'needs-review' | 'unmatched' | 'all' } // NEW: Toggle filter
   | { type: 'COMMIT_START' }
   | { type: 'COMMIT_SUCCESS'; payload: string[] }
   | { type: 'COMMIT_FAILURE'; payload: Error }
@@ -190,8 +188,28 @@ const enhancedOpportunityReducer = (
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.payload };
 
-    case 'SET_ACTIVE_TAB':
-      return { ...state, activeTab: action.payload };
+    case 'TOGGLE_FILTER': {
+      const newFilters = new Set(state.activeFilters);
+      if (action.payload === 'all') {
+        // 'all' clears other filters
+        newFilters.clear();
+        newFilters.add('all');
+      } else {
+        // Remove 'all' if other filters are selected
+        newFilters.delete('all');
+        // Toggle the specific filter
+        if (newFilters.has(action.payload)) {
+          newFilters.delete(action.payload);
+        } else {
+          newFilters.add(action.payload);
+        }
+        // If no filters remain, show all
+        if (newFilters.size === 0) {
+          newFilters.add('all');
+        }
+      }
+      return { ...state, activeFilters: newFilters };
+    }
 
     case 'SHOW_DETAILS':
       return { 
@@ -388,7 +406,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
     showUnifiedEditor: false,
     searchQuery: '',
     viewMode: 'table',
-    activeTab: 'all',
+    activeFilters: new Set(['high-priority', 'needs-review']), // Smart default: show items needing attention
     undoStack: [],
     redoStack: [],
     auditTrail: [],
@@ -396,6 +414,15 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
 
   const [state, dispatch] = useReducer(enhancedOpportunityReducer, initialState);
   const [showQuickEdit, setShowQuickEdit] = useState(false);
+
+  // Priority hint dismissal state (localStorage persistence)
+  const [showPriorityHint, setShowPriorityHint] = useState(() => {
+    try {
+      return !localStorage.getItem('malibu-priority-hint-dismissed');
+    } catch {
+      return true; // Default to showing if localStorage unavailable
+    }
+  });
 
   // Column visibility state for responsive viewports (<1280px)
   // Controls user's choice to show/hide columns that are hidden by responsive CSS
@@ -488,15 +515,24 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
 
     console.log('[CollectionOpportunitiesEnhanced] processedData - workingData:', state.workingData.length);
 
-    // Tab filter (legacy view tabs)
-    if (state.activeTab !== 'all') {
-      if (state.activeTab === 'needs-review') {
-        // Show suboptimal matches that need attention
-        data = data.filter(opp => opp.matchStatus === 'suboptimal');
-      } else if (state.activeTab === 'unmatched') {
-        // Show unmatched opportunities
-        data = data.filter(opp => opp.matchStatus === 'unmatched');
-      }
+    // Multi-dimensional filter logic (replaces tab filters)
+    if (!state.activeFilters.has('all')) {
+      data = data.filter(opp => {
+        // High priority filter: priority >= 34
+        const isHighPriority = state.activeFilters.has('high-priority') &&
+          (opp.priorityValue ? opp.priorityValue >= 34 : false);
+
+        // Needs review filter: missing TLE or low capacity
+        const needsReview = state.activeFilters.has('needs-review') &&
+          (opp.dataIntegrityIssues && opp.dataIntegrityIssues.length > 0);
+
+        // Unmatched filter: no site allocation
+        const isUnmatched = state.activeFilters.has('unmatched') &&
+          opp.matchStatus === 'unmatched';
+
+        // Include if ANY selected filter matches (OR logic)
+        return isHighPriority || needsReview || isUnmatched;
+      });
     }
 
     // Search filter
@@ -760,26 +796,56 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
   const satelliteCellRenderer = useCallback((rowIndex: number) => {
     const opportunity = processedData[rowIndex];
     if (!opportunity) return <Cell />;
-    
+
+    const hasDataIssues = opportunity.dataIntegrityIssues && opportunity.dataIntegrityIssues.length > 0;
+    const hasTLEIssue = hasDataIssues && opportunity.dataIntegrityIssues.some(issue =>
+      issue.type === 'NO_TLE' || issue.type === 'STALE_EPHEMERIS'
+    );
+
     return (
       <Cell>
         <div className="satellite-info">
-          <div className="satellite-name">
-            {opportunity.satellite.name}
-            {opportunity.dataIntegrityIssues && opportunity.dataIntegrityIssues.length > 0 && (
-              <DataIntegrityIndicator
-                issues={opportunity.dataIntegrityIssues}
-                satelliteId={opportunity.satellite.id}
-                onEscalate={(satId, issue) => {
-                  console.log('Escalate to ops:', satId, issue);
-                  // In real app, would open escalation dialog or API call
-                }}
-                onRetry={(satId) => {
-                  console.log('Retry TLE update:', satId);
-                  // In real app, would trigger TLE update request
-                }}
-                compact
-              />
+          <div className="satellite-name" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>{opportunity.satellite.name}</span>
+
+            {/* Inline Data Quality Indicators */}
+            {hasTLEIssue && (
+              <Tooltip content="Missing or stale TLE data">
+                <Tag
+                  minimal
+                  intent={Intent.WARNING}
+                  icon={IconNames.ERROR}
+                  style={{ fontSize: '11px', padding: '2px 6px' }}
+                >
+                  TLE
+                </Tag>
+              </Tooltip>
+            )}
+
+            {opportunity.capacityPercentage !== undefined && opportunity.capacityPercentage < 30 && (
+              <Tooltip content={`Low capacity: ${opportunity.capacityPercentage}%`}>
+                <Tag
+                  minimal
+                  intent={Intent.WARNING}
+                  icon={IconNames.ISSUE}
+                  style={{ fontSize: '11px', padding: '2px 6px' }}
+                >
+                  CAP
+                </Tag>
+              </Tooltip>
+            )}
+
+            {hasDataIssues && (
+              <Tooltip content={`${opportunity.dataIntegrityIssues.length} data issue(s)`}>
+                <Tag
+                  minimal
+                  intent={Intent.DANGER}
+                  icon={IconNames.WARNING_SIGN}
+                  style={{ fontSize: '11px', padding: '2px 6px', cursor: 'help' }}
+                >
+                  {opportunity.dataIntegrityIssues.length}
+                </Tag>
+              </Tooltip>
             )}
           </div>
           <div className={`satellite-meta ${Classes.TEXT_MUTED}`}>
@@ -803,15 +869,28 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
 
     const priorityValue = opportunity?.priorityValue || priorityMap[opportunity?.priority || 'low'];
 
+    // Enhanced visual hierarchy for priority
+    const isHighPriority = priorityValue >= 34;
+    const isCritical = priorityValue >= 40;
+
     return (
       <Cell>
-        <span style={{
-          fontSize: '16px',
-          fontWeight: 600,
-          color: '#1C2127'
-        }}>
+        <Tag
+          minimal
+          intent={
+            isCritical ? Intent.DANGER :
+            isHighPriority ? Intent.WARNING :
+            Intent.NONE
+          }
+          icon={
+            isCritical ? IconNames.WARNING_SIGN :
+            isHighPriority ? IconNames.ISSUE :
+            undefined
+          }
+          className="priority-value"
+        >
           {priorityValue}
-        </span>
+        </Tag>
       </Cell>
     );
   }, [processedData]);
@@ -1124,7 +1203,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
 
   // Calculate summary statistics
   const stats = useMemo(() => {
-    const total = processedData.length;
+    const total = state.workingData.length;
     const critical = processedData.filter(o =>
       state.healthScores.get(o.id)?.level === 'critical'
     ).length;
@@ -1135,19 +1214,48 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
       state.healthScores.get(o.id)?.level === 'optimal'
     ).length;
 
-    // Legacy tab counts (based on all data, not filtered)
-    const needsReview = state.workingData.filter(o => o.matchStatus === 'suboptimal').length;
+    // Filter counts for chips (based on workingData before filters applied)
+    const highPriority = state.workingData.filter(o =>
+      o.priorityValue ? o.priorityValue >= 34 : false
+    ).length;
+    const needsReview = state.workingData.filter(o =>
+      o.dataIntegrityIssues && o.dataIntegrityIssues.length > 0
+    ).length;
     const unmatched = state.workingData.filter(o => o.matchStatus === 'unmatched').length;
 
-    return { total, critical, warning, optimal, needsReview, unmatched };
-  }, [processedData, state.healthScores, state.workingData]);
+    // Calculate filtered count based on active filters
+    let filteredCount = 0;
+    if (!state.activeFilters.has('all')) {
+      // Apply the same filter logic as processedData
+      filteredCount = state.workingData.filter(o => {
+        const isHighPriority = state.activeFilters.has('high-priority') &&
+          (o.priorityValue ? o.priorityValue >= 34 : false);
+        const needsReviewFilter = state.activeFilters.has('needs-review') &&
+          (o.dataIntegrityIssues && o.dataIntegrityIssues.length > 0);
+        const isUnmatched = state.activeFilters.has('unmatched') &&
+          o.matchStatus === 'unmatched';
+
+        return isHighPriority || needsReviewFilter || isUnmatched;
+      }).length;
+    } else {
+      filteredCount = total;
+    }
+
+    return { total, critical, warning, optimal, highPriority, needsReview, unmatched, filteredCount };
+  }, [processedData, state.healthScores, state.workingData, state.activeFilters]);
 
   return (
     <div className="collection-opportunities-enhanced">
       {/* Enhanced Header */}
       <Navbar className="opportunities-navbar">
         <NavbarGroup>
-          <NavbarHeading>Review Assignments</NavbarHeading>
+          <NavbarHeading style={{
+            fontSize: '20px',
+            fontWeight: '700',
+            letterSpacing: '-0.01em'
+          }}>
+            Review Assignments
+          </NavbarHeading>
         </NavbarGroup>
 
         <NavbarGroup align="right">
@@ -1177,6 +1285,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
             placeholder="Search assignments..."
             value={state.searchQuery}
             onChange={(e) => dispatch({ type: 'SET_SEARCH', payload: e.target.value })}
+            className="search-input-large"
           />
 
           {/* Column Visibility Control - Responsive Toggle */}
@@ -1229,18 +1338,102 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
         </NavbarGroup>
       </Navbar>
 
-      {/* Legacy View Tabs */}
-      <Tabs
-        id="legacy-view-tabs"
-        selectedTabId={state.activeTab}
-        onChange={(newTabId) => dispatch({ type: 'SET_ACTIVE_TAB', payload: newTabId as 'all' | 'needs-review' | 'unmatched' })}
-        large
-        className="legacy-view-tabs"
-      >
-        <Tab id="all" title="ALL" />
-        <Tab id="needs-review" title={`NEEDS REVIEW (${stats.needsReview})`} />
-        <Tab id="unmatched" title={`UNMATCHED (${stats.unmatched})`} />
-      </Tabs>
+      {/* Priority hint - educates users about smart default filters (dismissible on first visit) */}
+      {showPriorityHint && !state.activeFilters.has('all') && (
+        <Callout
+          compact
+          intent={Intent.PRIMARY}
+          icon={IconNames.INFO_SIGN}
+          style={{ marginBottom: 16, position: 'relative' }}
+        >
+          <Button
+            variant="minimal"
+            size="small"
+            icon={IconNames.CROSS}
+            style={{ position: 'absolute', top: 8, right: 8 }}
+            onClick={() => {
+              setShowPriorityHint(false);
+              try {
+                localStorage.setItem('malibu-priority-hint-dismissed', 'true');
+              } catch {
+                // Fail silently if localStorage unavailable
+              }
+            }}
+            aria-label="Dismiss priority hint"
+          />
+          <strong>Priority items (≥34) and items needing review shown first.</strong> Click <strong>"Clear all"</strong> to see all {stats.total}.
+        </Callout>
+      )}
+
+      {/* Filter Chips - Subtle active state with rightIcon */}
+      <Card elevation={0} style={{ marginBottom: 16, padding: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span className={Classes.TEXT_MUTED}>Filters:</span>
+
+          {/* High Priority chip - X appears only when active */}
+          <Tag
+            minimal
+            interactive
+            icon={IconNames.WARNING_SIGN}
+            rightIcon={state.activeFilters.has('high-priority') ? IconNames.SMALL_CROSS : undefined}
+            onClick={() => dispatch({ type: 'TOGGLE_FILTER', payload: 'high-priority' })}
+            style={{
+              opacity: state.activeFilters.has('high-priority') ? 1 : 0.5,
+              borderBottom: state.activeFilters.has('high-priority') ? '2px solid currentColor' : 'none'
+            }}
+          >
+            Priority: ≥34 ({stats.highPriority})
+          </Tag>
+
+          {/* Needs Review chip - X appears only when active */}
+          <Tag
+            minimal
+            interactive
+            icon={IconNames.ERROR}
+            rightIcon={state.activeFilters.has('needs-review') ? IconNames.SMALL_CROSS : undefined}
+            onClick={() => dispatch({ type: 'TOGGLE_FILTER', payload: 'needs-review' })}
+            style={{
+              opacity: state.activeFilters.has('needs-review') ? 1 : 0.5,
+              borderBottom: state.activeFilters.has('needs-review') ? '2px solid currentColor' : 'none'
+            }}
+          >
+            Needs Review ({stats.needsReview})
+          </Tag>
+
+          {/* Unmatched chip - X appears only when active */}
+          <Tag
+            minimal
+            interactive
+            icon={IconNames.DISABLE}
+            rightIcon={state.activeFilters.has('unmatched') ? IconNames.SMALL_CROSS : undefined}
+            onClick={() => dispatch({ type: 'TOGGLE_FILTER', payload: 'unmatched' })}
+            style={{
+              opacity: state.activeFilters.has('unmatched') ? 1 : 0.5,
+              borderBottom: state.activeFilters.has('unmatched') ? '2px solid currentColor' : 'none'
+            }}
+          >
+            Unmatched ({stats.unmatched})
+          </Tag>
+
+          {/* Clear all - resets all filters to inactive */}
+          {!state.activeFilters.has('all') && (
+            <Button
+              variant="minimal"
+              size="small"
+              onClick={() => dispatch({ type: 'TOGGLE_FILTER', payload: 'all' })}
+            >
+              Clear all
+            </Button>
+          )}
+
+          {/* Result count */}
+          {!state.activeFilters.has('all') && (
+            <span className={Classes.TEXT_MUTED} style={{ marginLeft: 'auto' }}>
+              Showing <strong>{stats.filteredCount}</strong> of {stats.total}
+            </span>
+          )}
+        </div>
+      </Card>
 
       {/* Changes summary */}
       {state.pendingChanges.size > 0 && (
@@ -1310,14 +1503,16 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
           marginBottom: '20px',
           padding: '0 4px'
         }}>
-          <h5 className={Classes.HEADING} style={{
+          <h2 className={Classes.HEADING} style={{
             margin: 0,
-            fontSize: '18px',
+            fontSize: '15px',
             fontWeight: '600',
-            color: '#182026'
+            color: '#5C7080',
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase'
           }}>
             Assignment Library
-          </h5>
+          </h2>
         </div>
         <hr className={Classes.DIVIDER} style={{ margin: '0 0 16px 0' }} />
 
@@ -1342,7 +1537,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
             enableColumnResizing={true}
             enableFocusedCell={true}
             selectionModes={SelectionModes.ROWS_ONLY}
-            renderMode={RenderMode.BATCH}
+            renderMode={processedData.length > 50 ? RenderMode.BATCH : RenderMode.NONE}
             rowHeights={processedData.map(() => 60)}
             defaultColumnWidth={150}
             minColumnWidth={100}
@@ -1365,8 +1560,9 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
                     className="match-status-cell clickable"
                     onClick={() => handleOpenUnifiedEditor(opportunity.id)}
                     data-testid="opportunity-row"
-                    style={{ cursor: 'pointer' }}
                     title="Click to open allocation workflow"
+                    role="button"
+                    tabIndex={0}
                   >
                     <Tag intent={matchIntent} minimal className="match-status-tag">
                       {opportunity?.matchStatus ? opportunity.matchStatus.toUpperCase() : 'UNMATCHED'}
@@ -1381,15 +1577,16 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
           <Column name="Function" cellRenderer={functionCellRenderer} />
           <Column name="Orbit" cellRenderer={orbitCellRenderer} />
           <Column name="Site Allocation" cellRenderer={siteAllocationCellRenderer} />
+          {/* UX Analysis: Columns hidden by default via CSS to comply with Hick's Law (7±2 items) - User can show via column toggle */}
           <Column
             name="Collection Type"
             cellRenderer={collectionTypeCellRenderer}
-            className={`responsive-column ${userToggledColumns.has('collection-type') ? 'user-visible' : ''}`}
+            className={`optional-column ${userToggledColumns.has('collection-type') ? 'user-visible' : 'user-hidden'}`}
           />
           <Column
             name="Classification"
             cellRenderer={classificationCellRenderer}
-            className={`responsive-column ${userToggledColumns.has('classification') ? 'user-visible' : ''}`}
+            className={`optional-column ${userToggledColumns.has('classification') ? 'user-visible' : 'user-hidden'}`}
           />
           </Table2>
         ) : (

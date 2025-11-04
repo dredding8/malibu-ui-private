@@ -34,7 +34,7 @@
 
 .allocation-tab__description {
   color: #5c7080; /* Blueprint muted text color */
-  margin-bottom: 12px; /* $pt-spacing * 3 */
+  margin-bottom: 16px; /* Increased from 12px to 16px for better visual separation */
   font-size: 12px; /* $pt-font-size-small */
 }
 
@@ -87,7 +87,7 @@
 
 .sites-table__col-passes {
   width: 70px;
-  text-align: center;
+  text-align: right; /* Numeric data right-aligned for scannability */
 }
 
 .sites-table__col-duration {
@@ -102,6 +102,7 @@
 .sites-table__col-capacity {
   width: 180px;
   max-width: 180px;
+  text-align: right; /* Numeric data right-aligned for scannability */
 }
 
 /* Table Row Selection */
@@ -169,7 +170,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px; /* $pt-spacing */
-  align-items: flex-start;
+  align-items: flex-end; /* Right-align for numeric data scannability */
 }
 
 .capacity-display__available {
@@ -296,7 +297,7 @@
 
 /* Button sizing within cells - proper tap targets */
 .allocated-sites-table .bp5-button-group {
-  gap: 6px; /* Space between operational day buttons */
+  gap: 6px; /* Blueprint standard spacing for clear button separation */
 }
 
 .allocated-sites-table .bp5-button-group .bp5-button {
@@ -558,6 +559,276 @@
 }
 
 /* ============================================
+   BOTTOM DRAWER STYLES (iOS-inspired)
+   ============================================ */
+
+/* Grabber indicator (iOS bottom sheet pattern) */
+.site-details-drawer--bottom .bp5-drawer-header::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  background: var(--bp5-text-color-disabled, #5c7080);
+  border-radius: 2px;
+  margin: -8px auto 12px;
+  flex-shrink: 0;
+}
+
+.bp5-dark .site-details-drawer--bottom .bp5-drawer-header::before {
+  background: var(--bp5-dark-text-color-disabled, #738091);
+}
+
+/* ============================================
+   DRAWER SECTIONS - SINGLE VIEW LAYOUT
+   ============================================ */
+
+.drawer-section {
+  padding: 16px 20px; /* $pt-spacing * 4, 5 */
+}
+
+/* Hero Section - Collects */
+.drawer-section--hero {
+  padding: 24px 20px; /* $pt-spacing * 6, 5 */
+  background: rgba(19, 124, 189, 0.05); /* Subtle primary tint */
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.bp5-dark .drawer-section--hero {
+  background: rgba(138, 187, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.collects-hero {
+  text-align: center;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.collects-hero__value {
+  font-size: 48px; /* Large hero number */
+  font-weight: 700;
+  color: #137cbd; /* Blueprint primary */
+  line-height: 1;
+  margin: 8px 0;
+}
+
+.bp5-dark .collects-hero__value {
+  color: #8abbff; /* Blueprint dark primary */
+}
+
+.collects-hero__caption {
+  font-size: 13px;
+  color: #5c7080;
+  margin-top: 4px;
+}
+
+.bp5-dark .collects-hero__caption {
+  color: #a7b6c2;
+}
+
+/* Constraints Section */
+.drawer-section--constraints {
+  background: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid #e1e8ed;
+}
+
+.bp5-dark .drawer-section--constraints {
+  background: rgba(255, 255, 255, 0.02);
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.constraint-field {
+  margin-bottom: 8px !important; /* $pt-spacing * 2 */
+}
+
+.constraint-field:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Label styling */
+.label-muted {
+  font-size: 12px;
+  color: #5c7080;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.bp5-dark .label-muted {
+  color: #a7b6c2;
+}
+
+/* Mobile-specific drawer body padding */
+.site-details-drawer--mobile .bp5-drawer-body {
+  padding: 0; /* Remove padding - sections handle their own */
+}
+
+/* Desktop drawer body padding */
+.site-details-drawer--desktop .bp5-drawer-body {
+  padding: 0; /* Remove padding - sections handle their own */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .drawer-section--hero {
+    padding: 20px 16px; /* $pt-spacing * 5, 4 - tighter on mobile */
+  }
+
+  .drawer-section {
+    padding: 12px 16px; /* $pt-spacing * 3, 4 */
+  }
+
+  .collects-hero__value {
+    font-size: 40px; /* Slightly smaller on mobile */
+  }
+}
+
+/* Compact cards within drawer */
+.site-details-drawer .bp5-card.bp5-compact {
+  box-shadow: 0 0 0 1px rgba(17, 20, 24, 0.1);
+}
+
+.bp5-dark .site-details-drawer .bp5-card.bp5-compact {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================
+   PASSES GRID - CSS GRID LAYOUT
+   ============================================ */
+
+/* Grid Container - Responsive 3 → 2 → 1 columns */
+.passes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px; /* Blueprint spacing (3 × $pt-grid-size) */
+  max-height: 420px; /* Increased from table constraint */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px; /* Prevent card shadows from clipping */
+}
+
+/* Pass Card - Compact styling for grid */
+.pass-card.bp5-card.bp5-compact {
+  padding: 10px 12px; /* Compact padding */
+  cursor: default; /* Non-interactive */
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  min-height: 52px; /* Consistent card height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pass-card:hover {
+  box-shadow: 0 1px 4px rgba(19, 124, 189, 0.3); /* Subtle blue hover */
+  transform: translateY(-1px); /* Slight lift on hover */
+}
+
+/* PRIMARY: Timestamp Display */
+.pass-card__time {
+  font-family: monospace;
+  font-size: 16px; /* Prominent timestamp */
+  font-weight: 700;
+  color: var(--bp5-text-color, #182026);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bp5-dark .pass-card__time {
+  color: var(--bp5-dark-text-color, #f6f7f9);
+}
+
+/* SECONDARY: Details Display */
+.pass-card__details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--bp5-text-color-muted, #5c7080);
+  flex-wrap: wrap;
+}
+
+.bp5-dark .pass-card__details {
+  color: var(--bp5-dark-text-color-muted, #a7b6c2);
+}
+
+.pass-card__duration,
+.pass-card__elevation {
+  font-weight: 500;
+}
+
+.pass-card__separator {
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.pass-card__index {
+  margin-left: auto;
+  background-color: rgba(19, 124, 189, 0.1);
+  color: var(--bp5-intent-primary, #137cbd);
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.bp5-dark .pass-card__index {
+  background-color: rgba(138, 187, 255, 0.15);
+  color: var(--bp5-dark-intent-primary, #8abbff);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 900px) and (min-width: 600px) {
+  .passes-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+  }
+}
+
+@media (max-width: 599px) {
+  .passes-grid {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+  }
+
+  .pass-card__time {
+    font-size: 14px; /* Slightly smaller on mobile */
+  }
+}
+
+/* Ensure horizontal scrolling on mobile for summary cards */
+.site-details-drawer--mobile .bp5-drawer-body > div:first-child {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Hide scrollbar for summary cards on mobile (cleaner look) */
+.site-details-drawer--mobile .bp5-drawer-body > div:first-child::-webkit-scrollbar {
+  height: 4px;
+}
+
+.site-details-drawer--mobile .bp5-drawer-body > div:first-child::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.site-details-drawer--mobile .bp5-drawer-body > div:first-child::-webkit-scrollbar-thumb {
+  background: var(--bp5-text-color-disabled, #5c7080);
+  border-radius: 2px;
+}
+
+/* Pass table container scrolling */
+.site-details-drawer .bp5-html-table {
+  border-collapse: collapse;
+}
+
+.site-details-drawer .bp5-html-table th,
+.site-details-drawer .bp5-html-table td {
+  padding: 6px 8px;
+}
+
+/* ============================================
    LEGACY STYLES (TO BE REMOVED)
    Note: Keeping temporarily for graceful degradation
    ============================================ */
@@ -569,4 +840,32 @@
 
 .allocation-tab__config-list {
   /* Deprecated - replaced by .allocated-sites-table */
+}
+
+/* Deprecated custom drawer field styles - replaced by Blueprint components */
+.site-detail-section {
+  /* Replaced by native Blueprint layout */
+}
+
+.site-detail-field {
+  /* Replaced by FormGroup inline */
+}
+
+.site-detail-label,
+.site-detail-value {
+  /* Replaced by Text component */
+}
+
+.pass-timestamps-list,
+.pass-timestamp-card,
+.pass-card-header,
+.pass-card-body,
+.pass-timestamp,
+.pass-timestamp-label,
+.pass-timestamp-value {
+  /* Replaced by HTMLTable */
+}
+
+.operational-hours-display {
+  /* Replaced by inline Text + Tag */
 }
