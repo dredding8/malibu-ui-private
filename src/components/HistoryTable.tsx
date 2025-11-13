@@ -28,6 +28,9 @@ interface HistoryTableProps {
   newDeckId?: string; // For highlighting newly created deck
   selectedCollectionId?: string | null; // Currently selected collection
   onCollectionSelect?: (collectionId: string | null) => void; // Selection callback
+  embeddedMode?: boolean; // Hide breadcrumbs and filters for wizard embedding
+  autoSelectId?: string; // Auto-select this collection on mount
+  showHeader?: boolean; // Show/hide full header section
 }
 
 // Enterprise table styling constants following design best practices
@@ -40,22 +43,32 @@ const TABLE_STYLES = {
   emptyState: `${Classes.NON_IDEAL_STATE} ${Classes.CALLOUT}`
 };
 
-const HistoryTable: React.FC<HistoryTableProps> = ({ 
-  startDate, 
-  endDate, 
-  searchQuery = '', 
+const HistoryTable: React.FC<HistoryTableProps> = ({
+  startDate,
+  endDate,
+  searchQuery = '',
   statusFilter = 'all',
   onClearFilters,
   enableBulkActions = false,
   onSelectionChange,
   newDeckId,
   selectedCollectionId,
-  onCollectionSelect
+  onCollectionSelect,
+  embeddedMode = false,
+  autoSelectId,
+  showHeader = true
 }) => {
   const { jobs } = useBackgroundProcessing();
   const { t } = useLocalization();
   const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
   const [selectAll, setSelectAll] = React.useState(false);
+
+  // Auto-select collection when autoSelectId is provided (wizard mode)
+  React.useEffect(() => {
+    if (autoSelectId && onCollectionSelect) {
+      onCollectionSelect(autoSelectId);
+    }
+  }, [autoSelectId, onCollectionSelect]);
 
   // Helper function to check if a deck is newly created
   const isNewlyCreatedDeck = React.useCallback((deckId: string): boolean => {

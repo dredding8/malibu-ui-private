@@ -589,7 +589,7 @@ const CollectionOpportunitiesEnhanced: React.FC<CollectionOpportunitiesEnhancedP
 
     console.log('[CollectionOpportunitiesEnhanced] FINAL processedData length:', data.length);
     return data;
-  }, [state.workingData, state.filter, state.sortColumn, state.sortDirection, state.searchQuery, state.healthScores, state.activeTab]);
+  }, [state.workingData, state.filter, state.sortColumn, state.sortDirection, state.searchQuery, state.healthScores, state.activeTab, state.activeFilters]);
 
   // Status cell renderer with enhanced indicator
   const statusCellRenderer = useCallback((rowIndex: number) => {

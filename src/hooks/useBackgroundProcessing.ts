@@ -5,7 +5,7 @@ import { OverlayToaster, Position, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
 export interface UseBackgroundProcessingReturn {
-  startProcessing: (deckData: any) => Promise<void>;
+  startProcessing: (deckData: any, options?: { redirect?: boolean }) => Promise<{ id: string }>;
   isProcessing: boolean;
 }
 
@@ -14,12 +14,13 @@ export const useBackgroundProcessing = (): UseBackgroundProcessingReturn => {
   const navigate = useNavigate();
   const { startNewDeckCreation } = useBackgroundProcessingContext();
 
-  const startProcessing = useCallback(async (deckData: any) => {
+  const startProcessing = useCallback(async (deckData: any, options?: { redirect?: boolean }) => {
+    const { redirect = true } = options || {};
     setIsProcessing(true);
-    
+
     try {
-      startNewDeckCreation(deckData.name || 'New Collection Deck');
-      
+      const jobId = startNewDeckCreation(deckData.name || 'New Collection Deck');
+
       // Show processing started notification
       const toaster = await OverlayToaster.create({ position: Position.TOP_RIGHT });
       toaster.show({
@@ -28,13 +29,18 @@ export const useBackgroundProcessing = (): UseBackgroundProcessingReturn => {
         icon: IconNames.INFO_SIGN,
         timeout: 5000,
       });
-      
-      // Redirect to History page
-      navigate('/history');
-      
+
+      // Only redirect if explicitly requested (default: true for backward compatibility)
+      // Wizard flow will pass redirect: false and handle navigation itself
+      if (redirect) {
+        navigate('/history');
+      }
+
+      return { id: jobId };
+
     } catch (error) {
       console.error('Failed to start processing:', error);
-      
+
       // Show error notification
       const toaster = await OverlayToaster.create({ position: Position.TOP_RIGHT });
       toaster.show({
@@ -43,6 +49,8 @@ export const useBackgroundProcessing = (): UseBackgroundProcessingReturn => {
         icon: IconNames.ERROR,
         timeout: 5000,
       });
+
+      throw error; // Re-throw so wizard can handle error
     } finally {
       setIsProcessing(false);
     }
