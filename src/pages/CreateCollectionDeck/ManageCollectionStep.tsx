@@ -1,14 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Divider,
   Button,
   Intent,
-  Card,
   Callout,
   Tag,
   NonIdealState,
-  ButtonGroup
+  ButtonGroup,
+  H3,
+  H5,
+  Classes,
+  Icon,
+  Section,
+  SectionCard
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import CollectionOpportunitiesHub from '../CollectionOpportunitiesHub';
@@ -17,15 +22,6 @@ const ManageCollectionStep: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const collectionId = searchParams.get('id');
-  const successHeadingRef = useRef<HTMLHeadingElement>(null);
-
-  // P0-2: Focus management - Focus success message for accessibility
-  useEffect(() => {
-    // Focus the success heading so screen readers announce it
-    if (successHeadingRef.current) {
-      successHeadingRef.current.focus();
-    }
-  }, []);
 
   if (!collectionId) {
     return (
@@ -58,111 +54,105 @@ const ManageCollectionStep: React.FC = () => {
 
   return (
     <div>
-      {/* Success Header */}
-      {/* P0-3: ARIA attributes - Add role and aria-live for screen reader announcements */}
-      <div
-        style={{ textAlign: 'center', marginBottom: '24px' }}
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        <NonIdealState
-          icon={IconNames.TICK_CIRCLE}
-          title={
-            <h4 ref={successHeadingRef} tabIndex={-1} style={{ outline: 'none', color: '#0F9960' }}>
-              Collection Created Successfully!
-            </h4>
-          }
-          description={
-            <div>
-              <p>Your collection deck has been created and is now ready to manage.</p>
-              <p style={{ marginTop: '16px' }}>
-                <strong>Collection ID:</strong> <Tag intent={Intent.PRIMARY}>{collectionId}</Tag>
-              </p>
-            </div>
-          }
-        />
-      </div>
+      {/* Main Heading - Single H3 hierarchy */}
+      <H3 id="collection-management-heading" style={{ marginBottom: '20px' }}>
+        Collection Management
+      </H3>
 
-      <Divider />
+      {/* Section with 3 SectionCards for clear information grouping (Miller's Law + Gestalt Common Region) */}
+      <Section>
+        {/* SectionCard 1: Confirmation - Success message and collection ID */}
+        <SectionCard style={{ marginBottom: '20px' }}>
+          <div
+            style={{ textAlign: 'center' }}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <NonIdealState
+              icon={IconNames.TICK_CIRCLE}
+              title={
+                <H5 className={Classes.INTENT_SUCCESS}>
+                  Collection Created Successfully!
+                </H5>
+              }
+              description={
+                <div>
+                  <p>Your collection deck has been created and is now ready to manage.</p>
+                  <p style={{ marginTop: '12px' }}>
+                    <strong>Collection ID:</strong> <Tag intent={Intent.PRIMARY}>{collectionId}</Tag>
+                  </p>
+                  <Callout
+                    intent={Intent.SUCCESS}
+                    icon={IconNames.INFO_SIGN}
+                    style={{ marginTop: '16px', textAlign: 'left' }}
+                    compact
+                  >
+                    <strong>Quick Tip:</strong> Focus on opportunities with priority ≥34 (SEQ system) shown at the top of the table below.
+                  </Callout>
+                </div>
+              }
+            />
+          </div>
+        </SectionCard>
 
-      {/* Step Header */}
-      <h3 style={{ marginTop: '24px' }} id="step3-heading">Step 3: Manage Collection</h3>
-      <Divider style={{ margin: '24px 0' }} />
-
-      {/* Instructions */}
-      <div style={{ marginBottom: '24px' }}>
-        <Callout intent={Intent.SUCCESS} icon={IconNames.TICK} id="step3-instructions">
-          <strong>Your collection is ready!</strong> Use the management interface below to review assignments, allocate sites,
-          filter opportunities, and configure your collection. All features from the standalone management page are available here.
-        </Callout>
-      </div>
-
-      {/* Embedded Collection Management Interface */}
-      {/* P0-3: Add section with proper labeling for accessibility context */}
-      <section
-        aria-labelledby="step3-heading"
-        aria-describedby="step3-instructions"
-      >
-        <Card style={{ padding: '0', marginBottom: '24px' }}>
+        {/* SectionCard 2: Management Interface - Primary work area */}
+        <SectionCard
+          style={{ marginBottom: '20px' }}
+          aria-labelledby="collection-management-heading"
+        >
           <CollectionOpportunitiesHub collectionId={collectionId} embedded={true} />
-        </Card>
-      </section>
+        </SectionCard>
 
-      {/* Navigation Actions */}
-      <Card style={{ padding: '24px', textAlign: 'center', backgroundColor: '#f5f8fa' }}>
-        <h4 style={{ marginBottom: '16px' }}>✅ Wizard Complete</h4>
-        <p style={{ marginBottom: '24px', color: '#666' }}>
-          Your collection deck has been created and is ready to use. Choose what to do next:
-        </p>
+        {/* SectionCard 3: Navigation - Clear next steps with reduced actions (Hick's Law: 2 primary actions) */}
+        <SectionCard>
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <H5 style={{ marginBottom: '12px' }}>
+              <Icon icon={IconNames.TICK_CIRCLE} /> Wizard Complete
+            </H5>
+            <p style={{ marginBottom: '20px', color: '#5c7080' }}>
+              Choose what to do next:
+            </p>
 
-        <ButtonGroup>
-          <Button
-            intent={Intent.PRIMARY}
-            icon={IconNames.HISTORY}
-            text="Finish & Go to History"
-            onClick={handleViewHistory}
-            data-testid="finish-go-to-history"
-            style={{ minWidth: '200px', height: '40px', fontSize: '14px' }}
-          />
-          <Button
-            icon={IconNames.PLUS}
-            text="Create Another Collection"
-            onClick={handleCreateAnother}
-            data-testid="create-another-collection"
-            style={{ minWidth: '200px', height: '40px', fontSize: '14px' }}
-          />
-        </ButtonGroup>
+            <ButtonGroup style={{ marginBottom: '20px' }}>
+              <Button
+                intent={Intent.PRIMARY}
+                icon={IconNames.HISTORY}
+                text="Finish & Go to History"
+                onClick={handleViewHistory}
+                data-testid="finish-go-to-history"
+                size="large"
+              />
+              <Button
+                icon={IconNames.PLUS}
+                text="Create Another Collection"
+                onClick={handleCreateAnother}
+                data-testid="create-another-collection"
+                size="large"
+              />
+            </ButtonGroup>
 
-        <div style={{ marginTop: '16px' }}>
-          <Button
-            icon={IconNames.LINK}
-            text="Open Standalone Management Page"
-            onClick={() => navigate(`/collection/${collectionId}/manage`)}
-            data-testid="open-standalone-page"
-            style={{ fontSize: '13px' }}
-          />
-        </div>
+            <Divider style={{ margin: '20px 0' }} />
 
-        {/* Quick Tips */}
-        <div style={{ marginTop: '32px', textAlign: 'left' }}>
-          <h4 style={{ marginBottom: '16px' }}>📌 Quick Tips</h4>
-          <ul style={{ marginLeft: '24px', lineHeight: '1.8', color: '#666' }}>
-            <li>
-              <strong>Review Assignments:</strong> Check the assignment table above to review all opportunities and their match status.
-            </li>
-            <li>
-              <strong>Priority Items:</strong> Focus on opportunities with priority ≥34 (SEQ system) shown at the top.
-            </li>
-            <li>
-              <strong>Site Allocation:</strong> Allocate sites to opportunities as needed directly in the table above.
-            </li>
-            <li>
-              <strong>History Page:</strong> You can always return to manage this collection from the History page.
-            </li>
-          </ul>
-        </div>
-      </Card>
+            <div style={{ textAlign: 'left' }}>
+              <H5 style={{ marginBottom: '12px' }}>
+                <Icon icon={IconNames.INFO_SIGN} size={14} /> Management Tips
+              </H5>
+              <ul style={{ marginLeft: '20px', lineHeight: '1.8', color: '#5c7080', fontSize: '14px' }}>
+                <li>
+                  <strong>Review Assignments:</strong> Check the table above for all opportunities and match status.
+                </li>
+                <li>
+                  <strong>Site Allocation:</strong> Allocate sites to opportunities directly in the table.
+                </li>
+                <li>
+                  <strong>Future Access:</strong> Return to manage this collection anytime from the History page.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </SectionCard>
+      </Section>
     </div>
   );
 };
