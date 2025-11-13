@@ -74,6 +74,9 @@ const ReallocationWorkspace = lazy(() =>
 
 export interface CollectionOpportunitiesHubCoreProps {
   embeddedMode?: boolean;
+  defaultFilter?: 'all' | 'needsReview' | 'highPriority' | 'unmatched';
+  compactMode?: boolean;
+  onNavigateToFull?: () => void;
   onWizardNext?: () => void;
   onWizardBack?: () => void;
   onWizardExit?: () => void;
@@ -82,6 +85,9 @@ export interface CollectionOpportunitiesHubCoreProps {
 // Core component content - extracted for reuse in wizard
 const CollectionOpportunitiesHubCore: React.FC<CollectionOpportunitiesHubCoreProps> = memo(({
   embeddedMode = false,
+  defaultFilter = 'all',
+  compactMode = false,
+  onNavigateToFull,
   onWizardNext,
   onWizardBack,
   onWizardExit

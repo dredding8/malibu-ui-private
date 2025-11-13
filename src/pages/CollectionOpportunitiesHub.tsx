@@ -42,12 +42,18 @@ if (process.env.NODE_ENV === 'development') {
 interface CollectionOpportunitiesHubProps {
   collectionId?: string;
   embedded?: boolean;
+  defaultFilter?: 'all' | 'needsReview' | 'highPriority' | 'unmatched';
+  compactMode?: boolean;
+  onNavigateToFull?: () => void;
 }
 
 // Main hub component with provider - memoized for performance
 const CollectionOpportunitiesHub: React.FC<CollectionOpportunitiesHubProps> = memo(({
   collectionId: propCollectionId,
-  embedded = false
+  embedded = false,
+  defaultFilter = 'all',
+  compactMode = false,
+  onNavigateToFull
 }) => {
   // Performance monitoring
   usePerformanceMonitor('CollectionOpportunitiesHub');
@@ -208,7 +214,12 @@ const CollectionOpportunitiesHub: React.FC<CollectionOpportunitiesHubProps> = me
         onBatchUpdate={handleBatchUpdate}
       >
         {/* Main Content - delegated to CollectionOpportunitiesHubCore */}
-        <CollectionOpportunitiesHubCore embeddedMode={embedded} />
+        <CollectionOpportunitiesHubCore
+          embeddedMode={embedded}
+          defaultFilter={defaultFilter}
+          compactMode={compactMode}
+          onNavigateToFull={onNavigateToFull}
+        />
       </AllocationProvider>
     </>
   );
