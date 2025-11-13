@@ -1,0 +1,209 @@
+import { test, expect } from '@playwright/test';
+
+/**
+ * E2E Test: 6-Step Wizard Flow with Embedded History & Management
+ *
+ * Tests the complete wizard flow from data input through collection management,
+ * validating the seamless transition without context fragmentation.
+ */
+
+test.describe('6-Step Wizard Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to wizard start
+    await page.goto('http://localhost:3000/create-collection-deck/data');
+  });
+
+  test('should complete all 6 steps with embedded continuity', async ({ page }) => {
+    // Step 1: Input Data
+    await expect(page.getByTestId('create-deck-title')).toContainText('Build Your Collection');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 1 of 6');
+
+    // Fill Step 1 (simplified - adapt to actual form fields)
+    // In real test, fill actual form fields
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // Step 2: Review Parameters
+    await page.waitForURL('**/parameters');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 2 of 6');
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // Step 3: Select Opportunities
+    await page.waitForURL('**/collection-opportunities');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 3 of 6');
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // Step 4: Special Instructions
+    await page.waitForURL('**/instructions');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 4 of 6');
+
+    // Click "Finish" button - should advance to Step 5, not exit
+    await page.getByTestId('step4-finish-button').click();
+
+    // Step 5: View Status (NEW - embedded history)
+    await page.waitForURL('**/status');
+    await expect(page.getByTestId('step5-heading')).toContainText('Step 5: View Your Collection Status');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 5 of 6');
+
+    // Verify success callout
+    await expect(page.getByTestId('success-callout')).toContainText('Collection submitted successfully');
+
+    // Verify embedded history table
+    await expect(page.getByTestId('embedded-history-card')).toBeVisible();
+
+    // Verify navigation options
+    await expect(page.getByTestId('step5-exit-button')).toContainText('View All Collections');
+    await expect(page.getByTestId('step5-next-button')).toContainText('Continue to Management');
+
+    // Continue to Step 6
+    await page.getByTestId('step5-next-button').click();
+
+    // Step 6: Management Preview (NEW - embedded management)
+    await page.waitForURL('**/management');
+    await expect(page.getByTestId('step6-heading')).toContainText('Step 6: Begin Collection Management');
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 6 of 6');
+
+    // Verify embedded management preview
+    await expect(page.getByTestId('collection-preview-embedded')).toBeVisible();
+    await expect(page.getByTestId('metrics-grid')).toBeVisible();
+    await expect(page.getByTestId('quick-actions-card')).toBeVisible();
+
+    // Verify progress bar shows 100%
+    const progressBar = page.getByTestId('progress-bar');
+    const progressValue = await progressBar.getAttribute('aria-valuenow');
+    expect(Number(progressValue)).toBeGreaterThanOrEqual(95); // 6/6 = 100%, allow for rounding
+
+    // Complete wizard
+    await page.getByTestId('step6-complete-button').click();
+
+    // Should show SEQ survey or navigate away
+    // (Depends on sampling - might show SEQ or navigate directly)
+  });
+
+  test('should allow back navigation from Step 6 to Step 5', async ({ page }) => {
+    // Navigate directly to Step 6 (assume wizard state exists)
+    await page.goto('http://localhost:3000/create-collection-deck/management');
+
+    // Click Back button
+    await page.getByTestId('step6-back-button').click();
+
+    // Should return to Step 5
+    await page.waitForURL('**/status');
+    await expect(page.getByTestId('step5-heading')).toBeVisible();
+    await expect(page.getByTestId('progress-summary')).toContainText('Step 5 of 6');
+  });
+
+  test('should allow exit to standalone history from Step 5', async ({ page }) => {
+    // Navigate to Step 5
+    await page.goto('http://localhost:3000/create-collection-deck/status');
+
+    // Click "View All Collections"
+    await page.getByTestId('step5-exit-button').click();
+
+    // Should navigate to standalone history page
+    await page.waitForURL('**/history');
+    await expect(page.getByText('Your Collections')).toBeVisible();
+  });
+
+  test('should allow exit to standalone management from Step 6', async ({ page }) => {
+    // Navigate to Step 6
+    await page.goto('http://localhost:3000/create-collection-deck/management');
+
+    // Click "Open Full Management Dashboard"
+    await page.getByTestId('open-full-button').click();
+
+    // Should navigate to standalone management page
+    await page.waitForURL('**/collection/*/manage');
+  });
+
+  test('should auto-select newly created collection in Step 5', async ({ page }) => {
+    // Complete Steps 1-4 and advance to Step 5
+    // (Simplified - in real test, complete all previous steps)
+
+    await page.goto('http://localhost:3000/create-collection-deck/status');
+
+    // Verify HistoryTable is in embedded mode
+    const historyTable = page.getByTestId('history-table-container');
+    await expect(historyTable).toBeVisible();
+
+    // Verify auto-selection (newly created collection should be highlighted)
+    // In real test, verify specific collection ID is selected
+    const selectedRow = page.locator('.bp6-table-cell[style*="background"]').first();
+    await expect(selectedRow).toBeVisible();
+
+    // Verify "Continue to Management" button is enabled
+    await expect(page.getByTestId('step5-next-button')).toBeEnabled();
+  });
+
+  test('should display progress indicators for all 6 steps', async ({ page }) => {
+    await page.goto('http://localhost:3000/create-collection-deck/data');
+
+    // Verify 6-step progress indicators exist
+    const stepIndicators = page.getByTestId('step-progress-indicators');
+    await expect(stepIndicators).toBeVisible();
+
+    // Verify all 6 steps are displayed
+    for (let i = 1; i <= 6; i++) {
+      const stepIndicator = page.getByTestId(`step-${i}-indicator`);
+      await expect(stepIndicator).toBeVisible();
+    }
+
+    // Verify Step 1 is active
+    await expect(page.getByTestId('step-1-active-tag')).toBeVisible();
+
+    // Verify Steps 2-6 are pending
+    for (let i = 2; i <= 6; i++) {
+      await expect(page.getByTestId(`step-${i}-pending-icon`)).toBeVisible();
+    }
+  });
+
+  test('should maintain wizard chrome throughout all 6 steps', async ({ page }) => {
+    // Step 1
+    await page.goto('http://localhost:3000/create-collection-deck/data');
+    await expect(page.getByTestId('create-deck-title')).toBeVisible();
+    await expect(page.getByTestId('progress-card')).toBeVisible();
+
+    // Step 5
+    await page.goto('http://localhost:3000/create-collection-deck/status');
+    await expect(page.getByTestId('create-deck-title')).toBeVisible();
+    await expect(page.getByTestId('progress-card')).toBeVisible();
+
+    // Step 6
+    await page.goto('http://localhost:3000/create-collection-deck/management');
+    await expect(page.getByTestId('create-deck-title')).toBeVisible();
+    await expect(page.getByTestId('progress-card')).toBeVisible();
+
+    // Wizard chrome should never disappear
+  });
+});
+
+test.describe('Embedded Component Validation', () => {
+  test('HistoryTable should render in embedded mode', async ({ page }) => {
+    await page.goto('http://localhost:3000/create-collection-deck/status');
+
+    // Verify embedded history card exists
+    const embeddedCard = page.getByTestId('embedded-history-card');
+    await expect(embeddedCard).toBeVisible();
+
+    // Verify HistoryTable is rendered inside
+    const historyTable = page.getByTestId('history-table-container');
+    await expect(historyTable).toBeVisible();
+
+    // Verify simplified view (no breadcrumbs, filters hidden)
+    // In embedded mode, these should not be visible
+    await expect(page.locator('.bp4-breadcrumbs')).not.toBeVisible();
+  });
+
+  test('CollectionPreview should render in embedded mode', async ({ page }) => {
+    await page.goto('http://localhost:3000/create-collection-deck/management');
+
+    // Verify embedded preview exists
+    const embeddedPreview = page.getByTestId('collection-preview-embedded');
+    await expect(embeddedPreview).toBeVisible();
+
+    // Verify metrics grid
+    await expect(page.getByTestId('metrics-grid')).toBeVisible();
+
+    // Verify quick actions
+    await expect(page.getByTestId('quick-actions-card')).toBeVisible();
+  });
+});
