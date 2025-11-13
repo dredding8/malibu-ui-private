@@ -9,50 +9,75 @@ import {
   TextArea,
   Card,
   Callout,
-  ControlGroup,
-  HTMLSelect,
-  Tag,
+  NumericInput,
+  Slider,
   MenuItem,
   Popover,
-  PopoverInteractionKind
+  PopoverInteractionKind,
+  Tabs,
+  Tab,
+  Tag,
+  Text
 } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/select';
 import { DateInput } from '@blueprintjs/datetime';
 import { IconNames } from '@blueprintjs/icons';
 
-interface Step1InputDataProps {
+interface CollectionParametersFormProps {
   data: any;
   onUpdate: (data: any) => void;
   onNext: () => void;
   onCancel: () => void;
 }
 
-// TLE Data sources for Select component
+// TLE Data sources
 const TLE_SOURCES = [
   { value: 'UDL', label: 'UDL', description: 'Unified Data Library' },
   { value: 'Imported File', label: 'Imported File', description: 'Upload your own TLE file' },
   { value: 'Manual Entry', label: 'Manual Entry', description: 'Enter TLE data manually' }
 ];
 
-// Unavailable sites sources for Select component  
+// Unavailable sites sources
 const SITES_SOURCES = [
   { value: 'BLUESTAT', label: 'BLUESTAT', description: 'Blue Force Tracking Status System' },
   { value: 'Manual Entry', label: 'Manual Entry', description: 'Enter sites manually' }
 ];
 
-const Step1InputData: React.FC<Step1InputDataProps> = ({ 
-  data, 
-  onUpdate, 
-  onNext, 
-  onCancel 
+// Mock sites data
+const ALL_SITES = [
+  { id: 'THU', name: 'Thule', minElevation: 5 },
+  { id: 'FYL', name: 'Fylingdales', minElevation: 5 },
+  { id: 'ASC', name: 'Ascension Island', minElevation: 10 },
+  { id: 'CLR', name: 'Clear Space Force Station', minElevation: 15 },
+  { id: 'HOLT', name: 'Holt', minElevation: 20 },
+  { id: 'PPW', name: 'Pine Gap', minElevation: 25 },
+  { id: 'PPE', name: 'Pearce', minElevation: 30 },
+  { id: 'SVAL', name: 'Svalbard', minElevation: 35 },
+  { id: 'DIEG', name: 'Diego Garcia', minElevation: 40 },
+  { id: 'KAU', name: 'Kwajalein Atoll', minElevation: 45 },
+  { id: 'MAUI', name: 'Maui', minElevation: 50 },
+  { id: 'GUAM', name: 'Guam', minElevation: 55 },
+];
+
+const CollectionParametersForm: React.FC<CollectionParametersFormProps> = ({
+  data,
+  onUpdate,
+  onNext,
+  onCancel
 }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (section: string, field: string, value: any) => {
     if (section === 'deckName') {
-      // Handle deck name as a top-level property
       onUpdate({ deckName: value });
+    } else if (section === 'parameters') {
+      onUpdate({
+        parameters: {
+          ...data.parameters,
+          [field]: value
+        }
+      });
     } else {
       onUpdate({
         [section]: {
@@ -61,19 +86,21 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
         }
       });
     }
-    // Clear error when user starts typing
-    if (errors[`${section}.${field}`] || errors[section]) {
-      setErrors(prev => ({ 
-        ...prev, 
+    // Clear errors
+    if (errors[`${section}.${field}`] || errors[section] || errors[field]) {
+      setErrors(prev => ({
+        ...prev,
         [`${section}.${field}`]: '',
-        [section]: ''
+        [section]: '',
+        [field]: ''
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
+    // Tasking window validation
     if (!data.taskingWindow.startDate) {
       newErrors['taskingWindow.startDate'] = 'Start date is required';
     }
@@ -87,8 +114,21 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
         newErrors['taskingWindow.endDate'] = 'End date must be after start date';
       }
     }
+
+    // TLE data validation
     if (!data.tleData.source) {
       newErrors['tleData.source'] = 'TLE data source is required';
+    }
+
+    // Parameters validation
+    if (!data.parameters.hardCapacity || data.parameters.hardCapacity <= 0) {
+      newErrors.hardCapacity = 'Hard capacity must be greater than 0';
+    }
+    if (!data.parameters.minDuration || data.parameters.minDuration <= 0) {
+      newErrors.minDuration = 'Minimum duration must be greater than 0';
+    }
+    if (data.parameters.elevation == null || data.parameters.elevation < 0) {
+      newErrors.elevation = 'Elevation must be 0 or greater';
     }
 
     setErrors(newErrors);
@@ -103,7 +143,6 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
 
   const handleLoadFromUDL = () => {
     setIsLoading(true);
-    // Simulate loading from UDL
     setTimeout(() => {
       handleInputChange('tleData', 'source', 'UDL');
       handleInputChange('tleData', 'data', 'Sample TLE data loaded from UDL...');
@@ -113,7 +152,6 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
 
   const handleLoadFromBLUESTAT = () => {
     setIsLoading(true);
-    // Simulate loading from BLUESTAT
     setTimeout(() => {
       handleInputChange('unavailableSites', 'source', 'BLUESTAT');
       handleInputChange('unavailableSites', 'sites', ['Site A', 'Site B', 'Site C']);
@@ -122,7 +160,6 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
   };
 
   const handleImportTLE = () => {
-    // Simulate file import
     handleInputChange('tleData', 'source', 'Imported File');
     handleInputChange('tleData', 'data', 'Imported TLE data...');
   };
@@ -132,15 +169,13 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
     handleInputChange('unavailableSites', 'sites', []);
   };
 
-  return (
-    <div>
-      <h3 id="step-heading">Step 1: Input Data</h3>
-      <Divider className="bp6-margin-bottom" />
-
+  // Tab 1: Tasking Window
+  const TaskingWindowPanel = () => (
+    <div style={{ marginTop: '15px' }}>
       {/* Deck Name */}
       <Card className="bp6-margin-bottom">
         <h4>Collection Information</h4>
-        <FormGroup 
+        <FormGroup
           label={
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               Collection Name
@@ -158,10 +193,10 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
                   </div>
                 }
               >
-                <Button 
-                  icon={IconNames.INFO_SIGN} 
-                  minimal 
-                  small 
+                <Button
+                  icon={IconNames.INFO_SIGN}
+                  minimal
+                  small
                   style={{ padding: '2px' }}
                 />
               </Popover>
@@ -177,17 +212,13 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
             onChange={(e) => handleInputChange('deckName', '', e.target.value)}
             placeholder="e.g., ISR-LEO-January-2024"
             aria-label="Collection deck name"
-            aria-describedby="deck-name-help"
             data-testid="deck-name-input"
           />
-          <div id="deck-name-help" style={{ display: 'none' }}>
-            Enter a descriptive name for your collection deck. Include orbit type, function, or time period for clarity.
-          </div>
         </FormGroup>
       </Card>
 
       {/* Tasking Window */}
-      <Card className="bp6-margin-bottom">
+      <Card>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
           <h4 style={{ margin: 0 }}>Tasking Window</h4>
           <Popover
@@ -205,21 +236,21 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               </div>
             }
           >
-            <Button 
-              icon={IconNames.INFO_SIGN} 
-              minimal 
-              small 
+            <Button
+              icon={IconNames.INFO_SIGN}
+              minimal
+              small
               style={{ padding: '2px' }}
             />
           </Popover>
         </div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-          gap: '20px' 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px'
         }}>
-          <FormGroup 
-            label="Start Date" 
+          <FormGroup
+            label="Start Date"
             labelFor="start-date"
             intent={errors['taskingWindow.startDate'] ? Intent.DANGER : Intent.NONE}
             helperText={errors['taskingWindow.startDate']}
@@ -230,15 +261,11 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               placeholder="Select start date..."
               canClearSelection
               aria-label="Collection start date"
-              aria-describedby="start-date-help"
               data-testid="start-date-input"
             />
-            <div id="start-date-help" style={{ display: 'none' }}>
-              Select the beginning date for your collection window. Earlier dates provide more planning time.
-            </div>
           </FormGroup>
-          <FormGroup 
-            label="End Date" 
+          <FormGroup
+            label="End Date"
             labelFor="end-date"
             intent={errors['taskingWindow.endDate'] ? Intent.DANGER : Intent.NONE}
             helperText={errors['taskingWindow.endDate']}
@@ -249,16 +276,17 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               placeholder="Select end date..."
               canClearSelection
               aria-label="Collection end date"
-              aria-describedby="end-date-help"
               data-testid="end-date-input"
             />
-            <div id="end-date-help" style={{ display: 'none' }}>
-              Select the ending date for your collection window. Longer windows typically provide more collection opportunities.
-            </div>
           </FormGroup>
         </div>
       </Card>
+    </div>
+  );
 
+  // Tab 2: Data Sources
+  const DataSourcesPanel = () => (
+    <div style={{ marginTop: '15px' }}>
       {/* TLE Data */}
       <Card className="bp6-margin-bottom">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
@@ -280,22 +308,22 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               </div>
             }
           >
-            <Button 
-              icon={IconNames.INFO_SIGN} 
-              minimal 
-              small 
+            <Button
+              icon={IconNames.INFO_SIGN}
+              minimal
+              small
               style={{ padding: '2px' }}
             />
           </Popover>
         </div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '20px', 
-          marginBottom: '15px' 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '20px',
+          marginBottom: '15px'
         }}>
-          <FormGroup 
-            label="Data Source" 
+          <FormGroup
+            label="Data Source"
             labelFor="tle-source"
             intent={errors['tleData.source'] ? Intent.DANGER : Intent.NONE}
             helperText={errors['tleData.source']}
@@ -324,7 +352,7 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               fill
               data-testid="tle-source-select"
             >
-              <Button 
+              <Button
                 text={data.tleData.source || "Select source..."}
                 rightIcon={IconNames.CARET_DOWN}
                 fill
@@ -365,13 +393,13 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
       </Card>
 
       {/* Unavailable Sites */}
-      <Card className="bp6-margin-bottom">
+      <Card>
         <h4>Unavailable Sites</h4>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '20px', 
-          marginBottom: '15px' 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '20px',
+          marginBottom: '15px'
         }}>
           <FormGroup label="Data Source">
             <Select<typeof SITES_SOURCES[0]>
@@ -398,7 +426,7 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
               fill
               data-testid="sites-source-select"
             >
-              <Button 
+              <Button
                 text={data.unavailableSites.source || "Select source..."}
                 rightIcon={IconNames.CARET_DOWN}
                 fill
@@ -441,9 +469,163 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
           </div>
         </FormGroup>
       </Card>
+    </div>
+  );
+
+  // Tab 3: Parameters
+  const ParametersPanel = () => {
+    const currentElevation = data.parameters.elevation || 0;
+    const availableSites = ALL_SITES.filter(site => site.minElevation <= currentElevation);
+
+    return (
+      <div style={{ marginTop: '15px' }}>
+        {/* Elevation */}
+        <Card className="bp6-margin-bottom">
+          <h4>Minimum Elevation</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+            <div>
+              <FormGroup
+                label="Minimum Elevation (degrees)"
+                labelFor="elevation"
+                intent={errors.elevation ? Intent.DANGER : Intent.NONE}
+                helperText={errors.elevation || "Minimum elevation angle for collections"}
+              >
+                <div style={{ padding: '10px 20px 10px 10px' }}>
+                  <Slider
+                    min={0}
+                    max={90}
+                    stepSize={1}
+                    labelStepSize={15}
+                    value={currentElevation}
+                    onChange={(value) => handleInputChange('parameters', 'elevation', value)}
+                    labelRenderer={(value) => `${value}°`}
+                  />
+                </div>
+                <InputGroup
+                  value={currentElevation}
+                  onChange={(e) => handleInputChange('parameters', 'elevation', parseFloat(e.target.value) || 0)}
+                  placeholder="Enter elevation angle..."
+                  rightElement={<span>degrees</span>}
+                  intent={errors.elevation ? Intent.DANGER : Intent.NONE}
+                  aria-label="Elevation angle input"
+                  data-testid="elevation-input"
+                />
+              </FormGroup>
+            </div>
+            <div>
+              <Card elevation={1}>
+                <H5>Affected Sites</H5>
+                <Text><strong>{availableSites.length} of {ALL_SITES.length}</strong> sites available</Text>
+                <Divider style={{ margin: '10px 0' }}/>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  {ALL_SITES.map(site => (
+                    <Tag
+                      key={site.id}
+                      intent={site.minElevation <= currentElevation ? Intent.SUCCESS : Intent.NONE}
+                      minimal={site.minElevation > currentElevation}
+                      style={{ opacity: site.minElevation > currentElevation ? 0.5 : 1 }}
+                    >
+                      {site.name} {site.minElevation > currentElevation ? `(>${currentElevation}°)` : ''}
+                    </Tag>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
+        </Card>
+
+        {/* Hard Capacity */}
+        <Card className="bp6-margin-bottom">
+          <h4>Hard Capacity</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div>
+              <FormGroup
+                label="Hard Capacity"
+                labelFor="hard-capacity"
+                intent={errors.hardCapacity ? Intent.DANGER : Intent.NONE}
+                helperText={errors.hardCapacity || "Maximum number of simultaneous collections"}
+              >
+                <NumericInput
+                  id="hard-capacity"
+                  value={data.parameters.hardCapacity}
+                  onValueChange={(value) => handleInputChange('parameters', 'hardCapacity', value)}
+                  min={1}
+                  max={100}
+                  intent={errors.hardCapacity ? Intent.DANGER : Intent.NONE}
+                  fill
+                  data-testid="hard-capacity-input"
+                />
+              </FormGroup>
+            </div>
+            <div>
+              <Card elevation={1}>
+                <H5>Sensor Capacity Information</H5>
+                <ul style={{ marginLeft: '20px', fontSize: '14px', lineHeight: '1.6' }}>
+                  <li>Wideband Collection: 8 simultaneous channels</li>
+                  <li>Narrowband Collection: 16 simultaneous channels</li>
+                  <li>Imagery Collection: 4 simultaneous collections</li>
+                  <li>Signals Collection: 12 simultaneous collections</li>
+                </ul>
+              </Card>
+            </div>
+          </div>
+        </Card>
+
+        {/* Min Duration */}
+        <Card>
+          <h4>Minimum Duration</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div>
+              <FormGroup
+                label="Minimum Duration (minutes)"
+                labelFor="min-duration"
+                intent={errors.minDuration ? Intent.DANGER : Intent.NONE}
+                helperText={errors.minDuration || "Minimum collection duration"}
+              >
+                <NumericInput
+                  id="min-duration"
+                  value={data.parameters.minDuration}
+                  onValueChange={(value) => handleInputChange('parameters', 'minDuration', value)}
+                  min={1}
+                  max={1440}
+                  intent={errors.minDuration ? Intent.DANGER : Intent.NONE}
+                  fill
+                  data-testid="min-duration-input"
+                />
+              </FormGroup>
+            </div>
+            <div>
+              <Card elevation={1}>
+                <H5>Duration Guidance</H5>
+                <Text>
+                  <p><strong>Shorter Durations (&lt; 5 min):</strong><br/>
+                  May result in a higher number of total collections, but each may be less complete. Good for rapid, wide-net surveys.</p>
+                  <p><strong>Longer Durations (&gt; 15 min):</strong><br/>
+                  Results in fewer, but more thorough, collections. Better for detailed analysis of specific targets.</p>
+                </Text>
+              </Card>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <h3 id="step-heading">Step 1: Collection Parameters</h3>
+      <Divider className="bp6-margin-bottom" />
+
+      <Card>
+        <Tabs id="CollectionParametersTabs" defaultSelectedTabId="tasking" renderActiveTabPanelOnly={true}>
+          <Tab id="tasking" title="Tasking Window" panel={<TaskingWindowPanel />} />
+          <Tab id="data-sources" title="Data Sources" panel={<DataSourcesPanel />} />
+          <Tab id="parameters" title="Parameters" panel={<ParametersPanel />} />
+        </Tabs>
+      </Card>
 
       {/* Navigation Buttons */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
         <Button
           text="Cancel"
           onClick={onCancel}
@@ -453,6 +635,7 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
           text="Next"
           intent={Intent.PRIMARY}
           onClick={handleNext}
+          rightIcon={IconNames.ARROW_RIGHT}
           data-testid="next-button"
         />
       </div>
@@ -466,4 +649,4 @@ const Step1InputData: React.FC<Step1InputDataProps> = ({
   );
 };
 
-export default Step1InputData;
+export default CollectionParametersForm;

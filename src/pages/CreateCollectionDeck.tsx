@@ -14,10 +14,9 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 import IconWrapper from '../components/IconWrapper';
 import AppNavbar from '../components/AppNavbar';
-import Step1InputData from './CreateCollectionDeck/Step1InputData';
-import Step2ReviewParameters from './CreateCollectionDeck/Step2ReviewParameters';
-import Step3SelectOpportunities from './CreateCollectionDeck/Step3SelectOpportunities';
-import Step4SpecialInstructions from './CreateCollectionDeck/Step4SpecialInstructions';
+import CollectionParametersForm from './CreateCollectionDeck/CollectionParametersForm';
+import CreateDeckStep from './CreateCollectionDeck/CreateDeckStep';
+import ManageCollectionStep from './CreateCollectionDeck/ManageCollectionStep';
 import { useBackgroundProcessing } from '../hooks/useBackgroundProcessing';
 import { NAVIGATION_LABELS, NAVIGATION_ROUTES } from '../constants/navigation';
 
@@ -78,10 +77,9 @@ const CreateCollectionDeck: React.FC = () => {
   });
 
   const steps = [
-    { id: 1, name: NAVIGATION_LABELS.WIZARD_STEP_1, path: NAVIGATION_ROUTES.CREATE_COLLECTION_DATA },
-    { id: 2, name: NAVIGATION_LABELS.WIZARD_STEP_2, path: NAVIGATION_ROUTES.CREATE_COLLECTION_PARAMETERS },
-    { id: 3, name: NAVIGATION_LABELS.WIZARD_STEP_3, path: NAVIGATION_ROUTES.CREATE_COLLECTION_OPPORTUNITIES },
-    { id: 4, name: NAVIGATION_LABELS.WIZARD_STEP_4, path: NAVIGATION_ROUTES.CREATE_COLLECTION_INSTRUCTIONS }
+    { id: 1, name: 'Collection Parameters', path: '/create-collection-deck/parameters' },
+    { id: 2, name: 'Create Collection Deck', path: '/create-collection-deck/create' },
+    { id: 3, name: 'Manage Collection', path: '/create-collection-deck/manage' }
   ];
 
   // Load saved data from localStorage on component mount
@@ -118,22 +116,22 @@ const CreateCollectionDeck: React.FC = () => {
   useEffect(() => {
     const path = location.pathname;
     let newStep = 1;
-    
-    if (path.includes('/instructions')) newStep = 4;
-    else if (path.includes('/collection-opportunities')) newStep = 3;
-    else if (path.includes('/parameters')) newStep = 2;
-    else if (path.includes('/data')) newStep = 1;
-    
-    // Only update if step actually changed to prevent loops
-    if (newStep !== currentStep) {
-      setCurrentStep(newStep);
-    }
-    
+
+    // Check more specific paths first to avoid substring matching issues
+    // (e.g., '/create-collection-deck/manage' contains 'create')
+    if (path.includes('/manage')) newStep = 3;
+    else if (path.includes('/create')) newStep = 2;
+    else if (path.includes('/parameters')) newStep = 1;
+
+    // Update step based on URL (React will skip re-render if value unchanged)
+    // Removed currentStep check to avoid race condition with back button
+    setCurrentStep(newStep);
+
     // Handle root path redirect
     if (path === '/create-collection-deck' || path === '/create-collection-deck/') {
-      navigate('/create-collection-deck/data', { replace: true });
+      navigate('/create-collection-deck/parameters', { replace: true });
     }
-  }, [location.pathname, currentStep, navigate]);
+  }, [location.pathname, navigate]);
 
   const updateDeckData = useCallback((newData: any) => {
     setDeckData(prev => ({ ...prev, ...newData }));
@@ -145,19 +143,23 @@ const CreateCollectionDeck: React.FC = () => {
     switch (stepNumber) {
       case 1: return true;
       case 2: return !!(deckData.taskingWindow?.startDate && deckData.taskingWindow?.endDate && deckData.tleData?.source);
-      case 3: return !!(deckData.parameters?.hardCapacity && deckData.parameters?.minDuration && deckData.parameters?.elevation !== undefined);
-      case 4: return !!(deckData.matches && deckData.matches.length > 0);
+      case 3: return !!(deckData.matches && deckData.matches.length > 0); // Manage step requires deck to be created
       default: return false;
     }
   }, [deckData]);
 
   // Enhanced navigation with step validation and state management
   const handleNext = useCallback(() => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       const nextStep = currentStep + 1;
       if (canAccessStep(nextStep)) {
         setCurrentStep(nextStep);
-        navigate(steps[nextStep - 1].path, { 
+        // For Step 3, include the deck ID in the URL if available
+        const targetPath = nextStep === 3 && deckData.deckId
+          ? `${steps[nextStep - 1].path}?id=${deckData.deckId}`
+          : steps[nextStep - 1].path;
+
+        navigate(targetPath, {
           state: { wizardData: deckData, step: nextStep },
           replace: false
         });
@@ -334,59 +336,68 @@ const CreateCollectionDeck: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h2 data-testid="progress-heading">Your Progress</h2>
             <Tag intent={Intent.PRIMARY} large data-testid="progress-summary">
-              Step {currentStep} of 4
+              Step {currentStep} of 3
             </Tag>
           </div>
           
           {/* Current Step Context */}
-          <Callout 
-            intent={Intent.PRIMARY} 
-            icon={currentStep === 1 ? IconNames.DATABASE : 
-                  currentStep === 2 ? IconNames.COG : 
-                  currentStep === 3 ? IconNames.SEARCH : 
-                  IconNames.DOCUMENT}
+          <Callout
+            intent={Intent.PRIMARY}
+            icon={currentStep === 1 ? IconNames.COG : IconNames.SELECTION}
             className="bp6-margin-bottom"
             data-testid="current-step-context"
           >
             <strong>{steps[currentStep - 1]?.name}</strong>
             <div style={{ marginTop: '5px', fontSize: '14px' }}>
-              {currentStep === 1 && "Set up your collection data sources and time window"}
-              {currentStep === 2 && "Configure your collection parameters and site requirements"}  
-              {currentStep === 3 && "Select satellite collection opportunities for your deck"}
-              {currentStep === 4 && "Add final instructions and submit your collection"}
+              {currentStep === 1 && "Configure tasking window, data sources, and collection parameters"}
+              {currentStep === 2 && "Generate orbital matches and create collection deck entity"}
+              {currentStep === 3 && "Manage collection assignments and allocate sites"}
             </div>
-            {currentStep < 4 && (
+            {currentStep < 3 && (
               <div style={{ marginTop: '8px', fontSize: '13px', color: '#5C7080' }}>
-                Estimated time remaining: {currentStep === 1 ? "8-10" : currentStep === 2 ? "5-7" : "3-5"} minutes
+                Estimated time remaining: {currentStep === 1 ? "4-6" : "1-2"} minutes
               </div>
             )}
           </Callout>
 
           {/* Visual Progress Bar */}
-          <ProgressBar 
-            value={currentStep / 4} 
+          <ProgressBar
+            value={currentStep / 3}
             intent={Intent.PRIMARY}
             className="bp6-margin-bottom"
-            aria-label={`Collection creation progress: Step ${currentStep} of 4 - ${steps[currentStep - 1]?.name}`}
+            aria-label={`Collection creation progress: Step ${currentStep} of 3 - ${steps[currentStep - 1]?.name}`}
             data-testid="progress-bar"
           />
-          
+
           {/* Step Indicators with Status */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }} data-testid="step-progress-indicators">
+          {/* P0-3: ARIA attributes for step indicators */}
+          <div
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}
+            data-testid="step-progress-indicators"
+            role="list"
+            aria-label="Wizard progress steps"
+          >
             {steps.map((step, index) => (
-              <div 
+              <div
                 key={step.id}
-                style={{ 
+                style={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '10px',
+                  padding: '8px',
                   borderRadius: '3px',
                   backgroundColor: currentStep === step.id ? '#F5F8FA' : 'transparent',
                   border: currentStep === step.id ? '1px solid #137CBD' : '1px solid transparent'
                 }}
                 data-testid={`step-${step.id}-indicator`}
+                role="listitem"
+                aria-current={currentStep === step.id ? 'step' : undefined}
+                aria-label={`Step ${step.id}: ${step.name}. ${
+                  currentStep > step.id ? 'Completed' :
+                  currentStep === step.id ? 'Current step' :
+                  'Not yet started'
+                }`}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {currentStep > step.id ? (
@@ -452,55 +463,34 @@ const CreateCollectionDeck: React.FC = () => {
         <section aria-labelledby="step-heading" data-testid="step-content-section">
           <Card data-testid="step-content-card">
             <Routes>
-            <Route 
-              path="/data" 
+            <Route
+              path="/parameters"
               element={
-                <Step1InputData 
+                <CollectionParametersForm
                   data={deckData}
                   onUpdate={updateDeckData}
                   onNext={handleNext}
                   onCancel={handleCancel}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/parameters" 
+            <Route
+              path="/create"
               element={
-                <Step2ReviewParameters 
+                <CreateDeckStep
                   data={deckData}
                   onUpdate={updateDeckData}
                   onNext={handleNext}
                   onBack={handleBack}
-                  onCancel={handleCancel}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/collection-opportunities" 
-              element={
-                <Step3SelectOpportunities 
-                  data={deckData}
-                  onUpdate={updateDeckData}
-                  onNext={handleNext}
-                  onBack={handleBack}
-                  onCancel={handleCancel}
-                />
-              } 
-            />
-            <Route 
-              path="/instructions" 
-              element={
-                <Step4SpecialInstructions 
-                  data={deckData}
-                  onUpdate={updateDeckData}
-                  onFinish={handleFinish}
-                  onBack={handleBack}
-                  onCancel={handleCancel}
-                />
-              } 
+            <Route
+              path="/manage"
+              element={<ManageCollectionStep />}
             />
             {/* Default route - redirect to step 1 */}
-            <Route path="/*" element={<Step1InputData 
+            <Route path="/*" element={<CollectionParametersForm
                   data={deckData}
                   onUpdate={updateDeckData}
                   onNext={handleNext}

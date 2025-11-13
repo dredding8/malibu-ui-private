@@ -1,0 +1,575 @@
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  H5,
+  Divider,
+  Button,
+  Intent,
+  Card,
+  Callout,
+  Tag,
+  ProgressBar,
+  Checkbox,
+  InputGroup,
+  HTMLSelect,
+  Tabs,
+  Tab,
+  Section,
+  SectionCard,
+  Text,
+  Spinner,
+  NonIdealState,
+  TextArea,
+  FormGroup,
+  Collapse
+} from '@blueprintjs/core';
+import { Cell, Column, Table, TruncatedFormat } from '@blueprintjs/table';
+import { IconNames } from '@blueprintjs/icons';
+import { useBackgroundProcessing } from '../../hooks/useBackgroundProcessing';
+
+interface Match {
+  id: string;
+  sccNumber: string;
+  priority: number;
+  function: string;
+  orbit: string;
+  periodicity: number;
+  collectionType: string;
+  classification: string;
+  match: 'Optimal' | 'Baseline' | 'No matches';
+  matchNotes: string;
+  siteAllocation: string[];
+  notes: string;
+  selected: boolean;
+  needsReview: boolean;
+  unmatched: boolean;
+  duration: number;
+  site: string;
+}
+
+interface SelectOpportunitiesStepProps {
+  data: any;
+  onUpdate: (data: any) => void;
+  onBack: () => void;
+  onCancel: () => void;
+}
+
+// Sample matches moved to CreateDeckStep - we receive matches via data.matches prop
+
+const SelectOpportunitiesStep: React.FC<SelectOpportunitiesStepProps> = ({
+  data,
+  onUpdate,
+  onBack,
+  onCancel
+}) => {
+  const navigate = useNavigate();
+  const { startProcessing } = useBackgroundProcessing();
+
+  // Initialize matches from data (passed from CreateDeckStep)
+  const [matches, setMatches] = useState<Match[]>(data.matches || []);
+  const [selectedMatches, setSelectedMatches] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSite, setSelectedSite] = useState('all');
+  const [instructions, setInstructions] = useState(data.instructions || '');
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Pre-select optimal matches on mount
+  useEffect(() => {
+    if (matches.length > 0 && selectedMatches.size === 0) {
+      const optimalMatches = matches.filter(m => m.match === 'Optimal');
+      setSelectedMatches(new Set(optimalMatches.map(m => m.id)));
+    }
+  }, [matches]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Filter matches
+  const filteredMatches = useMemo(() => {
+    let filtered = matches;
+
+    switch (activeTab) {
+      case 'needsReview':
+        filtered = filtered.filter(match => match.needsReview);
+        break;
+      case 'unmatched':
+        filtered = filtered.filter(match => match.unmatched);
+        break;
+      default:
+        break;
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(match =>
+        match.sccNumber.toLowerCase().includes(query) ||
+        match.function.toLowerCase().includes(query) ||
+        match.collectionType.toLowerCase().includes(query)
+      );
+    }
+
+    if (selectedSite !== 'all') {
+      filtered = filtered.filter(match =>
+        match.siteAllocation.some(site => site.startsWith(selectedSite))
+      );
+    }
+
+    return filtered;
+  }, [matches, activeTab, searchQuery, selectedSite]);
+
+  const handleMatchSelection = (matchId: string, selected: boolean) => {
+    const newSelection = new Set(selectedMatches);
+    if (selected) {
+      newSelection.add(matchId);
+    } else {
+      newSelection.delete(matchId);
+    }
+    setSelectedMatches(newSelection);
+
+    const updatedMatches = matches.map(match =>
+      match.id === matchId ? { ...match, selected } : match
+    );
+    setMatches(updatedMatches);
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    const newSelection = new Set<string>();
+    const updatedMatches = matches.map(match => {
+      if (selected) {
+        newSelection.add(match.id);
+      }
+      return { ...match, selected };
+    });
+    setSelectedMatches(newSelection);
+    setMatches(updatedMatches);
+  };
+
+  const handleSelectOptimal = () => {
+    const newSelection = new Set<string>();
+    const updatedMatches = matches.map(match => {
+      const shouldSelect = match.match === 'Optimal';
+      if (shouldSelect) {
+        newSelection.add(match.id);
+      }
+      return { ...match, selected: shouldSelect };
+    });
+    setSelectedMatches(newSelection);
+    setMatches(updatedMatches);
+  };
+
+  const handleIncludeBaseline = () => {
+    const newSelection = new Set(selectedMatches);
+    const updatedMatches = matches.map(match => {
+      if (match.match === 'Baseline') {
+        newSelection.add(match.id);
+        return { ...match, selected: true };
+      }
+      return match;
+    });
+    setSelectedMatches(newSelection);
+    setMatches(updatedMatches);
+  };
+
+  const getSelectedMatchesSummary = () => {
+    const selectedMatchesData = matches.filter(match => selectedMatches.has(match.id));
+    const totalDuration = selectedMatchesData.reduce((sum, match) => sum + match.duration, 0);
+    const uniqueSCCs = new Set(selectedMatchesData.map(match => match.sccNumber));
+    const uniqueSites = new Set(selectedMatchesData.map(match => match.site).filter(s => s));
+
+    return {
+      count: selectedMatchesData.length,
+      totalDuration,
+      uniqueSCCs: uniqueSCCs.size,
+      uniqueSites: uniqueSites.size
+    };
+  };
+
+  const summary = getSelectedMatchesSummary();
+
+  const handleCreateCollection = async () => {
+    setIsSaving(true);
+    try {
+      const selectedMatchesData = matches.filter(match => selectedMatches.has(match.id));
+      const finalData = {
+        ...data,
+        matches: selectedMatchesData,
+        instructions
+      };
+
+      const response = await startProcessing(finalData, { redirect: false });
+
+      if (response && response.id) {
+        // Navigate to Step 4: Manage Collection with collection ID
+        navigate(`/create-collection-deck/manage?id=${response.id}`);
+      }
+    } catch (error) {
+      console.error('Failed to start processing:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getMatchIntent = (match: string): Intent => {
+    switch (match) {
+      case 'Optimal':
+        return Intent.SUCCESS;
+      case 'Baseline':
+        return Intent.WARNING;
+      case 'No matches':
+        return Intent.DANGER;
+      default:
+        return Intent.NONE;
+    }
+  };
+
+  const getClassificationIntent = (classification: string): Intent => {
+    switch (classification) {
+      case 'S//REL FVEY':
+        return Intent.DANGER;
+      case 'S//NF':
+        return Intent.WARNING;
+      default:
+        return Intent.NONE;
+    }
+  };
+
+  // Cell renderers
+  const selectionCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        <Checkbox
+          checked={selectedMatches.has(match?.id || '')}
+          onChange={(e) => handleMatchSelection(match?.id || '', e.currentTarget.checked)}
+        />
+      </Cell>
+    );
+  };
+
+  const priorityCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {match?.priority <= 10 && (
+            <span style={{ color: '#ff6b6b', fontSize: '12px' }}>⚠</span>
+          )}
+          {match?.priority}
+        </div>
+      </Cell>
+    );
+  };
+
+  const sccCellRenderer = (rowIndex: number) => (
+    <Cell>
+      <strong>{filteredMatches[rowIndex]?.sccNumber}</strong>
+    </Cell>
+  );
+
+  const functionCellRenderer = (rowIndex: number) => (
+    <Cell>{filteredMatches[rowIndex]?.function}</Cell>
+  );
+
+  const orbitCellRenderer = (rowIndex: number) => (
+    <Cell>{filteredMatches[rowIndex]?.orbit}</Cell>
+  );
+
+  const periodicityCellRenderer = (rowIndex: number) => (
+    <Cell>{filteredMatches[rowIndex]?.periodicity}</Cell>
+  );
+
+  const collectionTypeCellRenderer = (rowIndex: number) => (
+    <Cell>{filteredMatches[rowIndex]?.collectionType}</Cell>
+  );
+
+  const classificationCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        <Tag intent={getClassificationIntent(match?.classification || '')}>
+          {match?.classification}
+        </Tag>
+      </Cell>
+    );
+  };
+
+  const matchCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        <Tag intent={getMatchIntent(match?.match || '')}>
+          {match?.match}
+        </Tag>
+      </Cell>
+    );
+  };
+
+  const matchNotesCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        {match?.matchNotes ? (
+          <TruncatedFormat>{match.matchNotes}</TruncatedFormat>
+        ) : (
+          <span style={{ color: '#666', fontStyle: 'italic' }}>-</span>
+        )}
+      </Cell>
+    );
+  };
+
+  const siteAllocationCellRenderer = (rowIndex: number) => {
+    const match = filteredMatches[rowIndex];
+    return (
+      <Cell>
+        {match?.siteAllocation && match.siteAllocation.length > 0 ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {match.siteAllocation.map((site, index) => (
+              <Tag key={index} minimal intent={Intent.SUCCESS} style={{ fontSize: '11px' }}>
+                {site}
+              </Tag>
+            ))}
+          </div>
+        ) : (
+          <span style={{ color: '#666', fontStyle: 'italic' }}>-</span>
+        )}
+      </Cell>
+    );
+  };
+
+  const columns = [
+    <Column key="selection" name="Select" cellRenderer={selectionCellRenderer} />,
+    <Column key="priority" name="Priority" cellRenderer={priorityCellRenderer} />,
+    <Column key="scc" name="SCC" cellRenderer={sccCellRenderer} />,
+    <Column key="function" name="Function" cellRenderer={functionCellRenderer} />,
+    <Column key="orbit" name="Orbit" cellRenderer={orbitCellRenderer} />,
+    <Column key="periodicity" name="Periodicity" cellRenderer={periodicityCellRenderer} />,
+    <Column key="collectionType" name="Collection Type" cellRenderer={collectionTypeCellRenderer} />,
+    <Column key="classification" name="Classification" cellRenderer={classificationCellRenderer} />,
+    <Column key="match" name="Match" cellRenderer={matchCellRenderer} />,
+    <Column key="matchNotes" name="Match Notes" cellRenderer={matchNotesCellRenderer} />,
+    <Column key="siteAllocation" name="Site Allocation" cellRenderer={siteAllocationCellRenderer} />
+  ];
+
+  const allCount = matches.length;
+  const needsReviewCount = matches.filter(m => m.needsReview).length;
+  const unmatchedCount = matches.filter(m => m.unmatched).length;
+
+  return (
+    <div>
+      <h3 id="step-heading">Step 3: Select Opportunities</h3>
+      <Divider className="bp6-margin-bottom" />
+
+      {/* Deck Info Banner */}
+      <Callout intent={Intent.PRIMARY} icon={IconNames.INFO_SIGN} className="bp6-margin-bottom">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <strong>From Deck:</strong> <Tag intent={Intent.PRIMARY}>{data.deckId}</Tag>
+          </div>
+          <div style={{ fontSize: '14px' }}>
+            Choose which opportunities to include in your collection
+          </div>
+        </div>
+      </Callout>
+
+      {/* Configuration Summary */}
+      <Section>
+        <SectionCard>
+          <h4>Configuration Summary</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', fontSize: '14px' }}>
+            <div>
+              <strong>Tasking Window:</strong><br />
+              {new Date(data.taskingWindow.startDate).toLocaleDateString()} to {new Date(data.taskingWindow.endDate).toLocaleDateString()}
+            </div>
+            <div>
+              <strong>Parameters:</strong><br />
+              Capacity: {data.parameters.hardCapacity}, Duration: {data.parameters.minDuration}min, Elevation: {data.parameters.elevation}°
+            </div>
+            <div>
+              <strong>Data Sources:</strong><br />
+              TLE: {data.tleData.source}, Sites: {data.unavailableSites.sites.length} unavailable
+            </div>
+          </div>
+        </SectionCard>
+      </Section>
+
+      {/* Opportunities Table */}
+      <Card className="bp6-margin-top">
+            {/* Filter Controls */}
+            <div style={{ marginBottom: '20px' }}>
+              <Tabs
+                id="match-tabs"
+                selectedTabId={activeTab}
+                onChange={(newTabId) => setActiveTab(newTabId as string)}
+              >
+                <Tab id="all" title={`ALL (${allCount})`} panel={<div />} />
+                <Tab id="needsReview" title={`NEEDS REVIEW (${needsReviewCount})`} panel={<div />} />
+                <Tab id="unmatched" title={`UNMATCHED (${unmatchedCount})`} panel={<div />} />
+              </Tabs>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <InputGroup
+                  placeholder="Search SCCs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftIcon={IconNames.SEARCH}
+                  aria-label="Search satellite catalog numbers"
+                  style={{ width: '300px' }}
+                />
+                <HTMLSelect
+                  value={selectedSite}
+                  onChange={(e) => setSelectedSite(e.currentTarget.value)}
+                  aria-label="Filter by collection site"
+                  style={{ width: '150px' }}
+                >
+                  <option value="all">All Sites</option>
+                  <option value="THU">THU</option>
+                  <option value="FYL">FYL</option>
+                  <option value="ASC">ASC</option>
+                  <option value="CLR">CLR</option>
+                  <option value="HOLT">HOLT</option>
+                  <option value="PPW">PPW</option>
+                  <option value="PPE">PPE</option>
+                </HTMLSelect>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                  <Button
+                    small
+                    icon={IconNames.ENDORSED}
+                    text="Select Optimal Only"
+                    onClick={handleSelectOptimal}
+                  />
+                  <Button
+                    small
+                    icon={IconNames.ADD}
+                    text="Include Baseline"
+                    onClick={handleIncludeBaseline}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Table Header */}
+            <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>
+                Showing {filteredMatches.length} match{filteredMatches.length !== 1 ? 'es' : ''}
+              </span>
+              {filteredMatches.length > 0 && (
+                <Button
+                  small
+                  minimal
+                  icon={IconNames.SELECTION}
+                  text={selectedMatches.size === filteredMatches.length ? 'Deselect All' : 'Select All'}
+                  onClick={() => handleSelectAll(selectedMatches.size !== filteredMatches.length)}
+                />
+              )}
+            </div>
+
+            {/* Data Table */}
+            {filteredMatches.length > 0 ? (
+              <Table
+                numRows={filteredMatches.length}
+                enableRowHeader={false}
+                enableColumnHeader={true}
+                enableColumnResizing={true}
+              >
+                {columns}
+              </Table>
+            ) : (
+              <NonIdealState
+                icon={IconNames.SEARCH}
+                title="No Matches Found"
+                description="No matches found with the current search criteria. Try adjusting your filters."
+              />
+            )}
+          </Card>
+
+          {/* Selected Matches Summary */}
+          {selectedMatches.size > 0 && (
+            <Card className="bp6-margin-top">
+              <h4>Selected Matches Summary</h4>
+              <div style={{
+                backgroundColor: '#f5f8fa',
+                padding: '15px',
+                borderRadius: '3px',
+                border: '1px solid #d3d8de'
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px' }}>
+                  <div>
+                    <Tag intent={Intent.PRIMARY}>{summary.count}</Tag> Total Matches
+                  </div>
+                  <div>
+                    <Tag intent={Intent.SUCCESS}>{summary.totalDuration}</Tag> Total Minutes
+                  </div>
+                  <div>
+                    <Tag intent={Intent.WARNING}>{summary.uniqueSCCs}</Tag> Unique SCCs
+                  </div>
+                  <div>
+                    <Tag intent={Intent.DANGER}>{summary.uniqueSites}</Tag> Collection Sites
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Special Instructions (Collapsible) */}
+          <Card className="bp6-margin-top">
+            <div
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+              onClick={() => setInstructionsOpen(!instructionsOpen)}
+            >
+              <h4 style={{ margin: 0 }}>Special Instructions (Optional)</h4>
+              <Button
+                minimal
+                icon={instructionsOpen ? IconNames.CHEVRON_UP : IconNames.CHEVRON_DOWN}
+              />
+            </div>
+            <Collapse isOpen={instructionsOpen}>
+              <Divider style={{ margin: '10px 0' }} />
+              <FormGroup
+                label="Instructions for Collection Team"
+                labelFor="instructions"
+                helperText="Enter any special instructions, notes, or requirements for the collection team"
+              >
+                <TextArea
+                  id="instructions"
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  placeholder="Enter special instructions, notes, or requirements..."
+                  aria-label="Special instructions for collection team"
+                  rows={6}
+                  fill
+                />
+              </FormGroup>
+            </Collapse>
+          </Card>
+
+      {/* Navigation Buttons */}
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+        <Button
+          text="Cancel"
+          onClick={onCancel}
+          disabled={isSaving}
+        />
+        <Button
+          text="Back"
+          onClick={onBack}
+          disabled={isSaving}
+        />
+        <Button
+          text="Create Collection"
+          intent={Intent.SUCCESS}
+          loading={isSaving}
+          disabled={selectedMatches.size === 0}
+          onClick={handleCreateCollection}
+          rightIcon={IconNames.TICK}
+        />
+      </div>
+
+      {selectedMatches.size === 0 && (
+        <Callout intent={Intent.WARNING} icon={IconNames.WARNING_SIGN} className="bp6-margin-top">
+          Please select at least one opportunity to create the collection.
+        </Callout>
+      )}
+    </div>
+  );
+};
+
+export default SelectOpportunitiesStep;
