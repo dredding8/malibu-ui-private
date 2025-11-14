@@ -1,1 +1,145 @@
-/* CSS file intentionally empty - all styling uses Blueprint components */
+/**
+ * ManageCollectionStep Styles
+ *
+ * Design Goals (from roundtable):
+ * - Chrome overhead: 15% (down from 42%)
+ * - Table viewport: 75% (up from 50%)
+ * - Single scroll container (down from 3 nested)
+ * - Single footer (down from 2)
+ * - Hick's Law: 3 actions (down from 5)
+ * - Miller's Law: 5 info items (down from 8+)
+ */
+
+.manage-collection-step {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sticky Header - Target: ~5% viewport */
+.manage-step-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding: 16px 24px;
+  border-bottom: 1px solid #d3d8de;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 56px; /* ~5-6% of 900px viewport */
+}
+
+/* Scrollable Content - Target: ~75-80% viewport */
+.manage-step-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+  min-height: 0; /* Critical for flex scrolling */
+  background: #f5f8fa;
+}
+
+.management-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 1px 1px rgba(16, 22, 26, 0.2);
+
+  /* Ensure table gets maximum space */
+  display: flex;
+  flex-direction: column;
+  min-height: 600px; /* Ensure adequate table height */
+}
+
+/* Sticky Footer - Target: ~4-5% viewport */
+.manage-step-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: #fff;
+  padding: 16px 24px;
+  border-top: 1px solid #d3d8de;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 56px; /* ~5-6% of 900px viewport */
+  gap: 16px;
+}
+
+/* Ensure table takes full width */
+.management-content .bp5-table-container {
+  margin-top: 16px;
+  flex: 1;
+}
+
+/* Filter chips responsive layout */
+.manage-step-content .bp5-button-group {
+  flex-wrap: wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .manage-step-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .manage-step-footer > div {
+    width: 100%;
+  }
+
+  .manage-step-footer > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .manage-step-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .manage-step-content {
+    padding: 16px;
+  }
+
+  .management-content {
+    padding: 16px;
+  }
+}
+
+/* Dark mode support */
+.bp5-dark .manage-step-header,
+.bp5-dark .manage-step-footer {
+  background: #30404d;
+  border-color: #394b59;
+}
+
+.bp5-dark .manage-step-content {
+  background: #293742;
+}
+
+.bp5-dark .management-content {
+  background: #30404d;
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.4), 0 1px 1px rgba(16, 22, 26, 0.4);
+}
+
+/* Print styles */
+@media print {
+  .manage-step-header,
+  .manage-step-footer {
+    position: static;
+  }
+
+  .manage-step-content {
+    overflow: visible;
+  }
+}

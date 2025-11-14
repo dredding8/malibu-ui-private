@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Button,
@@ -6,13 +6,16 @@ import {
   Tag,
   NonIdealState,
   Icon,
-  Section,
   Callout,
   HotkeysProvider,
-  Hotkeys
+  Hotkeys,
+  InputGroup,
+  Spinner
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import CollectionOpportunitiesHub from '../CollectionOpportunitiesHub';
+import { useCollectionManagement } from '../../hooks/useCollectionManagement';
+import CollectionOpportunitiesEnhanced from '../../components/CollectionOpportunitiesEnhanced';
+import { AllocationProvider } from '../../contexts/AllocationContext';
 import './ManageCollectionStep.css';
 
 const ManageCollectionStep: React.FC = () => {
@@ -20,42 +23,27 @@ const ManageCollectionStep: React.FC = () => {
   const [searchParams] = useSearchParams();
   const collectionId = searchParams.get('id');
 
-  // Calculate summary stats from collection data
-  const stats = {
-    total: 50,
-    highPriority: 0,
-    needsReview: 9,
-    optimal: 41
-  };
+  // Use the collection management hook for ALL business logic
+  const {
+    opportunities,
+    sites,
+    stats,
+    filters,
+    searchQuery,
+    setFilter,
+    setSearch,
+    setSorting,
+    updateOpportunity,
+    clearFilters,
+    isLoading,
+    error
+  } = useCollectionManagement(collectionId || '', {
+    defaultFilter: 'needsReview'
+  });
 
-  if (!collectionId) {
-    return (
-      <div style={{ padding: '40px' }}>
-        <NonIdealState
-          icon={IconNames.ERROR}
-          title="No Collection ID"
-          description="Unable to find the collection ID. Please try creating a collection again."
-          action={
-            <Button
-              intent={Intent.PRIMARY}
-              icon={IconNames.ARROW_LEFT}
-              text="Create Collection"
-              onClick={() => navigate('/create-collection-deck')}
-              data-testid="create-collection-error-action"
-            />
-          }
-        />
-      </div>
-    );
-  }
-
-  const handleOpenFullManagement = () => {
-    navigate(`/collection/${collectionId}/manage`);
-  };
-
-  const handleFinish = () => {
-    navigate('/history');
-  };
+  // Navigation handlers
+  const handleFinish = () => navigate('/history');
+  const handleOpenFullManagement = () => navigate(`/collection/${collectionId}/manage`);
 
   // Keyboard shortcuts
   const hotkeys = useMemo(
@@ -63,131 +51,241 @@ const ManageCollectionStep: React.FC = () => {
       {
         combo: 'mod+enter',
         global: true,
-        label: 'Save and exit wizard',
+        label: 'Finish and view collections',
         onKeyDown: handleFinish,
       },
       {
         combo: 'mod+shift+f',
         global: true,
-        label: 'Switch to full view',
+        label: 'Open full management view',
         onKeyDown: handleOpenFullManagement,
       },
     ],
     [handleFinish, handleOpenFullManagement]
   );
 
+  // Error state
+  if (error) {
+    return (
+      <div className="manage-collection-step">
+        <div style={{ padding: '40px' }}>
+          <NonIdealState
+            icon={IconNames.ERROR}
+            title="Failed to Load Collection"
+            description={error.message}
+            action={
+              <Button
+                intent={Intent.PRIMARY}
+                onClick={() => window.location.reload()}
+                text="Retry"
+              />
+            }
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // No collection ID state
+  if (!collectionId) {
+    return (
+      <div className="manage-collection-step">
+        <div style={{ padding: '40px' }}>
+          <NonIdealState
+            icon={IconNames.ERROR}
+            title="No Collection ID"
+            description="Unable to find the collection ID. Please try creating a collection again."
+            action={
+              <Button
+                intent={Intent.PRIMARY}
+                icon={IconNames.ARROW_LEFT}
+                text="Create Collection"
+                onClick={() => navigate('/create-collection-deck')}
+                data-testid="create-collection-error-action"
+              />
+            }
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <HotkeysProvider>
       <Hotkeys hotkeys={hotkeys} />
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Sticky Header - Collection context */}
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          background: '#fff',
-          padding: '16px 24px',
-          borderBottom: '1px solid #d3d8de',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Tag intent={Intent.PRIMARY}>{collectionId}</Tag>
-          <span className="bp5-text-muted">Step 3 of 3</span>
-          <Icon icon={IconNames.TICK_CIRCLE} intent={Intent.SUCCESS} />
-          <span style={{ color: '#0d8050', fontWeight: 500 }}>Complete</span>
+      <div className="manage-collection-step">
+        {/* Sticky Header - Minimal (5% viewport target) */}
+        <div className="manage-step-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Tag intent={Intent.PRIMARY}>{collectionId}</Tag>
+            <span className="bp5-text-muted">Step 3 of 3: Review & Manage (Optional)</span>
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-        {/* Compact Status Banner */}
-        <div style={{ padding: '12px 24px 0 24px' }}>
+        {/* Scrollable Content Area (75% viewport target for table) */}
+        <div className="manage-step-content">
+          {/* Success Banner - Simplified */}
           <Callout
             intent={Intent.SUCCESS}
             icon={IconNames.TICK_CIRCLE}
-            style={{ padding: '8px 12px' }}
+            style={{ marginBottom: '24px' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <strong>Collection Ready:</strong>
-                <span>{stats.total} opportunities loaded</span>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  {stats.needsReview > 0 && (
-                    <Tag intent={Intent.WARNING} minimal>
-                      {stats.needsReview} need review
-                    </Tag>
-                  )}
-                  <Tag intent={Intent.SUCCESS} minimal>
-                    {stats.optimal} optimal
-                  </Tag>
-                </div>
-              </div>
-            </div>
+            Collection created with <strong>{stats.total} opportunities</strong>.
+            {stats.needsReview > 0 && (
+              <> <Tag intent={Intent.WARNING} minimal>{stats.needsReview} need review</Tag></>
+            )}
           </Callout>
+
+          {/* Native Management Content (NOT embedded app) */}
+          <div className="management-content">
+            <h3 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 600 }}>
+              Review Assignments
+            </h3>
+
+            {/* Filters Toolbar */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              <InputGroup
+                leftIcon={IconNames.SEARCH}
+                placeholder="Search assignments..."
+                value={searchQuery}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ flex: 1, minWidth: '200px' }}
+              />
+            </div>
+
+            {/* Filter Chips */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: '14px', color: '#738694' }}>Filters:</span>
+
+              <Button
+                intent={filters.highPriority ? Intent.PRIMARY : Intent.NONE}
+                icon={filters.highPriority ? IconNames.FILTER_KEEP : IconNames.FILTER}
+                text={`High Priority (${stats.highPriority})`}
+                onClick={() => setFilter({ highPriority: !filters.highPriority })}
+                small
+              />
+
+              <Button
+                intent={filters.needsReview ? Intent.WARNING : Intent.NONE}
+                icon={filters.needsReview ? IconNames.FILTER_KEEP : IconNames.FILTER}
+                text={`Needs Review (${stats.needsReview})`}
+                onClick={() => setFilter({ needsReview: !filters.needsReview })}
+                small
+              />
+
+              <Button
+                intent={filters.unmatched ? Intent.DANGER : Intent.NONE}
+                icon={filters.unmatched ? IconNames.FILTER_KEEP : IconNames.FILTER}
+                text={`Unmatched (${stats.unmatched})`}
+                onClick={() => setFilter({ unmatched: !filters.unmatched })}
+                small
+              />
+
+              {(filters.highPriority || filters.needsReview || filters.unmatched || searchQuery) && (
+                <Button
+                  text="Clear All"
+                  onClick={clearFilters}
+                  minimal
+                  small
+                />
+              )}
+
+              <span style={{ marginLeft: 'auto', fontSize: '14px', color: '#738694' }}>
+                Showing <strong>{opportunities.length}</strong> of {stats.total}
+              </span>
+            </div>
+
+            {/* Opportunities Table - Native, not embedded */}
+            {isLoading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                <Spinner />
+              </div>
+            ) : opportunities.length === 0 ? (
+              <NonIdealState
+                icon={IconNames.SEARCH}
+                title="No Opportunities Found"
+                description={
+                  searchQuery || filters.needsReview || filters.highPriority || filters.unmatched
+                    ? 'Try adjusting your filters or search query'
+                    : 'No opportunities available for this collection'
+                }
+                action={
+                  (searchQuery || filters.needsReview || filters.highPriority || filters.unmatched) && (
+                    <Button
+                      icon={IconNames.CROSS}
+                      text="Clear Filters"
+                      onClick={clearFilters}
+                    />
+                  )
+                }
+              />
+            ) : (
+              <AllocationProvider
+                initialOpportunities={opportunities}
+                initialSites={sites}
+                capacityThresholds={{
+                  critical: 10,
+                  warning: 30,
+                  optimal: 70
+                }}
+                enableRealTimeUpdates={false}
+                onBatchUpdate={async (changes) => {
+                  console.log('Batch update:', changes);
+                  // TODO: Implement batch update via hook
+                  return { success: [], failed: [] };
+                }}
+              >
+                <CollectionOpportunitiesEnhanced
+                  opportunities={opportunities}
+                  availableSites={sites}
+                  onBatchUpdate={async (changes) => {
+                    console.log('Batch update:', changes);
+                    // TODO: Implement batch update via hook
+                  }}
+                  capacityThresholds={{
+                    critical: 10,
+                    warning: 30,
+                    optimal: 70
+                  }}
+                  enableRealTimeValidation={false}
+                  enableHealthAnalysis={false}
+                  showWorkspaceOption={false}
+                  showValidationOption={false}
+                />
+              </AllocationProvider>
+            )}
+          </div>
         </div>
 
-        <Section
-          title="Collection Management"
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '24px',
-            minHeight: 0
-          }}
-        >
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-            <CollectionOpportunitiesHub
-              collectionId={collectionId}
-              embedded={true}
-              defaultFilter="needsReview"
-              compactMode={true}
-              onNavigateToFull={handleOpenFullManagement}
+        {/* Sticky Footer - SINGLE footer, 3 actions (Hick's Law: 40% reduction from 5) */}
+        <div className="manage-step-footer">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon icon={IconNames.SAVED} intent={Intent.SUCCESS} size={12} />
+            <span className="bp5-text-muted">Changes saved automatically</span>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Button
+              text="Back"
+              onClick={() => navigate(-1)}
+              large
+            />
+            <Button
+              text="Finish & View Collections"
+              onClick={handleFinish}
+              large
+              data-testid="finish-button"
+            />
+            <Button
+              intent={Intent.PRIMARY}
+              text="Open Full Management View"
+              rightIcon={IconNames.MAXIMIZE}
+              onClick={handleOpenFullManagement}
+              large
+              data-testid="open-full-management-button"
             />
           </div>
-        </Section>
-      </div>
-
-      {/* Sticky Footer - Primary actions */}
-      <div
-        style={{
-          position: 'sticky',
-          bottom: 0,
-          zIndex: 10,
-          background: '#fff',
-          padding: '16px 24px',
-          borderTop: '1px solid #d3d8de',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Icon icon={IconNames.SAVED} intent={Intent.SUCCESS} size={12} />
-          <span className="bp5-text-muted">Changes saved automatically</span>
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Button
-            text="Save & Exit Wizard"
-            onClick={handleFinish}
-            size="large"
-            data-testid="finish-button"
-          />
-          <Button
-            intent={Intent.PRIMARY}
-            text="Switch to Full View"
-            onClick={handleOpenFullManagement}
-            rightIcon={IconNames.MAXIMIZE}
-            size="large"
-            data-testid="open-full-management-button"
-          />
         </div>
       </div>
-    </div>
     </HotkeysProvider>
   );
 };
